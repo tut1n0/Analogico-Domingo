@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+
+{% block contenido %}
+
+<h2>Editar Programa</h2>
+
+<form
+action="/programas/editar/{{ programa.id_programa }}"
+method="post"
+class="formulario">
+
+    <label>Número</label>
+
+    <input
+    type="number"
+    name="numero"
+    value="{{ programa.numero }}"
+    required>
+
+    <label>Fecha</label>
+
+    <input
+    type="date"
+    name="fecha"
+    value="{{ programa.fecha }}"
+    required>
+
+    <label>Observaciones</label>
+
+    <textarea
+    name="observaciones"
+    rows="6">{{ programa.observaciones }}</textarea>
+
+    <button
+    type="submit"
+    class="boton">
+
+        Guardar Cambios
+
+    </button>
+
+</form>
+
+{% endblock %}

@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+
+{% block contenido %}
+
+<h2>Agregar Disco</h2>
+
+<form action="/discos/nuevo" method="post" enctype="multipart/form-data" class="formulario">
+
+    <label>Título</label>
+    <input type="text" name="titulo" required>
+
+    <label>Artista</label>
+    <input type="text" name="artista" required>
+
+    <label>Año</label>
+    <input type="number" name="anio">
+
+    <label>Género</label>
+    <input type="text" name="genero">
+
+    <label>Sello</label>
+    <input type="text" name="sello">
+
+    <label>Productor</label>
+    <input type="text" name="productor">
+
+    <label>Duración</label>
+    <input type="text" name="duracion">
+
+    <label>Descripción</label>
+    <textarea name="descripcion" rows="6"></textarea>
+
+    <label>Portada</label>
+    <input type="file" name="portada" accept=".jpg,.jpeg,.png,.webp">
+
+    <button type="submit" class="boton">
+        Guardar Disco
+    </button>
+
+</form>
+
+{% endblock %}

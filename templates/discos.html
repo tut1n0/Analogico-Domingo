@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+
+{% block contenido %}
+
+
+
+<div class="barra-superior">
+
+    <h2>Catálogo de Discos</h2>
+
+    <a href="/discos/nuevo" class="boton">
+        + Agregar Disco
+    </a>
+
+</div>
+
+<br>
+
+<div class="contenedor-discos">
+
+{% for disco in discos %}
+
+<div class="tarjeta">
+    
+
+<div class="portada">
+
+{% if disco.portada %}
+
+<img
+src="/uploads/portadas/{{ disco.portada }}"
+alt="{{ disco.titulo }}">
+
+{% else %}
+
+Sin portada
+
+{% endif %}
+
+</div>
+
+    <h3>{{ disco.titulo }}</h3>
+
+    <p><strong>{{ disco.artista }}</strong></p>
+
+    <p>{{ disco.anio }}</p>
+
+    <p>{{ disco.genero }}</p>
+
+    <p>{{ disco.sello }}</p>
+
+    <div class="acciones">
+
+        <a href="/discos/editar/{{ disco.id_disco }}">Editar</a>
+
+        <a href="/discos/eliminar/{{ disco.id_disco }}">Eliminar</a>
+
+    </div>
+
+</div>
+
+{% endfor %}
+
+</div>
+
+{% endblock %}

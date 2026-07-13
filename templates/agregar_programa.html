@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+
+{% block contenido %}
+
+<h2>Nuevo Programa</h2>
+
+<form
+action="/programas/nuevo"
+method="post"
+class="formulario">
+
+    <label>Número</label>
+
+    <input
+    type="number"
+    name="numero"
+    required>
+
+    <label>Fecha</label>
+
+    <input
+    type="date"
+    name="fecha"
+    required>
+
+    <label>Observaciones</label>
+
+    <textarea
+    name="observaciones"
+    rows="6"></textarea>
+
+    <button
+    type="submit"
+    class="boton">
+
+        Guardar
+
+    </button>
+
+</form>
+<hr>
+
+<h3>Discos del programa</h3>
+
+{% if discos %}
+
+    {% for disco in discos %}
+
+    <div class="checkbox-disco">
+
+        <label>
+
+            <input
+                type="checkbox"
+                name="discos"
+                value="{{ disco.id_disco }}">
+
+            <strong>{{ disco.artista }}</strong>
+            -
+            {{ disco.titulo }}
+
+            {% if disco.anio %}
+                ({{ disco.anio }})
+            {% endif %}
+
+        </label>
+
+    </div>
+
+    {% endfor %}
+
+{% else %}
+
+<p>No hay discos pendientes.</p>
+
+{% endif %}
+
+{% endblock %}

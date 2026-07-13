@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+
+{% block contenido %}
+
+<div class="barra-superior">
+
+    <h2>Programas</h2>
+
+    <a href="/programas/nuevo" class="boton">
+        + Nuevo Programa
+    </a>
+
+</div>
+
+<table class="tabla">
+
+    <thead>
+
+        <tr>
+
+            <th>Número</th>
+            <th>Fecha</th>
+            <th>Observaciones</th>
+            <th>Acciones</th>
+
+        </tr>
+
+    </thead>
+
+    <tbody>
+
+    {% for programa in programas %}
+
+        <tr>
+
+            <td>{{ programa.numero }}</td>
+
+            <td>{{ programa.fecha }}</td>
+
+            <td>{{ programa.observaciones }}</td>
+
+            <td>
+
+                <a href="/programas/editar/{{ programa.id_programa }}">
+                    Editar
+                </a>
+
+                |
+
+                <a
+                href="/programas/eliminar/{{ programa.id_programa }}"
+                onclick="return confirm('¿Eliminar programa?')">
+
+                    Eliminar
+
+                </a>
+
+            </td>
+
+        </tr>
+
+    {% endfor %}
+
+    </tbody>
+
+</table>
+
+{% endblock %}
