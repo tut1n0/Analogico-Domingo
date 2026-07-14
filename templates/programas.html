@@ -21,6 +21,7 @@
             <th>Número</th>
             <th>Fecha</th>
             <th>Observaciones</th>
+            <th>Audio</th>
             <th>Acciones</th>
 
         </tr>
@@ -41,6 +42,26 @@
 
             <td>
 
+                {% if programa.audio %}
+
+                    <audio controls preload="none">
+
+                        <source
+                            src="/uploads/programas/{{ programa.audio }}"
+                            type="audio/mpeg">
+
+                    </audio>
+
+                {% else %}
+
+                    Sin audio
+
+                {% endif %}
+
+            </td>
+
+            <td>
+
                 <a href="/programas/editar/{{ programa.id_programa }}">
                     Editar
                 </a>
@@ -48,8 +69,8 @@
                 |
 
                 <a
-                href="/programas/eliminar/{{ programa.id_programa }}"
-                onclick="return confirm('¿Eliminar programa?')">
+                    href="/programas/eliminar/{{ programa.id_programa }}"
+                    onclick="return confirm('¿Eliminar programa?')">
 
                     Eliminar
 

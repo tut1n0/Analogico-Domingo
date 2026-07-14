@@ -270,10 +270,12 @@ def agregar_programa(datos):
                 (
                     numero,
                     fecha,
-                    observaciones
+                    observaciones,
+                    audio
                 )
                 VALUES
                 (
+                    %s,
                     %s,
                     %s,
                     %s
@@ -284,7 +286,8 @@ def agregar_programa(datos):
 
                 datos["numero"],
                 datos["fecha"],
-                datos["observaciones"]
+                datos["observaciones"],
+                datos["audio"]
 
             ))
 
@@ -313,7 +316,8 @@ def actualizar_programa(id_programa, datos):
                 SET
                     numero=%s,
                     fecha=%s,
-                    observaciones=%s
+                    observaciones=%s,
+                    audio=%s
                 WHERE id_programa=%s
             """
 
@@ -322,6 +326,7 @@ def actualizar_programa(id_programa, datos):
                 datos["numero"],
                 datos["fecha"],
                 datos["observaciones"],
+                datos["audio"],
                 id_programa
 
             ))
@@ -410,6 +415,52 @@ def agregar_disco_a_programa(id_programa, id_disco):
                 id_programa,
                 id_disco
             ))
+
+            conexion.commit()
+
+    except Exception:
+
+        conexion.rollback()
+        raise
+
+    finally:
+
+        conexion.close()
+
+
+def obtener_discos_programa(id_programa):
+    conexion = get_connection()
+
+    try:
+        with conexion.cursor() as cursor:
+
+            sql = """
+                SELECT id_disco
+                FROM programa_disco
+                WHERE id_programa=%s
+            """
+
+            cursor.execute(sql, (id_programa,))
+
+            return cursor.fetchall()
+
+    finally:
+
+        conexion.close()
+
+
+def eliminar_discos_programa(id_programa):
+    conexion = get_connection()
+
+    try:
+        with conexion.cursor() as cursor:
+
+            sql = """
+                DELETE FROM programa_disco
+                WHERE id_programa=%s
+            """
+
+            cursor.execute(sql, (id_programa,))
 
             conexion.commit()
 

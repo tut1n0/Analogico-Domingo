@@ -76,3 +76,14 @@ class="formulario">
 {% endif %}
 
 {% endblock %}
+
+<label>Audio del programa (MP3)</label>
+
+<input
+    type="file"
+    name="audio"
+    accept=".mp3">
+<form
+    action="/programas/nuevo"
+    method="post"
+    enctype="multipart/form-data">

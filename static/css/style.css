@@ -301,3 +301,79 @@ footer{
     background:#222;
 
 }
+
+
+/* ===========================
+   FORMULARIOS
+=========================== */
+
+.formulario{
+    max-width:700px;
+    margin:30px auto;
+    display:flex;
+    flex-direction:column;
+    gap:15px;
+}
+
+.formulario label{
+    font-weight:bold;
+    color:#ddd;
+}
+
+.formulario input,
+.formulario textarea,
+.formulario select{
+    width:100%;
+    padding:10px;
+    border:1px solid #444;
+    border-radius:6px;
+    background:#222;
+    color:white;
+    font-size:15px;
+}
+
+.formulario textarea{
+    resize:vertical;
+    min-height:120px;
+}
+
+.formulario input[type="file"]{
+    padding:6px;
+    background:#2b2b2b;
+}
+
+.formulario audio{
+    width:100%;
+    margin-top:8px;
+}
+
+.formulario button{
+    margin-top:15px;
+}
+
+
+.lista-discos{
+    margin-top:10px;
+    border:1px solid #333;
+    border-radius:6px;
+    background:#1f1f1f;
+    padding:15px;
+    max-height:300px;
+    overflow-y:auto;
+}
+
+.lista-discos div{
+    margin-bottom:8px;
+}
+
+.lista-discos label{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    cursor:pointer;
+    font-weight:normal;
+}
+
+.lista-discos input[type="checkbox"]{
+    width:auto;
+}

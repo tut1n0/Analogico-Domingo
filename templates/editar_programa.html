@@ -5,35 +5,78 @@
 <h2>Editar Programa</h2>
 
 <form
-action="/programas/editar/{{ programa.id_programa }}"
-method="post"
-class="formulario">
+    action="/programas/editar/{{ programa.id_programa }}"
+    method="post"
+    enctype="multipart/form-data"
+    class="formulario">
 
     <label>Número</label>
 
     <input
-    type="number"
-    name="numero"
-    value="{{ programa.numero }}"
-    required>
+        type="number"
+        name="numero"
+        value="{{ programa.numero }}"
+        required>
 
     <label>Fecha</label>
 
     <input
-    type="date"
-    name="fecha"
-    value="{{ programa.fecha }}"
-    required>
+        type="date"
+        name="fecha"
+        value="{{ programa.fecha }}"
+        required>
 
     <label>Observaciones</label>
 
     <textarea
-    name="observaciones"
-    rows="6">{{ programa.observaciones }}</textarea>
+        name="observaciones"
+        rows="6">{{ programa.observaciones }}</textarea>
+
+    <label>Audio del programa</label>
+
+    <input
+        type="file"
+        name="audio"
+        accept=".mp3">
+
+    {% if programa.audio %}
+
+        <p>Audio actual:</p>
+
+        <audio controls preload="none">
+
+            <source
+                src="/uploads/programas/{{ programa.audio }}"
+                type="audio/mpeg">
+
+        </audio>
+
+    {% endif %}
+
+    <label>Discos del programa</label>
+    <div class="lista-discos">
+    {% for disco in discos %}
+
+        <label>
+
+            <input
+                type="checkbox"
+                name="discos"
+                value="{{ disco.id_disco }}"
+                {% if disco.id_disco in seleccionados %}checked{% endif %}>
+
+            {{ disco.artista }} - {{ disco.titulo }}
+
+        </label>
+
+    {% endfor %}
+    </div>
+
+    <br>
 
     <button
-    type="submit"
-    class="boton">
+        type="submit"
+        class="boton">
 
         Guardar Cambios
 
