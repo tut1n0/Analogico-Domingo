@@ -497,3 +497,27 @@ def marcar_disco_escuchado(id_disco):
     finally:
 
         conexion.close()
+# ==========================================
+# USUARIOS
+# ==========================================
+
+def obtener_usuario(usuario):
+    conexion = get_connection()
+
+    try:
+
+        with conexion.cursor() as cursor:
+
+            sql = """
+                SELECT *
+                FROM usuarios
+                WHERE usuario = %s
+            """
+
+            cursor.execute(sql, (usuario,))
+
+            return cursor.fetchone()
+
+    finally:
+
+        conexion.close()

@@ -1,11 +1,12 @@
 import os
 import shutil
-import uuid 
+import uuid
+
 from fastapi import APIRouter, Request, Form, UploadFile, File
 from fastapi.responses import RedirectResponse
-from fastapi.templating import Jinja2Templates
- 
 
+from utils.render import render
+from utils.auth import verificar_login
 
 from models import (
     obtener_discos,
@@ -20,7 +21,7 @@ router = APIRouter(
     tags=["Discos"]
 )
 
-templates = Jinja2Templates(directory="templates")
+
 
 
 # ======================================================
@@ -32,10 +33,10 @@ def listar_discos(request: Request):
 
     discos = obtener_discos()
 
-    return templates.TemplateResponse(
-        request=request,
-        name="discos.html",
-        context={
+    return render(
+        request,
+        "discos.html",
+        {
             "discos": discos
         }
     )
@@ -48,10 +49,15 @@ def listar_discos(request: Request):
 @router.get("/nuevo")
 def nuevo_disco(request: Request):
 
-    return templates.TemplateResponse(
-        request=request,
-        name="agregar_disco.html",
-        context={}
+    respuesta = verificar_login(request)
+
+    if respuesta:
+        return respuesta
+
+    return render(
+        request,
+        "agregar_disco.html",
+        {}
     )
 
 
@@ -61,6 +67,8 @@ def nuevo_disco(request: Request):
 
 @router.post("/nuevo")
 def guardar_disco(
+
+    request: Request,
 
     titulo: str = Form(...),
     artista: str = Form(...),
@@ -74,6 +82,11 @@ def guardar_disco(
     portada: UploadFile = File(None)
 
 ):
+
+    respuesta = verificar_login(request)
+
+    if respuesta:
+        return respuesta
 
     nombre_portada = ""
 
@@ -122,12 +135,17 @@ def guardar_disco(
 @router.get("/editar/{id_disco}")
 def editar_disco(request: Request, id_disco: int):
 
+    respuesta = verificar_login(request)
+
+    if respuesta:
+        return respuesta
+
     disco = obtener_disco(id_disco)
 
-    return templates.TemplateResponse(
-        request=request,
-        name="editar_disco.html",
-        context={
+    return render(
+        request,
+        "editar_disco.html",
+        {
             "disco": disco
         }
     )
@@ -139,7 +157,7 @@ def editar_disco(request: Request, id_disco: int):
 
 @router.post("/editar/{id_disco}")
 def actualizar(
-
+    request: Request,
     id_disco: int,
 
     titulo: str = Form(...),
@@ -153,7 +171,12 @@ def actualizar(
     escuchado: bool = Form(False)
 
 ):
+    respuesta = verificar_login(request)
+    if respuesta:
+        return respuesta
 
+    disco_actual = obtener_disco(id_disco)
+    
     datos = {
 
         "titulo": titulo,
@@ -164,7 +187,7 @@ def actualizar(
         "productor": productor,
         "duracion": duracion,
         "descripcion": descripcion,
-        "portada": "",
+        "portada": disco_actual["portada"],
         "escuchado": escuchado
 
     }
@@ -182,7 +205,12 @@ def actualizar(
 # ======================================================
 
 @router.get("/eliminar/{id_disco}")
-def eliminar(id_disco: int):
+def eliminar(request: Request, id_disco: int):
+
+    respuesta = verificar_login(request)
+
+    if respuesta:
+        return respuesta
 
     eliminar_disco(id_disco)
 

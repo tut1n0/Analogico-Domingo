@@ -5,85 +5,82 @@
 <h2>Nuevo Programa</h2>
 
 <form
-action="/programas/nuevo"
-method="post"
-class="formulario">
+    action="/programas/nuevo"
+    method="post"
+    enctype="multipart/form-data"
+    class="formulario">
 
     <label>Número</label>
 
     <input
-    type="number"
-    name="numero"
-    required>
+        type="number"
+        name="numero"
+        required>
 
     <label>Fecha</label>
 
     <input
-    type="date"
-    name="fecha"
-    required>
+        type="date"
+        name="fecha"
+        required>
 
     <label>Observaciones</label>
 
     <textarea
-    name="observaciones"
-    rows="6"></textarea>
+        name="observaciones"
+        rows="6"></textarea>
+
+    <label>Audio del programa (MP3)</label>
+
+    <input
+        type="file"
+        name="audio"
+        accept=".mp3">
+
+    <h3>Discos del programa</h3>
+
+    {% if discos %}
+
+        {% for disco in discos %}
+
+        <div class="checkbox-disco">
+
+            <label>
+
+                <input
+                    type="checkbox"
+                    name="discos"
+                    value="{{ disco.id_disco }}">
+
+                <strong>{{ disco.artista }}</strong>
+                -
+                {{ disco.titulo }}
+
+                {% if disco.anio %}
+                    ({{ disco.anio }})
+                {% endif %}
+
+            </label>
+
+        </div>
+
+        {% endfor %}
+
+    {% else %}
+
+        <p>No hay discos pendientes.</p>
+
+    {% endif %}
 
     <button
-    type="submit"
-    class="boton">
+        type="submit"
+        class="boton">
 
         Guardar
 
     </button>
 
 </form>
-<hr>
-
-<h3>Discos del programa</h3>
-
-{% if discos %}
-
-    {% for disco in discos %}
-
-    <div class="checkbox-disco">
-
-        <label>
-
-            <input
-                type="checkbox"
-                name="discos"
-                value="{{ disco.id_disco }}">
-
-            <strong>{{ disco.artista }}</strong>
-            -
-            {{ disco.titulo }}
-
-            {% if disco.anio %}
-                ({{ disco.anio }})
-            {% endif %}
-
-        </label>
-
-    </div>
-
-    {% endfor %}
-
-{% else %}
-
-<p>No hay discos pendientes.</p>
-
-{% endif %}
 
 {% endblock %}
 
-<label>Audio del programa (MP3)</label>
-
-<input
-    type="file"
-    name="audio"
-    accept=".mp3">
-<form
-    action="/programas/nuevo"
-    method="post"
-    enctype="multipart/form-data">

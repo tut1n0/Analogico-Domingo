@@ -377,3 +377,77 @@ footer{
 .lista-discos input[type="checkbox"]{
     width:auto;
 }
+
+/* =====================================
+   LOGIN
+===================================== */
+
+.login-container{
+
+    width:400px;
+    margin:60px auto;
+    background:#1b1b1b;
+    border:1px solid #d4a000;
+    border-radius:10px;
+    padding:35px;
+
+}
+
+.login-container h2{
+
+    text-align:center;
+    margin-bottom:30px;
+    color:#f1f1f1;
+
+}
+
+.login-form{
+
+    display:flex;
+    flex-direction:column;
+    gap:18px;
+
+}
+
+.login-form label{
+
+    font-weight:bold;
+    color:#ddd;
+
+}
+
+.login-form input{
+
+    padding:12px;
+    border:1px solid #444;
+    border-radius:6px;
+    background:#222;
+    color:white;
+    font-size:15px;
+
+}
+
+.login-form input:focus{
+
+    outline:none;
+    border-color:#d4a000;
+
+}
+
+.login-form .boton{
+
+    margin-top:10px;
+    width:100%;
+
+}
+
+.error-login{
+
+    background:#7d2020;
+    color:white;
+    padding:12px;
+    border-radius:6px;
+    margin-bottom:20px;
+    text-align:center;
+
+}

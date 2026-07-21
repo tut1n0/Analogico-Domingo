@@ -6,7 +6,8 @@ from typing import List
 
 from fastapi import APIRouter, Request, Form, UploadFile, File
 from fastapi.responses import RedirectResponse
-from fastapi.templating import Jinja2Templates
+from utils.render import render
+from utils.auth import verificar_login
 
 from models import (
     obtener_programas,
@@ -26,7 +27,7 @@ router = APIRouter(
     tags=["Programas"]
 )
 
-templates = Jinja2Templates(directory="templates")
+
 
 
 # =====================================================
@@ -38,10 +39,10 @@ def listar_programas(request: Request):
 
     programas = obtener_programas()
 
-    return templates.TemplateResponse(
-        request=request,
-        name="programas.html",
-        context={
+    return render(
+        request,
+        "programas.html",
+        {
             "programas": programas
         }
     )
@@ -54,12 +55,17 @@ def listar_programas(request: Request):
 @router.get("/nuevo")
 def nuevo_programa(request: Request):
 
+    respuesta = verificar_login(request)
+
+    if respuesta:
+        return respuesta
+
     discos = obtener_discos()
 
-    return templates.TemplateResponse(
-        request=request,
-        name="agregar_programa.html",
-        context={
+    return render(
+        request,
+        "agregar_programa.html",
+        {
             "discos": discos
         }
     )
@@ -72,6 +78,8 @@ def nuevo_programa(request: Request):
 @router.post("/nuevo")
 def guardar_programa(
 
+    request: Request,
+
     numero: int = Form(...),
     fecha: str = Form(...),
     observaciones: str = Form(""),
@@ -79,6 +87,11 @@ def guardar_programa(
     discos: List[int] = Form([])
 
 ):
+
+    respuesta = verificar_login(request)
+
+    if respuesta:
+        return respuesta
 
     nombre_audio = ""
 
@@ -129,6 +142,11 @@ def guardar_programa(
 @router.get("/editar/{id_programa}")
 def editar(request: Request, id_programa: int):
 
+    respuesta = verificar_login(request)
+
+    if respuesta:
+        return respuesta
+
     programa = obtener_programa(id_programa)
 
     discos = obtener_discos()
@@ -139,10 +157,10 @@ def editar(request: Request, id_programa: int):
         d["id_disco"] for d in discos_programa
     ]
 
-    return templates.TemplateResponse(
-        request=request,
-        name="editar_programa.html",
-        context={
+    return render(
+        request,
+        "editar_programa.html",
+        {
             "programa": programa,
             "discos": discos,
             "seleccionados": seleccionados
@@ -156,6 +174,7 @@ def editar(request: Request, id_programa: int):
 
 @router.post("/editar/{id_programa}")
 def actualizar(
+    request: Request,
 
     id_programa: int,
 
@@ -166,6 +185,10 @@ def actualizar(
     discos: List[int] = Form([])
 
 ):
+    respuesta = verificar_login(request)
+
+    if respuesta:
+        return respuesta
 
     programa = obtener_programa(id_programa)
 
@@ -233,7 +256,12 @@ def actualizar(
 # =====================================================
 
 @router.get("/eliminar/{id_programa}")
-def eliminar(id_programa: int):
+def eliminar(request: Request, id_programa: int):
+
+    respuesta = verificar_login(request)
+
+    if respuesta:
+        return respuesta
 
     programa = obtener_programa(id_programa)
 

@@ -25,17 +25,25 @@
 
     </div>
 
-    <nav>
+<nav>
 
-        <a href="/">Inicio</a>
+    <a href="/">Inicio</a>
+    <a href="/discos/">Discos</a>
+    <a href="/programas/">Programas</a>
 
-        <a href="/discos/">Discos</a>
+    {% if session.usuario %}
 
         <a href="/discos/nuevo">Agregar Disco</a>
+        <a href="/programas/nuevo">Nuevo Programa</a>
+        <a href="/logout">Cerrar sesión</a>
 
-        <a href="/programas/">Programas</a>
+    {% else %}
 
-    </nav>
+        <a href="/login">Iniciar sesión</a>
+
+    {% endif %}
+
+</nav>
 
 </header>
 

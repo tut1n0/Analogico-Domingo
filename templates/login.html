@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+
+{% block contenido %}
+
+<div class="login-container">
+
+    <h2>Iniciar sesión</h2>
+
+    {% if error %}
+
+    <div class="error-login">
+
+        {{ error }}
+
+    </div>
+
+    {% endif %}
+
+    <form
+        action="/login"
+        method="post"
+        class="login-form">
+
+        <label>Usuario</label>
+
+        <input
+            type="text"
+            name="usuario"
+            required
+            autofocus>
+
+        <label>Contraseña</label>
+
+        <input
+            type="password"
+            name="password"
+            required>
+
+        <button
+            type="submit"
+            class="boton">
+
+            Ingresar
+
+        </button>
+
+    </form>
+
+</div>
+
+{% endblock %}
