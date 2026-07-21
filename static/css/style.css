@@ -6,14 +6,10 @@
 
 }
 
-body{
-
-    background:#111;
-
-    color:#f1f1f1;
-
-    font-family:Arial, Helvetica, sans-serif;
-
+body {
+    font-family: "Space Grotesk", sans-serif;
+    background: #F5E6C8;
+    color: #ffbf00
 }
 
 header{
@@ -35,6 +31,7 @@ header{
 .logo h1{
 
     font-size:32px;
+    color:#d39a0c;
 
 }
 
@@ -46,7 +43,7 @@ header{
 
 nav a{
 
-    color:rgb(239, 211, 3);
+    color:#d39a0c;
 
     text-decoration:none;
 
@@ -88,7 +85,7 @@ main{
 
 .hero p{
 
-    color:#bbb;
+    color:#1c1c1c;
 
     line-height:1.8;
 
@@ -108,7 +105,7 @@ main{
 
 .boton{
 
-    background:#e9bb05;
+    background:#d4a000;
 
     color:#111;
 
@@ -213,7 +210,7 @@ footer{
 }
 
 .tarjeta h3{
-
+    color:#d39a0c;
     margin-bottom:8px;
 
 }
