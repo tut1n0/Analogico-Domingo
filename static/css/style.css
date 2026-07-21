@@ -7,9 +7,10 @@
 }
 
 body {
-    font-family: "Space Grotesk", sans-serif;
+    font-family: "Alumni Sans", sans-serif;
     background: #F5E6C8;
-    color: #ffbf00
+    color: #ffbf00;
+    font-size: 20px;
 }
 
 header{
