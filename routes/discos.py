@@ -22,22 +22,6 @@ router = APIRouter(
 )
 
 
-# ======================================================
-# VER DISCO
-# ======================================================
-
-@router.get("/{id_disco}")
-def ver_disco(request: Request, id_disco: int):
-
-    disco = obtener_disco(id_disco)
-
-    return render(
-        request,
-        "ver_disco.html",
-        {
-            "disco": disco
-        }
-    )
 
 # ======================================================
 # LISTAR DISCOS
@@ -232,4 +216,21 @@ def eliminar(request: Request, id_disco: int):
     return RedirectResponse(
         url="/discos/",
         status_code=303
+    )
+
+# ======================================================
+# VER DISCO
+# ======================================================
+
+@router.get("/{id_disco}")
+def ver_disco(request: Request, id_disco: int):
+
+    disco = obtener_disco(id_disco)
+
+    return render(
+        request,
+        "ver_disco.html",
+        {
+            "disco": disco
+        }
     )
