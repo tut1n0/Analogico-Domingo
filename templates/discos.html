@@ -21,25 +21,32 @@
 {% for disco in discos %}
 
 <div class="tarjeta">
-    
 
-<div class="portada">
+    <div class="portada">
 
-{% if disco.portada %}
+    <a href="/discos/{{ disco.id_disco }}">
 
-<img
-src="/uploads/portadas/{{ disco.portada }}"
-alt="{{ disco.titulo }}">
+    {% if disco.portada %}
 
-{% else %}
+        <img
+        src="/uploads/portadas/{{ disco.portada }}"
+        alt="{{ disco.titulo }}">
 
-Sin portada
+    {% else %}
 
-{% endif %}
+        Sin portada
 
-</div>
+    {% endif %}
 
-    <h3>{{ disco.titulo }}</h3>
+    </a>
+
+    </div>
+
+    <h3>
+        <a class="titulo-disco" href="/discos/{{ disco.id_disco }}">
+            {{ disco.titulo }}
+        </a>
+    </h3>
 
     <p><strong>{{ disco.artista }}</strong></p>
 

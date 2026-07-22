@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+
+{% block contenido %}
+
+<div class="detalle-disco">
+
+    <div class="detalle-portada">
+
+        {% if disco.portada %}
+
+            <img
+            src="/uploads/portadas/{{ disco.portada }}"
+            alt="{{ disco.titulo }}">
+
+        {% else %}
+
+            <div class="sin-portada">
+                Sin portada
+            </div>
+
+        {% endif %}
+
+    </div>
+
+    <div class="detalle-info">
+
+        <h2>{{ disco.titulo }}</h2>
+
+        <h3>{{ disco.artista }}</h3>
+
+        <p><strong>Año:</strong> {{ disco.anio }}</p>
+
+        <p><strong>Género:</strong> {{ disco.genero }}</p>
+
+        <p><strong>Sello:</strong> {{ disco.sello }}</p>
+
+        <p><strong>Productor:</strong> {{ disco.productor }}</p>
+
+        <p><strong>Duración:</strong> {{ disco.duracion }}</p>
+
+        <br>
+
+        <h3>Descripción</h3>
+
+        <p class="descripcion">
+            {{ disco.descripcion }}
+        </p>
+
+        <br>
+
+        <a href="/discos/" class="boton">
+            ← Volver al catálogo
+        </a>
+
+    </div>
+
+</div>
+
+{% endblock %}
