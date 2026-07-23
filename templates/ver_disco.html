@@ -9,8 +9,8 @@
         {% if disco.portada %}
 
             <img
-            src="/uploads/portadas/{{ disco.portada }}"
-            alt="{{ disco.titulo }}">
+                src="/uploads/portadas/{{ disco.portada }}"
+                alt="{{ disco.titulo }}">
 
         {% else %}
 
@@ -23,6 +23,85 @@
     </div>
 
     <div class="detalle-info">
+
+        {% if editar %}
+
+        <form
+            action="/discos/editar/{{ disco.id_disco }}"
+            method="post">
+
+            <label>Título</label>
+
+            <input
+                type="text"
+                name="titulo"
+                value="{{ disco.titulo }}">
+
+            <label>Artista</label>
+
+            <input
+                type="text"
+                name="artista"
+                value="{{ disco.artista }}">
+
+            <label>Año</label>
+
+            <input
+                type="number"
+                name="anio"
+                value="{{ disco.anio }}">
+
+            <label>Género</label>
+
+            <input
+                type="text"
+                name="genero"
+                value="{{ disco.genero }}">
+
+            <label>Sello</label>
+
+            <input
+                type="text"
+                name="sello"
+                value="{{ disco.sello }}">
+
+            <label>Productor</label>
+
+            <input
+                type="text"
+                name="productor"
+                value="{{ disco.productor }}">
+
+            <label>Duración</label>
+
+            <input
+                type="text"
+                name="duracion"
+                value="{{ disco.duracion }}">
+
+            <label>Descripción</label>
+
+            <textarea
+                name="descripcion"
+                rows="12">{{ disco.descripcion }}</textarea>
+
+            <br>
+
+            <button
+                class="boton"
+                type="submit">
+                💾 Guardar cambios
+            </button>
+
+            <a
+                href="/discos/{{ disco.id_disco }}"
+                class="boton">
+                Cancelar
+            </a>
+
+        </form>
+
+        {% else %}
 
         <h2>{{ disco.titulo }}</h2>
 
@@ -46,11 +125,38 @@
             {{ disco.descripcion }}
         </p>
 
-        <br>
+        {% if session.usuario %}
 
-        <a href="/discos/" class="boton">
-            ← Volver al catálogo
-        </a>
+        <div class="acciones-admin">
+
+            <a
+                href="/discos/{{ disco.id_disco }}?editar=true"
+                class="boton">
+                ✏️ Editar información
+            </a>
+
+            <a
+                href="/discos/eliminar/{{ disco.id_disco }}"
+                class="boton boton-eliminar"
+                onclick="return confirm('¿Eliminar este disco?');">
+                🗑 Eliminar disco
+            </a>
+
+        </div>
+
+        {% endif %}
+
+        <div class="volver">
+
+            <a
+                href="/discos/"
+                class="boton">
+                ← Volver al catálogo
+            </a>
+
+        </div>
+
+        {% endif %}
 
     </div>
 

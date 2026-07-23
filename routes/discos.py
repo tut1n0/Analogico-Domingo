@@ -2,6 +2,7 @@ import os
 import shutil
 import uuid
 
+from fastapi import Query
 from fastapi import APIRouter, Request, Form, UploadFile, File
 from fastapi.responses import RedirectResponse
 
@@ -223,7 +224,11 @@ def eliminar(request: Request, id_disco: int):
 # ======================================================
 
 @router.get("/{id_disco}")
-def ver_disco(request: Request, id_disco: int):
+def ver_disco(
+    request: Request,
+    id_disco: int,
+    editar: bool = Query(False)
+):
 
     disco = obtener_disco(id_disco)
 
@@ -231,6 +236,7 @@ def ver_disco(request: Request, id_disco: int):
         request,
         "ver_disco.html",
         {
-            "disco": disco
+            "disco": disco,
+            "editar": editar
         }
     )

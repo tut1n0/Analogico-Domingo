@@ -508,3 +508,77 @@ footer{
     text-align:justify;
 
 }
+
+.cabecera-disco{
+
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:20px;
+
+}
+
+.cabecera-disco h2{
+
+    margin:0;
+
+}
+
+.acciones-detalle{
+
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-top:40px;
+    gap:20px;
+
+}
+
+.boton-editar{
+
+    font-size:15px;
+
+}
+
+.boton-eliminar{
+
+    background:#8d2e2e;
+
+}
+
+.boton-eliminar:hover{
+
+    background:#6d1f1f;
+
+}
+
+.detalle-info form{
+    display:flex;
+    flex-direction:column;
+    gap:12px;
+}
+
+.detalle-info input,
+.detalle-info textarea{
+    width:100%;
+    padding:12px;
+    font-size:18px;
+    border:1px solid #bbb;
+    border-radius:8px;
+    font-family:inherit;
+}
+
+.detalle-info textarea{
+    resize:vertical;
+}
+
+.acciones-admin{
+    display:flex;
+    gap:18px;
+    margin-top:40px;
+    margin-bottom:25px;
+}
+
+.volver{
+    margin-top:15px;
+}
