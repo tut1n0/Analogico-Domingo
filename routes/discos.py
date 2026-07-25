@@ -101,7 +101,7 @@ def guardar_disco(
         "duracion": duracion,
         "descripcion": descripcion,
         "portada": portada_url,
-        "escuchado": False
+        "escuchado": 0
 
     }
 
@@ -173,7 +173,7 @@ def actualizar(
         "duracion": duracion,
         "descripcion": descripcion,
         "portada": disco_actual["portada"],
-        "escuchado": escuchado
+        "escuchado": int(escuchado)
 
     }
 
