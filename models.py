@@ -34,7 +34,7 @@ def obtener_disco(id_disco):
             sql = """
                 SELECT *
                 FROM discos
-                WHERE id_disco = %s
+                WHERE id_disco = ?
             """
 
             cursor.execute(sql, (id_disco,))
@@ -65,7 +65,7 @@ def agregar_disco(datos):
                     portada,
                     escuchado
                 )
-                VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+                VALUES (?,?,?,?,?,?,?,?,?,?)
             """
 
             cursor.execute(sql, (
@@ -107,17 +107,17 @@ def actualizar_disco(id_disco, datos):
             sql = """
                 UPDATE discos
                 SET
-                    titulo=%s,
-                    artista=%s,
-                    anio=%s,
-                    genero=%s,
-                    sello=%s,
-                    productor=%s,
-                    duracion=%s,
-                    descripcion=%s,
-                    portada=%s,
-                    escuchado=%s
-                WHERE id_disco=%s
+                    titulo=?,
+                    artista=?,
+                    anio=?,
+                    genero=?,
+                    sello=?,
+                    productor=?,
+                    duracion=?,
+                    descripcion=?,
+                    portada=?,
+                    escuchado=?
+                WHERE id_disco=?
             """
 
             cursor.execute(sql, (
@@ -159,7 +159,7 @@ def eliminar_disco(id_disco):
 
             sql = """
                 DELETE FROM discos
-                WHERE id_disco=%s
+                WHERE id_disco=?
             """
 
             cursor.execute(sql, (id_disco,))
@@ -188,11 +188,11 @@ def buscar_discos(texto):
             sql = """
                 SELECT *
                 FROM discos
-                WHERE titulo LIKE %s
-                   OR artista LIKE %s
-                   OR genero LIKE %s
-                   OR sello LIKE %s
-                   OR productor LIKE %s
+                WHERE titulo LIKE ?
+                   OR artista LIKE ?
+                   OR genero LIKE ?
+                   OR sello LIKE ?
+                   OR productor LIKE ?
                 ORDER BY artista, titulo
             """
 
@@ -247,7 +247,7 @@ def obtener_programa(id_programa):
             sql = """
                 SELECT *
                 FROM programas
-                WHERE id_programa = %s
+                WHERE id_programa = ?
             """
 
             cursor.execute(sql, (id_programa,))
@@ -275,10 +275,10 @@ def agregar_programa(datos):
                 )
                 VALUES
                 (
-                    %s,
-                    %s,
-                    %s,
-                    %s
+                    ?,
+                    ?,
+                    ?,
+                    ?
                 )
             """
 
@@ -314,11 +314,11 @@ def actualizar_programa(id_programa, datos):
             sql = """
                 UPDATE programas
                 SET
-                    numero=%s,
-                    fecha=%s,
-                    observaciones=%s,
-                    audio=%s
-                WHERE id_programa=%s
+                    numero=?,
+                    fecha=?,
+                    observaciones=?,
+                    audio=?
+                WHERE id_programa=?
             """
 
             cursor.execute(sql, (
@@ -353,7 +353,7 @@ def eliminar_programa(id_programa):
 
             sql = """
                 DELETE FROM programas
-                WHERE id_programa=%s
+                WHERE id_programa=?
             """
 
             cursor.execute(sql, (id_programa,))
@@ -380,7 +380,7 @@ def obtener_discos_pendientes():
             sql = """
                 SELECT *
                 FROM discos
-                WHERE escuchado = FALSE
+                WHERE escuchado = 0
                 ORDER BY artista, titulo
             """
 
@@ -406,8 +406,8 @@ def agregar_disco_a_programa(id_programa, id_disco):
                 )
                 VALUES
                 (
-                    %s,
-                    %s
+                    ?,
+                    ?
                 )
             """
 
@@ -437,7 +437,7 @@ def obtener_discos_programa(id_programa):
             sql = """
                 SELECT id_disco
                 FROM programa_disco
-                WHERE id_programa=%s
+                WHERE id_programa=?
             """
 
             cursor.execute(sql, (id_programa,))
@@ -457,7 +457,7 @@ def eliminar_discos_programa(id_programa):
 
             sql = """
                 DELETE FROM programa_disco
-                WHERE id_programa=%s
+                WHERE id_programa=?
             """
 
             cursor.execute(sql, (id_programa,))
@@ -481,8 +481,8 @@ def marcar_disco_escuchado(id_disco):
 
             sql = """
                 UPDATE discos
-                SET escuchado = TRUE
-                WHERE id_disco = %s
+                SET escuchado = 1
+                WHERE id_disco = ?
             """
 
             cursor.execute(sql, (id_disco,))
@@ -511,7 +511,7 @@ def obtener_usuario(usuario):
             sql = """
                 SELECT *
                 FROM usuarios
-                WHERE usuario = %s
+                WHERE usuario = ?
             """
 
             cursor.execute(sql, (usuario,))
