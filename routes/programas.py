@@ -1,13 +1,10 @@
-import os
-import shutil
-import uuid
-
 from typing import List
 
 from fastapi import APIRouter, Request, Form, UploadFile, File
 from fastapi.responses import RedirectResponse
 from utils.render import render
 from utils.auth import verificar_login
+from utils.storage import upload_file, delete_file
 
 from models import (
     obtener_programas,
@@ -96,18 +93,7 @@ def guardar_programa(
     nombre_audio = ""
 
     if audio and audio.filename:
-
-        extension = os.path.splitext(audio.filename)[1]
-        nombre_audio = f"{uuid.uuid4()}{extension}"
-
-        ruta = os.path.join(
-            "uploads",
-            "programas",
-            nombre_audio
-        )
-
-        with open(ruta, "wb") as buffer:
-            shutil.copyfileobj(audio.file, buffer)
+        nombre_audio = upload_file(audio, "programas")
 
     datos = {
 
@@ -196,29 +182,8 @@ def actualizar(
 
     if audio and audio.filename:
 
-        if nombre_audio:
-
-            ruta_vieja = os.path.join(
-                "uploads",
-                "programas",
-                nombre_audio
-            )
-
-            if os.path.exists(ruta_vieja):
-                os.remove(ruta_vieja)
-
-        extension = os.path.splitext(audio.filename)[1]
-
-        nombre_audio = f"{uuid.uuid4()}{extension}"
-
-        ruta = os.path.join(
-            "uploads",
-            "programas",
-            nombre_audio
-        )
-
-        with open(ruta, "wb") as buffer:
-            shutil.copyfileobj(audio.file, buffer)
+        delete_file(nombre_audio)
+        nombre_audio = upload_file(audio, "programas")
 
     datos = {
 
@@ -266,15 +231,7 @@ def eliminar(request: Request, id_programa: int):
     programa = obtener_programa(id_programa)
 
     if programa["audio"]:
-
-        ruta = os.path.join(
-            "uploads",
-            "programas",
-            programa["audio"]
-        )
-
-        if os.path.exists(ruta):
-            os.remove(ruta)
+        delete_file(programa["audio"])
 
     eliminar_programa(id_programa)
 

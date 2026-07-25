@@ -1,13 +1,10 @@
-import os
-import shutil
-import uuid
-
 from fastapi import Query
 from fastapi import APIRouter, Request, Form, UploadFile, File
 from fastapi.responses import RedirectResponse
 
 from utils.render import render
 from utils.auth import verificar_login
+from utils.storage import upload_file, delete_file
 
 from models import (
     obtener_discos,
@@ -88,22 +85,10 @@ def guardar_disco(
     if respuesta:
         return respuesta
 
-    nombre_portada = ""
+    portada_url = ""
 
     if portada and portada.filename:
-
-        extension = os.path.splitext(portada.filename)[1]
-
-        nombre_portada = f"{uuid.uuid4()}{extension}"
-
-        ruta = os.path.join(
-            "uploads",
-            "portadas",
-            nombre_portada
-        )
-
-        with open(ruta, "wb") as buffer:
-            shutil.copyfileobj(portada.file, buffer)
+        portada_url = upload_file(portada, "portadas")
 
     datos = {
 
@@ -115,7 +100,7 @@ def guardar_disco(
         "productor": productor,
         "duracion": duracion,
         "descripcion": descripcion,
-        "portada": nombre_portada,
+        "portada": portada_url,
         "escuchado": False
 
     }
@@ -211,6 +196,11 @@ def eliminar(request: Request, id_disco: int):
 
     if respuesta:
         return respuesta
+
+    disco = obtener_disco(id_disco)
+
+    if disco and disco["portada"]:
+        delete_file(disco["portada"])
 
     eliminar_disco(id_disco)
 
