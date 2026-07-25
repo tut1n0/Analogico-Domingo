@@ -90,7 +90,8 @@ class PgConnectionWrapper:
         self._conn = pg_conn
 
     def cursor(self):
-        return PgCursorWrapper(self._conn.cursor())
+        from psycopg2.extras import RealDictCursor
+        return PgCursorWrapper(self._conn.cursor(cursor_factory=RealDictCursor))
 
     def commit(self):
         self._conn.commit()

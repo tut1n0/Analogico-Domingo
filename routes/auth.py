@@ -39,16 +39,7 @@ def validar_login(
 
 ):
 
-    try:
-        datos_usuario = obtener_usuario(usuario)
-    except Exception as e:
-        return render(
-            request,
-            "login.html",
-            {
-                "error": f"Error de base de datos: {e}"
-            }
-        )
+    datos_usuario = obtener_usuario(usuario)
 
     if datos_usuario is None:
 
