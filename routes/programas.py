@@ -1,10 +1,10 @@
 from typing import List
 
 from fastapi import APIRouter, Request, Form, UploadFile, File
-from fastapi.responses import RedirectResponse
+from fastapi.responses import RedirectResponse, JSONResponse
 from utils.render import render
 from utils.auth import verificar_login
-from utils.storage import upload_file, delete_file
+from utils.storage import upload_file, delete_file, get_upload_signature
 
 from models import (
     obtener_programas,
@@ -46,6 +46,26 @@ def listar_programas(request: Request):
 
 
 # =====================================================
+# UPLOAD SIGNATURE (para subir archivos grandes directo a Cloudinary)
+# =====================================================
+
+@router.get("/upload-url")
+def upload_url(request: Request, folder: str = "programas"):
+
+    respuesta = verificar_login(request)
+
+    if respuesta:
+        return JSONResponse(
+            status_code=401,
+            content={"error": "No autenticado"}
+        )
+
+    params = get_upload_signature(folder)
+
+    return JSONResponse(content=params)
+
+
+# =====================================================
 # FORMULARIO NUEVO
 # =====================================================
 
@@ -81,6 +101,7 @@ def guardar_programa(
     fecha: str = Form(...),
     observaciones: str = Form(""),
     audio: UploadFile = File(None),
+    audio_url: str = Form(""),
     discos: List[int] = Form([])
 
 ):
@@ -90,9 +111,9 @@ def guardar_programa(
     if respuesta:
         return respuesta
 
-    nombre_audio = ""
+    nombre_audio = audio_url
 
-    if audio and audio.filename:
+    if not nombre_audio and audio and audio.filename:
         nombre_audio = upload_file(audio, "programas")
 
     datos = {
@@ -168,6 +189,7 @@ def actualizar(
     fecha: str = Form(...),
     observaciones: str = Form(""),
     audio: UploadFile = File(None),
+    audio_url: str = Form(""),
     discos: List[int] = Form([])
 
 ):
@@ -180,8 +202,10 @@ def actualizar(
 
     nombre_audio = programa["audio"]
 
-    if audio and audio.filename:
-
+    if audio_url:
+        delete_file(nombre_audio)
+        nombre_audio = audio_url
+    elif audio and audio.filename:
         delete_file(nombre_audio)
         nombre_audio = upload_file(audio, "programas")
 

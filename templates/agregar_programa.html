@@ -4,11 +4,15 @@
 
 <h2>Nuevo Programa</h2>
 
+<div id="upload-status" style="display:none; color:blue; margin:10px 0;"></div>
+<div id="upload-error" style="display:none; color:red; margin:10px 0;"></div>
+
 <form
     action="/programas/nuevo"
     method="post"
     enctype="multipart/form-data"
-    class="formulario">
+    class="formulario"
+    id="form-programa">
 
     <label>Número</label>
 
@@ -35,7 +39,10 @@
     <input
         type="file"
         name="audio"
-        accept=".mp3">
+        accept=".mp3"
+        id="input-audio">
+
+    <input type="hidden" name="audio_url" id="audio_url" value="">
 
     <h3>Discos del programa</h3>
 
@@ -74,7 +81,8 @@
 
     <button
         type="submit"
-        class="boton">
+        class="boton"
+        id="btn-submit">
 
         Guardar
 
@@ -82,5 +90,50 @@
 
 </form>
 
-{% endblock %}
+<script>
+document.getElementById("form-programa").addEventListener("submit", async function(e) {
+    var fileInput = document.getElementById("input-audio");
+    var audioUrl = document.getElementById("audio_url").value;
+    var status = document.getElementById("upload-status");
+    var error = document.getElementById("upload-error");
+    var btn = document.getElementById("btn-submit");
 
+    if (!fileInput.files.length || audioUrl) return;
+
+    e.preventDefault();
+    error.style.display = "none";
+    status.style.display = "block";
+    status.textContent = "Obteniendo firma de subida...";
+    btn.disabled = true;
+
+    try {
+        var sigRes = await fetch("/programas/upload-url?folder=programas");
+        var sig = await sigRes.json();
+
+        status.textContent = "Subiendo audio a Cloudinary...";
+        var fd = new FormData();
+        fd.append("file", fileInput.files[0]);
+        fd.append("api_key", sig.api_key);
+        fd.append("timestamp", sig.timestamp);
+        fd.append("signature", sig.signature);
+        fd.append("folder", sig.folder);
+        fd.append("resource_type", "video");
+
+        var uploadRes = await fetch(sig.upload_url, { method: "POST", body: fd });
+        var uploadData = await uploadRes.json();
+
+        if (uploadData.error) throw new Error(uploadData.error.message);
+
+        document.getElementById("audio_url").value = uploadData.secure_url;
+        status.textContent = "Audio subido. Guardando programa...";
+        this.submit();
+    } catch (err) {
+        status.style.display = "none";
+        error.style.display = "block";
+        error.textContent = "Error al subir audio: " + err.message;
+        btn.disabled = false;
+    }
+});
+</script>
+
+{% endblock %}

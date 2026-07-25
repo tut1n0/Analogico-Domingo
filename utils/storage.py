@@ -1,7 +1,9 @@
 import os
 import uuid
+import time
 import shutil
 import cloudinary
+import cloudinary.utils
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -77,3 +79,26 @@ def _delete_cloudinary(url):
         cloudinary.uploader.destroy(public_id)
     except Exception:
         pass
+
+
+def get_upload_signature(folder):
+    cloud_name = os.getenv("CLOUDINARY_CLOUD_NAME")
+    api_key = os.getenv("CLOUDINARY_API_KEY")
+    api_secret = os.getenv("CLOUDINARY_API_SECRET")
+
+    timestamp = int(time.time())
+    params_to_sign = {
+        "folder": folder,
+        "timestamp": timestamp,
+    }
+    signature = cloudinary.utils.api_sign_request(
+        params_to_sign, api_secret
+    )
+
+    return {
+        "upload_url": f"https://api.cloudinary.com/v1_1/{cloud_name}/upload",
+        "api_key": api_key,
+        "timestamp": timestamp,
+        "signature": signature,
+        "folder": folder,
+    }
