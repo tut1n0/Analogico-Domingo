@@ -153,7 +153,9 @@ def actualizar(
     productor: str = Form(None),
     duracion: str = Form(None),
     descripcion: str = Form(None),
-    escuchado: bool = Form(False)
+    escuchado: bool = Form(False),
+
+    portada: UploadFile = File(None)
 
 ):
     respuesta = verificar_login(request)
@@ -161,7 +163,14 @@ def actualizar(
         return respuesta
 
     disco_actual = obtener_disco(id_disco)
-    
+
+    portada_url = disco_actual["portada"]
+
+    if portada and portada.filename:
+        if portada_url:
+            delete_file(portada_url)
+        portada_url = upload_file(portada, "portadas")
+
     datos = {
 
         "titulo": titulo,
@@ -172,7 +181,7 @@ def actualizar(
         "productor": productor,
         "duracion": duracion,
         "descripcion": descripcion,
-        "portada": disco_actual["portada"],
+        "portada": portada_url,
         "escuchado": int(escuchado)
 
     }
@@ -180,7 +189,7 @@ def actualizar(
     actualizar_disco(id_disco, datos)
 
     return RedirectResponse(
-        url="/discos/",
+        url=f"/discos/{id_disco}",
         status_code=303
     )
 

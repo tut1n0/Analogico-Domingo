@@ -28,7 +28,8 @@
 
         <form
             action="/discos/editar/{{ disco.id_disco }}"
-            method="post">
+            method="post"
+            enctype="multipart/form-data">
 
             <label>Título</label>
 
@@ -84,6 +85,18 @@
             <textarea
                 name="descripcion"
                 rows="12">{{ disco.descripcion }}</textarea>
+
+            <label>Portada</label>
+
+            {% if disco.portada %}
+                <p style="margin-bottom: 4px;">Portada actual:</p>
+                <img src="{{ disco.portada }}" alt="Portada actual" style="max-width: 200px; margin-bottom: 8px;">
+            {% endif %}
+
+            <input
+                type="file"
+                name="portada"
+                accept=".jpg,.jpeg,.png,.webp">
 
             <br>
 
