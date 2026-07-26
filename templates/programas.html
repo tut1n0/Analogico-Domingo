@@ -6,9 +6,11 @@
 
     <h2>Programas</h2>
 
+    {% if session.usuario %}
     <a href="/programas/nuevo" class="boton">
         + Nuevo Programa
     </a>
+    {% endif %}
 
 </div>
 
@@ -22,7 +24,9 @@
             <th>Fecha</th>
             <th>Observaciones</th>
             <th>Audio</th>
+            {% if session.usuario %}
             <th>Acciones</th>
+            {% endif %}
 
         </tr>
 
@@ -60,6 +64,7 @@
 
             </td>
 
+            {% if session.usuario %}
             <td>
 
                 <a href="/programas/editar/{{ programa.id_programa }}">
@@ -77,6 +82,7 @@
                 </a>
 
             </td>
+            {% endif %}
 
         </tr>
 

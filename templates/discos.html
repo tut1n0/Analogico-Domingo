@@ -8,13 +8,13 @@
 
     <h2>Catálogo de Discos</h2>
 
+    {% if session.usuario %}
     <a href="/discos/nuevo" class="boton">
         + Agregar Disco
     </a>
+    {% endif %}
 
 </div>
-
-<br>
 
 <div class="contenedor-discos">
 
@@ -56,6 +56,7 @@
 
     <p>{{ disco.sello }}</p>
 
+    {% if session.usuario %}
     <div class="acciones">
 
         <a href="/discos/editar/{{ disco.id_disco }}">Editar</a>
@@ -63,6 +64,7 @@
         <a href="/discos/eliminar/{{ disco.id_disco }}">Eliminar</a>
 
     </div>
+    {% endif %}
 
 </div>
 
