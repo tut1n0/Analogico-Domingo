@@ -582,3 +582,177 @@ footer{
 .volver{
     margin-top:15px;
 }
+
+
+/* =====================================
+   RESPONSIVE — Tablets y pantallas ≤ 768px
+===================================== */
+
+@media (max-width: 768px) {
+
+    main {
+        width: 100%;
+        padding: 20px;
+    }
+
+    header {
+        flex-direction: column;
+        text-align: center;
+        padding: 20px;
+    }
+
+    .logo h1 {
+        font-size: 26px;
+    }
+
+    nav {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 10px;
+        margin-top: 12px;
+    }
+
+    nav a {
+        margin-left: 0;
+    }
+
+    .barra-superior {
+        flex-direction: column;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .contenedor-discos {
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 15px;
+    }
+
+    .detalle-disco {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .detalle-portada img {
+        width: 100%;
+        max-width: 350px;
+    }
+
+    .detalle-info {
+        width: 100%;
+    }
+
+    .detalle-info h2 {
+        font-size: 30px;
+        text-align: center;
+    }
+
+    .detalle-info h3 {
+        text-align: center;
+    }
+
+    .acciones-admin {
+        justify-content: center;
+    }
+
+    .acciones-detalle {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .login-container {
+        width: 90%;
+        max-width: 400px;
+    }
+
+    .formulario {
+        max-width: 100%;
+    }
+
+    .tabla {
+        display: block;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    footer {
+        margin-top: 40px;
+        padding: 20px;
+    }
+
+}
+
+
+/* =====================================
+   RESPONSIVE — Celulares ≤ 480px
+===================================== */
+
+@media (max-width: 480px) {
+
+    body {
+        font-size: 16px;
+    }
+
+    header {
+        padding: 15px;
+    }
+
+    .logo h1 {
+        font-size: 22px;
+    }
+
+    main {
+        padding: 15px;
+    }
+
+    .hero h2 {
+        font-size: 28px;
+    }
+
+    .contenedor-discos {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+
+    .portada {
+        height: 200px;
+    }
+
+    .acciones {
+        flex-direction: column;
+        gap: 8px;
+        align-items: center;
+    }
+
+    .boton {
+        padding: 12px 20px;
+        font-size: 16px;
+        width: 100%;
+        text-align: center;
+    }
+
+    .detalle-portada img {
+        max-width: 280px;
+    }
+
+    .detalle-info h2 {
+        font-size: 24px;
+    }
+
+    .acciones-admin {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .login-container {
+        width: 95%;
+        padding: 25px;
+    }
+
+    .cabecera-disco {
+        flex-direction: column;
+        gap: 10px;
+        text-align: center;
+    }
+
+}
