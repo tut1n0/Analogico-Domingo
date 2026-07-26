@@ -648,23 +648,25 @@ footer{
     }
 
     .detalle-disco {
-        flex-direction: column;
-        align-items: center;
-        overflow: hidden;
+        display: block;
+        margin-top: 20px;
     }
 
     .detalle-portada {
-        width: 100%;
-        margin-bottom: 20px;
+        text-align: center;
+        margin-bottom: 25px;
     }
 
     .detalle-portada img {
         width: 100%;
         max-width: 350px;
+        height: auto;
+        border-radius: 8px;
     }
 
     .detalle-info {
         width: 100%;
+        clear: both;
     }
 
     .detalle-info h2 {
@@ -785,11 +787,15 @@ footer{
     .detalle-portada img {
         width: 100%;
         max-width: 280px;
+        height: auto;
     }
 
     .detalle-disco {
-        gap: 24px;
-        margin-top: 20px;
+        margin-top: 15px;
+    }
+
+    .detalle-portada {
+        margin-bottom: 20px;
     }
 
     .detalle-info h2 {
