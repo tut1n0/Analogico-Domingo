@@ -110,6 +110,7 @@ document.getElementById("form-programa").addEventListener("submit", async functi
 
     try {
         var sigRes = await fetch("/programas/upload-url?folder=programas");
+        if (!sigRes.ok) throw new Error("No se pudo obtener firma de subida (HTTP " + sigRes.status + ")");
         var sig = await sigRes.json();
 
         status.textContent = "Subiendo audio a Cloudinary...";

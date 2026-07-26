@@ -61,8 +61,11 @@ class PgCursorWrapper:
         sql = sql.replace("?", "%s")
         self._cursor.execute(sql, params or ())
         if sql.strip().upper().startswith("INSERT"):
-            self._cursor.execute("SELECT LASTVAL()")
-            self._lastrowid = self._cursor.fetchone()["lastval"]
+            try:
+                self._cursor.execute("SELECT LASTVAL()")
+                self._lastrowid = self._cursor.fetchone()["lastval"]
+            except Exception:
+                self._lastrowid = None
 
     def fetchone(self):
         return self._cursor.fetchone()

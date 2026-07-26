@@ -1,7 +1,7 @@
 from typing import List
 
 from fastapi import APIRouter, Request, Form, UploadFile, File
-from fastapi.responses import RedirectResponse, JSONResponse
+from fastapi.responses import RedirectResponse, JSONResponse, HTMLResponse
 from utils.render import render
 from utils.auth import verificar_login
 from utils.storage import upload_file, delete_file, get_upload_signature
@@ -111,35 +111,44 @@ def guardar_programa(
     if respuesta:
         return respuesta
 
-    nombre_audio = audio_url
+    try:
 
-    if not nombre_audio and audio and audio.filename:
-        nombre_audio = upload_file(audio, "programas")
+        nombre_audio = audio_url
 
-    datos = {
+        if not nombre_audio and audio and audio.filename:
+            nombre_audio = upload_file(audio, "programas")
 
-        "numero": numero,
-        "fecha": fecha,
-        "observaciones": observaciones,
-        "audio": nombre_audio
+        datos = {
 
-    }
+            "numero": numero,
+            "fecha": fecha,
+            "observaciones": observaciones,
+            "audio": nombre_audio
 
-    id_programa = agregar_programa(datos)
+        }
 
-    for id_disco in discos:
+        id_programa = agregar_programa(datos)
 
-        agregar_disco_a_programa(
-            id_programa,
-            id_disco
+        for id_disco in discos:
+
+            agregar_disco_a_programa(
+                id_programa,
+                id_disco
+            )
+
+            marcar_disco_escuchado(id_disco)
+
+        return RedirectResponse(
+            url="/programas/",
+            status_code=303
         )
 
-        marcar_disco_escuchado(id_disco)
-
-    return RedirectResponse(
-        url="/programas/",
-        status_code=303
-    )
+    except Exception as e:
+        print(f"[ERROR GUARDAR PROGRAMA] {e}")
+        return HTMLResponse(
+            content=f"Error al guardar programa: {e}",
+            status_code=500
+        )
 
 
 # =====================================================
@@ -198,46 +207,55 @@ def actualizar(
     if respuesta:
         return respuesta
 
-    programa = obtener_programa(id_programa)
+    try:
 
-    nombre_audio = programa["audio"]
+        programa = obtener_programa(id_programa)
 
-    if audio_url:
-        delete_file(nombre_audio)
-        nombre_audio = audio_url
-    elif audio and audio.filename:
-        delete_file(nombre_audio)
-        nombre_audio = upload_file(audio, "programas")
+        nombre_audio = programa["audio"]
 
-    datos = {
+        if audio_url:
+            delete_file(nombre_audio)
+            nombre_audio = audio_url
+        elif audio and audio.filename:
+            delete_file(nombre_audio)
+            nombre_audio = upload_file(audio, "programas")
 
-        "numero": numero,
-        "fecha": fecha,
-        "observaciones": observaciones,
-        "audio": nombre_audio
+        datos = {
 
-    }
+            "numero": numero,
+            "fecha": fecha,
+            "observaciones": observaciones,
+            "audio": nombre_audio
 
-    actualizar_programa(
-        id_programa,
-        datos
-    )
+        }
 
-    eliminar_discos_programa(id_programa)
-
-    for id_disco in discos:
-
-        agregar_disco_a_programa(
+        actualizar_programa(
             id_programa,
-            id_disco
+            datos
         )
 
-        marcar_disco_escuchado(id_disco)
+        eliminar_discos_programa(id_programa)
 
-    return RedirectResponse(
-        url="/programas/",
-        status_code=303
-    )
+        for id_disco in discos:
+
+            agregar_disco_a_programa(
+                id_programa,
+                id_disco
+            )
+
+            marcar_disco_escuchado(id_disco)
+
+        return RedirectResponse(
+            url="/programas/",
+            status_code=303
+        )
+
+    except Exception as e:
+        print(f"[ERROR ACTUALIZAR PROGRAMA] {e}")
+        return HTMLResponse(
+            content=f"Error al actualizar programa: {e}",
+            status_code=500
+        )
 
 
 # =====================================================
