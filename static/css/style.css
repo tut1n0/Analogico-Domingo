@@ -499,6 +499,7 @@ footer{
 
     margin-bottom:12px;
     line-height:1.7;
+    color:#555;
 
 }
 
@@ -506,6 +507,7 @@ footer{
 
     white-space:pre-line;
     text-align:justify;
+    color:#444;
 
 }
 
@@ -732,10 +734,15 @@ footer{
 
     .portada {
         height: 180px;
+        margin-bottom: 20px;
+    }
+
+    .tarjeta h3 {
+        margin-bottom: 10px;
     }
 
     .tarjeta p {
-        margin: 2px 0;
+        margin: 4px 0;
     }
 
     .acciones {
