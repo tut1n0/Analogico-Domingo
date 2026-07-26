@@ -271,6 +271,10 @@ footer{
 
 }
 
+.tabla td{
+    color:#555;
+}
+
 .tabla th{
 
     background:#222;
@@ -634,6 +638,15 @@ footer{
         overflow: hidden;
     }
 
+    .portada {
+        height: 200px;
+        margin-bottom: 20px;
+    }
+
+    .tarjeta h3 {
+        margin-bottom: 12px;
+    }
+
     .detalle-disco {
         flex-direction: column;
         align-items: center;
@@ -729,20 +742,20 @@ footer{
     }
 
     .tarjeta {
-        padding: 15px;
+        padding: 18px;
     }
 
     .portada {
-        height: 180px;
-        margin-bottom: 20px;
+        height: 220px;
+        margin-bottom: 24px;
     }
 
     .tarjeta h3 {
-        margin-bottom: 10px;
+        margin-bottom: 14px;
     }
 
     .tarjeta p {
-        margin: 4px 0;
+        margin: 5px 0;
     }
 
     .acciones {
