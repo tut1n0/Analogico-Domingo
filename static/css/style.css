@@ -650,6 +650,12 @@ footer{
     .detalle-disco {
         flex-direction: column;
         align-items: center;
+        overflow: hidden;
+    }
+
+    .detalle-portada {
+        width: 100%;
+        margin-bottom: 20px;
     }
 
     .detalle-portada img {
@@ -777,7 +783,13 @@ footer{
     }
 
     .detalle-portada img {
+        width: 100%;
         max-width: 280px;
+    }
+
+    .detalle-disco {
+        gap: 24px;
+        margin-top: 20px;
     }
 
     .detalle-info h2 {
