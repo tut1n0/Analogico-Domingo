@@ -114,6 +114,7 @@ function rpRestore() {
     try {
         var state = JSON.parse(localStorage.getItem("rp_state"));
         if (!state || !state.src) return;
+        if (!sessionStorage.getItem("rp_active")) return;
         rpTitulo.textContent = state.titulo || "---";
         rpAudio.src = state.src;
         rpAudio.volume = state.volume !== undefined ? state.volume : 0.8;
@@ -122,9 +123,7 @@ function rpRestore() {
         rpAudio.addEventListener("loadedmetadata", function onLoad() {
             rpAudio.removeEventListener("loadedmetadata", onLoad);
             rpAudio.currentTime = state.currentTime || 0;
-            if (sessionStorage.getItem("rp_active")) {
-                rpAudio.play().catch(function() {});
-            }
+            rpAudio.play().catch(function() {});
         });
     } catch(e) {}
 }
