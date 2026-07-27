@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+
+{% block contenido %}
+
+<div class="barra-superior">
+
+    <h2>Música</h2>
+
+    {% if session.usuario %}
+    <a href="/musica/nuevo" class="boton">
+        + Nuevo
+    </a>
+    {% endif %}
+
+</div>
+
+<table class="tabla">
+
+    <thead>
+        <tr>
+            <th>Portada</th>
+            <th>Título</th>
+            <th>Artista</th>
+            <th>Año</th>
+            <th>Audio</th>
+            {% if session.usuario %}
+            <th>Acciones</th>
+            {% endif %}
+        </tr>
+    </thead>
+
+    <tbody>
+
+    {% for item in musica %}
+
+        <tr>
+            <td>
+                {% if item.portada %}
+                <a href="/musica/{{ item.id_musica }}">
+                    <img src="{{ item.portada }}" alt="" style="height:60px; border-radius:4px; object-fit:cover;">
+                </a>
+                {% else %}
+                Sin portada
+                {% endif %}
+            </td>
+
+            <td>
+                <a href="/musica/{{ item.id_musica }}" class="titulo-disco">
+                    {{ item.titulo }}
+                </a>
+            </td>
+
+            <td>{{ item.artista }}</td>
+
+            <td>{{ item.anio }}</td>
+
+            <td>
+                {% if item.audio %}
+                    <audio controls preload="none">
+                        <source src="{{ item.audio }}" type="audio/mpeg">
+                    </audio>
+                {% else %}
+                    Sin audio
+                {% endif %}
+            </td>
+
+            {% if session.usuario %}
+            <td>
+                <a href="/musica/editar/{{ item.id_musica }}">Editar</a>
+                |
+                <a href="/musica/eliminar/{{ item.id_musica }}" onclick="return confirm('¿Eliminar?')">Eliminar</a>
+            </td>
+            {% endif %}
+        </tr>
+
+    {% endfor %}
+
+    </tbody>
+
+</table>
+
+{% endblock %}

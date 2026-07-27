@@ -28,6 +28,16 @@ CREATE TABLE IF NOT EXISTS programa_disco (
     FOREIGN KEY (id_disco) REFERENCES discos(id_disco)
 );
 
+CREATE TABLE IF NOT EXISTS musica (
+    id_musica INTEGER PRIMARY KEY AUTOINCREMENT,
+    titulo TEXT NOT NULL,
+    artista TEXT NOT NULL,
+    anio TEXT,
+    descripcion TEXT,
+    portada TEXT,
+    audio TEXT
+);
+
 CREATE TABLE IF NOT EXISTS usuarios (
     id_usuario INTEGER PRIMARY KEY AUTOINCREMENT,
     usuario TEXT NOT NULL UNIQUE,

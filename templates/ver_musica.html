@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+
+{% block contenido %}
+
+<div class="cabecera-disco">
+    <h2>{{ musica.titulo }}</h2>
+</div>
+
+<div class="detalle-musica">
+
+    <div class="detalle-portada">
+        {% if musica.portada %}
+        <img src="{{ musica.portada }}" alt="{{ musica.titulo }}">
+        {% else %}
+        <div class="portada">Sin portada</div>
+        {% endif %}
+    </div>
+
+    <div class="detalle-info">
+
+        <h2>{{ musica.titulo }}</h2>
+        <h3>{{ musica.artista }}</h3>
+
+        {% if musica.anio %}
+        <p><strong>Año:</strong> {{ musica.anio }}</p>
+        {% endif %}
+
+        {% if musica.descripcion %}
+        <p class="descripcion">{{ musica.descripcion }}</p>
+        {% endif %}
+
+        {% if musica.audio %}
+        <div style="margin-top:25px;">
+            <audio controls preload="none" style="width:100%;">
+                <source src="{{ musica.audio }}" type="audio/mpeg">
+            </audio>
+        </div>
+        {% endif %}
+
+        {% if session.usuario %}
+        <div class="acciones-admin">
+            <a href="/musica/editar/{{ musica.id_musica }}" class="boton boton-editar">Editar</a>
+            <a href="/musica/eliminar/{{ musica.id_musica }}" class="boton boton-eliminar" onclick="return confirm('¿Eliminar?')">Eliminar</a>
+        </div>
+        {% endif %}
+
+        <a href="/musica/" class="boton volver">Volver</a>
+
+    </div>
+
+</div>
+
+{% endblock %}

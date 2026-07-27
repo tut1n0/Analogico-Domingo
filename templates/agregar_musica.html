@@ -1,0 +1,115 @@
+{% extends "base.html" %}
+
+{% block contenido %}
+
+<h2>Nuevo Música</h2>
+
+<div id="upload-status" style="display:none; color:blue; margin:10px 0;"></div>
+<div id="upload-error" style="display:none; color:red; margin:10px 0;"></div>
+
+<form
+    action="/musica/nuevo"
+    method="post"
+    enctype="multipart/form-data"
+    class="formulario"
+    id="form-musica">
+
+    <label>Título</label>
+    <input type="text" name="titulo" required>
+
+    <label>Artista</label>
+    <input type="text" name="artista" required>
+
+    <label>Año</label>
+    <input type="text" name="anio">
+
+    <label>Descripción</label>
+    <textarea name="descripcion" rows="6"></textarea>
+
+    <label>Portada (imagen)</label>
+    <input type="file" name="portada" accept="image/*" id="input-portada">
+    <input type="hidden" name="portada_url" id="portada_url" value="">
+
+    <label>Audio (MP3)</label>
+    <input type="file" name="audio" accept=".mp3" id="input-audio">
+    <input type="hidden" name="audio_url" id="audio_url" value="">
+
+    <button type="submit" class="boton" id="btn-submit">Guardar</button>
+
+</form>
+
+<script>
+document.getElementById("form-musica").addEventListener("submit", async function(e) {
+    var portadaInput = document.getElementById("input-portada");
+    var audioInput = document.getElementById("input-audio");
+    var portadaUrl = document.getElementById("portada_url").value;
+    var audioUrl = document.getElementById("audio_url").value;
+    var status = document.getElementById("upload-status");
+    var error = document.getElementById("upload-error");
+    var btn = document.getElementById("btn-submit");
+
+    var needPortada = portadaInput.files.length && !portadaUrl;
+    var needAudio = audioInput.files.length && !audioUrl;
+
+    if (!needPortada && !needAudio) return;
+
+    e.preventDefault();
+    error.style.display = "none";
+    status.style.display = "block";
+    btn.disabled = true;
+
+    try {
+        if (needPortada) {
+            status.textContent = "Obteniendo firma de subida (portada)...";
+            var sigRes = await fetch("/musica/upload-url?folder=musica");
+            if (!sigRes.ok) throw new Error("Error firma portada");
+            var sig = await sigRes.json();
+
+            status.textContent = "Subiendo portada...";
+            var fd = new FormData();
+            fd.append("file", portadaInput.files[0]);
+            fd.append("api_key", sig.api_key);
+            fd.append("timestamp", sig.timestamp);
+            fd.append("signature", sig.signature);
+            fd.append("folder", sig.folder);
+            fd.append("resource_type", "image");
+
+            var uploadRes = await fetch(sig.upload_url, { method: "POST", body: fd });
+            var uploadData = await uploadRes.json();
+            if (uploadData.error) throw new Error(uploadData.error.message);
+            document.getElementById("portada_url").value = uploadData.secure_url;
+        }
+
+        if (needAudio) {
+            status.textContent = "Obteniendo firma de subida (audio)...";
+            var sigRes2 = await fetch("/musica/upload-url?folder=musica");
+            if (!sigRes2.ok) throw new Error("Error firma audio");
+            var sig2 = await sigRes2.json();
+
+            status.textContent = "Subiendo audio...";
+            var fd2 = new FormData();
+            fd2.append("file", audioInput.files[0]);
+            fd2.append("api_key", sig2.api_key);
+            fd2.append("timestamp", sig2.timestamp);
+            fd2.append("signature", sig2.signature);
+            fd2.append("folder", sig2.folder);
+            fd2.append("resource_type", "video");
+
+            var uploadRes2 = await fetch(sig2.upload_url, { method: "POST", body: fd2 });
+            var uploadData2 = await uploadRes2.json();
+            if (uploadData2.error) throw new Error(uploadData2.error.message);
+            document.getElementById("audio_url").value = uploadData2.secure_url;
+        }
+
+        status.textContent = "Archivos subidos. Guardando...";
+        this.submit();
+    } catch (err) {
+        status.style.display = "none";
+        error.style.display = "block";
+        error.textContent = "Error al subir: " + err.message;
+        btn.disabled = false;
+    }
+});
+</script>
+
+{% endblock %}

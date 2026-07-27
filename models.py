@@ -498,6 +498,99 @@ def marcar_disco_escuchado(id_disco):
 
         conexion.close()
 # ==========================================
+# MUSICA
+# ==========================================
+
+def obtener_musica():
+    conexion = get_connection()
+    try:
+        with conexion.cursor() as cursor:
+            sql = "SELECT * FROM musica ORDER BY artista ASC, titulo ASC"
+            cursor.execute(sql)
+            return cursor.fetchall()
+    finally:
+        conexion.close()
+
+
+def obtener_musica_por_id(id_musica):
+    conexion = get_connection()
+    try:
+        with conexion.cursor() as cursor:
+            sql = "SELECT * FROM musica WHERE id_musica = ?"
+            cursor.execute(sql, (id_musica,))
+            return cursor.fetchone()
+    finally:
+        conexion.close()
+
+
+def agregar_musica(datos):
+    conexion = get_connection()
+    try:
+        with conexion.cursor() as cursor:
+            sql = """
+                INSERT INTO musica (titulo, artista, anio, descripcion, portada, audio)
+                VALUES (?, ?, ?, ?, ?, ?)
+            """
+            cursor.execute(sql, (
+                datos["titulo"],
+                datos["artista"],
+                datos["anio"],
+                datos["descripcion"],
+                datos["portada"],
+                datos["audio"],
+            ))
+            conexion.commit()
+            return cursor.lastrowid
+    except Exception:
+        conexion.rollback()
+        raise
+    finally:
+        conexion.close()
+
+
+def actualizar_musica(id_musica, datos):
+    conexion = get_connection()
+    try:
+        with conexion.cursor() as cursor:
+            sql = """
+                UPDATE musica
+                SET titulo=?, artista=?, anio=?, descripcion=?, portada=?, audio=?
+                WHERE id_musica=?
+            """
+            cursor.execute(sql, (
+                datos["titulo"],
+                datos["artista"],
+                datos["anio"],
+                datos["descripcion"],
+                datos["portada"],
+                datos["audio"],
+                id_musica,
+            ))
+            conexion.commit()
+            return cursor.rowcount
+    except Exception:
+        conexion.rollback()
+        raise
+    finally:
+        conexion.close()
+
+
+def eliminar_musica(id_musica):
+    conexion = get_connection()
+    try:
+        with conexion.cursor() as cursor:
+            sql = "DELETE FROM musica WHERE id_musica=?"
+            cursor.execute(sql, (id_musica,))
+            conexion.commit()
+            return cursor.rowcount
+    except Exception:
+        conexion.rollback()
+        raise
+    finally:
+        conexion.close()
+
+
+# ==========================================
 # USUARIOS
 # ==========================================
 

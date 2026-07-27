@@ -589,6 +589,23 @@ footer{
     margin-top:15px;
 }
 
+/* =====================================
+   DETALLE MUSICA
+===================================== */
+
+.detalle-musica {
+    display: flex;
+    gap: 40px;
+    align-items: flex-start;
+    margin-top: 30px;
+}
+
+.detalle-musica .detalle-portada img {
+    width: 350px;
+    border-radius: 8px;
+    box-shadow: 0 0 20px rgba(0,0,0,.25);
+}
+
 
 /* =====================================
    RESPONSIVE — Tablets y pantallas ≤ 768px
