@@ -48,13 +48,11 @@
 
                 {% if programa.audio %}
 
-                    <audio controls preload="none">
-
-                        <source
-                            src="{{ programa.audio }}"
-                            type="audio/mpeg">
-
-                    </audio>
+                    <button
+                        class="boton-play"
+                        onclick="reproducirMusica('{{ programa.audio }}', 'Programa #{{ programa.numero }}')">
+                        ▶ Play
+                    </button>
 
                 {% else %}
 
