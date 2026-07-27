@@ -51,7 +51,7 @@
 
 </header>
 
-<main>
+<main style="padding-bottom: 90px;">
 
 {% block contenido %}
 {% endblock %}
@@ -63,6 +63,141 @@
     Analógico Domingo © 2026
 
 </footer>
+
+<div class="reproductor-persistente" id="reproductor" style="display:none;">
+    <div class="reproductor-info">
+        <span id="rp-titulo">---</span>
+    </div>
+    <div class="reproductor-controles">
+        <button id="rp-btn-play" onclick="rpToggle()">▶</button>
+        <div class="reproductor-progreso">
+            <span id="rp-actual">0:00</span>
+            <input type="range" id="rp-seek" min="0" max="100" value="0" step="1" oninput="rpSeek(this.value)">
+            <span id="rp-duracion">0:00</span>
+        </div>
+        <div class="reproductor-volumen">
+            <input type="range" id="rp-volumen" min="0" max="100" value="80" oninput="rpVolumen(this.value)">
+        </div>
+        <button id="rp-btn-close" onclick="rpCerrar()" title="Cerrar">✕</button>
+    </div>
+    <audio id="rp-audio" preload="auto"></audio>
+</div>
+
+<script>
+var rpAudio = document.getElementById("rp-audio");
+var rpBar = document.getElementById("reproductor");
+var rpBtnPlay = document.getElementById("rp-btn-play");
+var rpSeek = document.getElementById("rp-seek");
+var rpActual = document.getElementById("rp-actual");
+var rpDuracion = document.getElementById("rp-duracion");
+var rpTitulo = document.getElementById("rp-titulo");
+var rpVolumenSlider = document.getElementById("rp-volumen");
+
+rpAudio.volume = 0.8;
+
+function rpFormato(segundos) {
+    var m = Math.floor(segundos / 60);
+    var s = Math.floor(segundos % 60);
+    return m + ":" + (s < 10 ? "0" : "") + s;
+}
+
+function rpGuardar() {
+    if (!rpAudio.src) return;
+    localStorage.setItem("rp_state", JSON.stringify({
+        src: rpAudio.src,
+        titulo: rpTitulo.textContent,
+        currentTime: rpAudio.currentTime,
+        playing: !rpAudio.paused,
+        volume: rpAudio.volume
+    }));
+}
+
+function rpRestore() {
+    try {
+        var state = JSON.parse(localStorage.getItem("rp_state"));
+        if (!state || !state.src) return;
+        rpTitulo.textContent = state.titulo || "---";
+        rpAudio.src = state.src;
+        rpAudio.volume = state.volume !== undefined ? state.volume : 0.8;
+        rpVolumenSlider.value = Math.round(rpAudio.volume * 100);
+        rpBar.style.display = "flex";
+        rpAudio.addEventListener("loadedmetadata", function onLoad() {
+            rpAudio.removeEventListener("loadedmetadata", onLoad);
+            rpAudio.currentTime = state.currentTime || 0;
+            if (state.playing) {
+                rpAudio.play().catch(function() {});
+            }
+        });
+    } catch(e) {}
+}
+
+rpAudio.addEventListener("timeupdate", function() {
+    if (!rpAudio.duration) return;
+    rpSeek.value = (rpAudio.currentTime / rpAudio.duration) * 100;
+    rpActual.textContent = rpFormato(rpAudio.currentTime);
+});
+
+rpAudio.addEventListener("loadedmetadata", function() {
+    rpDuracion.textContent = rpFormato(rpAudio.duration);
+});
+
+rpAudio.addEventListener("play", function() {
+    rpBtnPlay.textContent = "⏸";
+    rpGuardar();
+});
+
+rpAudio.addEventListener("pause", function() {
+    rpBtnPlay.textContent = "▶";
+    rpGuardar();
+});
+
+rpAudio.addEventListener("ended", function() {
+    rpBtnPlay.textContent = "▶";
+    localStorage.removeItem("rp_state");
+});
+
+function rpToggle() {
+    if (!rpAudio.src) return;
+    if (rpAudio.paused) {
+        rpAudio.play();
+    } else {
+        rpAudio.pause();
+    }
+}
+
+function rpSeek(pct) {
+    if (!rpAudio.duration) return;
+    rpAudio.currentTime = (pct / 100) * rpAudio.duration;
+}
+
+function rpVolumen(pct) {
+    rpAudio.volume = pct / 100;
+    rpGuardar();
+}
+
+function rpCerrar() {
+    rpAudio.pause();
+    rpAudio.src = "";
+    rpBar.style.display = "none";
+    localStorage.removeItem("rp_state");
+}
+
+function reproducirMusica(url, titulo) {
+    var mismaCancion = rpAudio.src === url || rpAudio.src === location.origin + url;
+    if (mismaCancion) {
+        rpToggle();
+        return;
+    }
+    rpTitulo.textContent = titulo;
+    rpAudio.src = url;
+    rpBar.style.display = "flex";
+    rpAudio.play().catch(function() {});
+}
+
+window.addEventListener("load", rpRestore);
+
+window.addEventListener("beforeunload", rpGuardar);
+</script>
 
 </body>
 

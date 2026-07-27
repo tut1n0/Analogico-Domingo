@@ -31,9 +31,11 @@
 
         {% if musica.audio %}
         <div style="margin-top:25px;">
-            <audio controls preload="none" style="width:100%;">
-                <source src="{{ musica.audio }}" type="audio/mpeg">
-            </audio>
+            <button
+                class="boton"
+                onclick="reproducirMusica('{{ musica.audio }}', '{{ musica.artista }} - {{ musica.titulo }}')">
+                ▶ Escuchar
+            </button>
         </div>
         {% endif %}
 

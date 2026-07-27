@@ -606,6 +606,145 @@ footer{
     box-shadow: 0 0 20px rgba(0,0,0,.25);
 }
 
+/* =====================================
+   REPRODUCTOR PERSISTENTE
+===================================== */
+
+.reproductor-persistente {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: #111;
+    border-top: 2px solid #d4a000;
+    padding: 10px 20px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    z-index: 1000;
+}
+
+.reproductor-persistente audio {
+    display: none;
+}
+
+.reproductor-info {
+    min-width: 180px;
+    max-width: 250px;
+    overflow: hidden;
+}
+
+.reproductor-info span {
+    color: #d4a000;
+    font-weight: bold;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: block;
+}
+
+.reproductor-controles {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex: 1;
+}
+
+.reproductor-controles button {
+    background: #d4a000;
+    color: #111;
+    border: none;
+    border-radius: 50%;
+    width: 36px;
+    height: 36px;
+    font-size: 14px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.reproductor-controles button:hover {
+    background: #e6c229;
+}
+
+.reproductor-progreso {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex: 1;
+}
+
+.reproductor-progreso span {
+    color: #999;
+    font-size: 13px;
+    min-width: 35px;
+}
+
+.reproductor-progreso input[type="range"] {
+    flex: 1;
+    height: 4px;
+    -webkit-appearance: none;
+    appearance: none;
+    background: #333;
+    border-radius: 2px;
+    outline: none;
+    cursor: pointer;
+}
+
+.reproductor-progreso input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 14px;
+    height: 14px;
+    background: #d4a000;
+    border-radius: 50%;
+    cursor: pointer;
+}
+
+.reproductor-volumen {
+    display: flex;
+    align-items: center;
+}
+
+.reproductor-volumen input[type="range"] {
+    width: 80px;
+    height: 4px;
+    -webkit-appearance: none;
+    appearance: none;
+    background: #333;
+    border-radius: 2px;
+    outline: none;
+    cursor: pointer;
+}
+
+.reproductor-volumen input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 12px;
+    height: 12px;
+    background: #d4a000;
+    border-radius: 50%;
+    cursor: pointer;
+}
+
+.boton-play {
+    background: #d4a000;
+    color: #111;
+    border: none;
+    border-radius: 5px;
+    padding: 6px 14px;
+    font-weight: bold;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 15px;
+}
+
+.boton-play:hover {
+    background: #e6c229;
+}
+
 
 /* =====================================
    RESPONSIVE — Tablets y pantallas ≤ 768px
@@ -732,6 +871,21 @@ footer{
         padding: 20px;
     }
 
+    .reproductor-persistente {
+        flex-wrap: wrap;
+        gap: 8px;
+        padding: 8px 12px;
+    }
+
+    .reproductor-info {
+        min-width: 120px;
+        max-width: 150px;
+    }
+
+    .reproductor-volumen {
+        display: none;
+    }
+
 }
 
 
@@ -833,6 +987,19 @@ footer{
         flex-direction: column;
         gap: 10px;
         text-align: center;
+    }
+
+    .reproductor-persistente {
+        padding: 6px 10px;
+    }
+
+    .reproductor-info {
+        min-width: 100px;
+        max-width: 120px;
+    }
+
+    .reproductor-info span {
+        font-size: 14px;
     }
 
 }

@@ -56,9 +56,11 @@
 
             <td>
                 {% if item.audio %}
-                    <audio controls preload="none">
-                        <source src="{{ item.audio }}" type="audio/mpeg">
-                    </audio>
+                    <button
+                        class="boton-play"
+                        onclick="reproducirMusica('{{ item.audio }}', '{{ item.artista }} - {{ item.titulo }}')">
+                        ▶ Play
+                    </button>
                 {% else %}
                     Sin audio
                 {% endif %}
