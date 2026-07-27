@@ -2,7 +2,7 @@ from fastapi import APIRouter, Request, Form, UploadFile, File
 from fastapi.responses import RedirectResponse, HTMLResponse, JSONResponse
 from utils.render import render
 from utils.auth import verificar_login
-from utils.storage import upload_file, delete_file, get_upload_signature
+from utils.storage import upload_file, upload_file_local, delete_file, get_upload_signature
 
 from models import (
     obtener_musica,
@@ -64,7 +64,7 @@ def guardar(
 
         nombre_audio = audio_url
         if not nombre_audio and audio and audio.filename:
-            nombre_audio = upload_file(audio, "musica")
+            nombre_audio = upload_file_local(audio, "musica")
 
         datos = {
             "titulo": titulo,
@@ -128,7 +128,7 @@ def actualizar(
             nombre_audio = audio_url
         elif audio and audio.filename:
             delete_file(nombre_audio)
-            nombre_audio = upload_file(audio, "musica")
+            nombre_audio = upload_file_local(audio, "musica")
 
         datos = {
             "titulo": titulo,

@@ -28,6 +28,11 @@ def upload_file(file, folder):
     return _upload_cloudinary(file, folder, filename)
 
 
+def upload_file_local(file, folder):
+    filename = f"{uuid.uuid4()}{os.path.splitext(file.filename)[1]}"
+    return _upload_local(file, folder, filename)
+
+
 def delete_file(reference):
     if not reference:
         return
