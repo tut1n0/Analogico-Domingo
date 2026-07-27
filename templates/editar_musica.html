@@ -10,7 +10,6 @@
 <form
     action="/musica/editar/{{ musica.id_musica }}"
     method="post"
-    enctype="multipart/form-data"
     class="formulario"
     id="form-musica">
 
@@ -32,7 +31,7 @@
     {% endif %}
 
     <label>Nueva portada (opcional)</label>
-    <input type="file" name="portada" accept="image/*" id="input-portada">
+    <input type="file" accept="image/*" id="input-portada">
     <input type="hidden" name="portada_url" id="portada_url" value="">
 
     <label>Audio actual</label>
@@ -43,21 +42,47 @@
     {% endif %}
 
     <label>Nuevo audio (opcional)</label>
-    <input type="file" name="audio" accept=".mp3" id="input-audio">
+    <input type="file" accept=".mp3,audio/*" id="input-audio">
+    <input type="hidden" name="audio_url" id="audio_url" value="">
 
     <button type="submit" class="boton" id="btn-submit">Guardar Cambios</button>
 
 </form>
 
 <script>
+async function uploadToCloudinary(file, folder, resourceType, statusEl) {
+    var sigRes = await fetch("/musica/upload-url?folder=" + folder);
+    if (!sigRes.ok) throw new Error("Error obteniendo firma de subida");
+    var sig = await sigRes.json();
+
+    statusEl.textContent = "Subiendo " + (resourceType === "image" ? "portada" : "audio") + "...";
+
+    var fd = new FormData();
+    fd.append("file", file);
+    fd.append("api_key", sig.api_key);
+    fd.append("timestamp", sig.timestamp);
+    fd.append("signature", sig.signature);
+    fd.append("folder", sig.folder);
+    fd.append("resource_type", resourceType);
+
+    var uploadRes = await fetch(sig.upload_url, { method: "POST", body: fd });
+    var data = await uploadRes.json();
+
+    if (data.error) throw new Error(data.error.message);
+    return data.secure_url;
+}
+
 document.getElementById("form-musica").addEventListener("submit", async function(e) {
     var portadaInput = document.getElementById("input-portada");
-    var portadaUrl = document.getElementById("portada_url").value;
+    var audioInput = document.getElementById("input-audio");
     var status = document.getElementById("upload-status");
     var error = document.getElementById("upload-error");
     var btn = document.getElementById("btn-submit");
 
-    if (!portadaInput.files.length || portadaUrl) return;
+    var hasPortada = portadaInput.files.length && !document.getElementById("portada_url").value;
+    var hasAudio = audioInput.files.length && !document.getElementById("audio_url").value;
+
+    if (!hasPortada && !hasAudio) return;
 
     e.preventDefault();
     error.style.display = "none";
@@ -65,27 +90,23 @@ document.getElementById("form-musica").addEventListener("submit", async function
     btn.disabled = true;
 
     try {
-        status.textContent = "Subiendo portada...";
-        var sigRes = await fetch("/musica/upload-url?folder=musica");
-        var sig = await sigRes.json();
-        var fd = new FormData();
-        fd.append("file", portadaInput.files[0]);
-        fd.append("api_key", sig.api_key);
-        fd.append("timestamp", sig.timestamp);
-        fd.append("signature", sig.signature);
-        fd.append("folder", sig.folder);
-        fd.append("resource_type", "image");
-        var uploadRes = await fetch(sig.upload_url, { method: "POST", body: fd });
-        var uploadData = await uploadRes.json();
-        if (uploadData.error) throw new Error(uploadData.error.message);
-        document.getElementById("portada_url").value = uploadData.secure_url;
+        if (hasPortada) {
+            var url = await uploadToCloudinary(portadaInput.files[0], "musica", "image", status);
+            document.getElementById("portada_url").value = url;
+        }
 
-        status.textContent = "Portada subida. Guardando...";
+        if (hasAudio) {
+            status.textContent = "Subiendo audio (puede tardar)...";
+            var url = await uploadToCloudinary(audioInput.files[0], "musica", "video", status);
+            document.getElementById("audio_url").value = url;
+        }
+
+        status.textContent = "Archivos subidos. Guardando...";
         this.submit();
     } catch (err) {
         status.style.display = "none";
         error.style.display = "block";
-        error.textContent = "Error: " + err.message;
+        error.textContent = "Error al subir: " + err.message;
         btn.disabled = false;
     }
 });

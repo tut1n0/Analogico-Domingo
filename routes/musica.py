@@ -1,8 +1,8 @@
-from fastapi import APIRouter, Request, Form, UploadFile, File
+from fastapi import APIRouter, Request, Form
 from fastapi.responses import RedirectResponse, HTMLResponse, JSONResponse
 from utils.render import render
 from utils.auth import verificar_login
-from utils.storage import upload_file, upload_file_local, delete_file, get_upload_signature
+from utils.storage import delete_file, get_upload_signature
 
 from models import (
     obtener_musica,
@@ -48,9 +48,7 @@ def guardar(
     artista: str = Form(...),
     anio: str = Form(""),
     descripcion: str = Form(""),
-    portada: UploadFile = File(None),
     portada_url: str = Form(""),
-    audio: UploadFile = File(None),
     audio_url: str = Form(""),
 ):
     respuesta = verificar_login(request)
@@ -58,21 +56,13 @@ def guardar(
         return respuesta
 
     try:
-        nombre_portada = portada_url
-        if not nombre_portada and portada and portada.filename:
-            nombre_portada = upload_file(portada, "musica")
-
-        nombre_audio = audio_url
-        if not nombre_audio and audio and audio.filename:
-            nombre_audio = upload_file_local(audio, "musica")
-
         datos = {
             "titulo": titulo,
             "artista": artista,
             "anio": anio,
             "descripcion": descripcion,
-            "portada": nombre_portada,
-            "audio": nombre_audio,
+            "portada": portada_url,
+            "audio": audio_url,
         }
 
         agregar_musica(datos)
@@ -102,9 +92,7 @@ def actualizar(
     artista: str = Form(...),
     anio: str = Form(""),
     descripcion: str = Form(""),
-    portada: UploadFile = File(None),
     portada_url: str = Form(""),
-    audio: UploadFile = File(None),
     audio_url: str = Form(""),
 ):
     respuesta = verificar_login(request)
@@ -118,17 +106,11 @@ def actualizar(
         if portada_url:
             delete_file(nombre_portada)
             nombre_portada = portada_url
-        elif portada and portada.filename:
-            delete_file(nombre_portada)
-            nombre_portada = upload_file(portada, "musica")
 
         nombre_audio = item["audio"]
         if audio_url:
             delete_file(nombre_audio)
             nombre_audio = audio_url
-        elif audio and audio.filename:
-            delete_file(nombre_audio)
-            nombre_audio = upload_file_local(audio, "musica")
 
         datos = {
             "titulo": titulo,
