@@ -40,7 +40,17 @@ async def upload_local(request: Request, file: UploadFile = File(...), folder: s
         return JSONResponse(status_code=401, content={"error": "No autenticado"})
 
     try:
-        url = upload_file_local(file, folder)
+        import os, uuid
+
+        cloud_name = os.getenv("CLOUDINARY_CLOUD_NAME")
+        if cloud_name:
+            from utils.storage import _upload_cloudinary
+            filename = f"{uuid.uuid4()}{os.path.splitext(file.filename)[1]}"
+            url = _upload_cloudinary(file, folder, filename)
+        else:
+            from utils.storage import upload_file_local
+            url = upload_file_local(file, folder)
+
         return JSONResponse(content={"url": url})
     except Exception as e:
         return JSONResponse(status_code=500, content={"error": str(e)})
