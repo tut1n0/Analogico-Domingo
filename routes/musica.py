@@ -2,7 +2,7 @@ from fastapi import APIRouter, Request, Form, UploadFile, File
 from fastapi.responses import RedirectResponse, HTMLResponse, JSONResponse
 from utils.render import render
 from utils.auth import verificar_login
-from utils.storage import delete_file, get_upload_signature, upload_file_local
+from utils.storage import delete_file, get_upload_signature
 
 from models import (
     obtener_musica,

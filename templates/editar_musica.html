@@ -50,14 +50,26 @@
 </form>
 
 <script>
-async function uploadLocal(file, folder, statusEl) {
-    statusEl.textContent = "Subiendo archivo...";
+async function uploadToCloudinary(file, folder, resourceType, statusEl) {
+    var sigRes = await fetch("/musica/upload-url?folder=" + folder);
+    if (!sigRes.ok) throw new Error("Error obteniendo firma de subida");
+    var sig = await sigRes.json();
+
+    statusEl.textContent = "Subiendo " + (resourceType === "image" ? "portada" : "audio") + "...";
+
     var fd = new FormData();
     fd.append("file", file);
-    var res = await fetch("/musica/upload-local?folder=" + folder, { method: "POST", body: fd });
-    var data = await res.json();
-    if (!res.ok || data.error) throw new Error(data.error || "Error al subir");
-    return data.url;
+    fd.append("api_key", sig.api_key);
+    fd.append("timestamp", sig.timestamp);
+    fd.append("signature", sig.signature);
+    fd.append("folder", sig.folder);
+    fd.append("resource_type", resourceType);
+
+    var uploadRes = await fetch(sig.upload_url, { method: "POST", body: fd });
+    var data = await uploadRes.json();
+
+    if (data.error) throw new Error(data.error.message);
+    return data.secure_url;
 }
 
 document.getElementById("form-musica").addEventListener("submit", async function(e) {
@@ -79,13 +91,13 @@ document.getElementById("form-musica").addEventListener("submit", async function
 
     try {
         if (hasPortada) {
-            var url = await uploadLocal(portadaInput.files[0], "musica", status);
+            var url = await uploadToCloudinary(portadaInput.files[0], "musica", "image", status);
             document.getElementById("portada_url").value = url;
         }
 
         if (hasAudio) {
             status.textContent = "Subiendo audio (puede tardar)...";
-            var url = await uploadLocal(audioInput.files[0], "musica", status);
+            var url = await uploadToCloudinary(audioInput.files[0], "musica", "video", status);
             document.getElementById("audio_url").value = url;
         }
 
