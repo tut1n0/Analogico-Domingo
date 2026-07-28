@@ -39,7 +39,7 @@
 
 <script>
 async function uploadToCloudinary(file, folder, resourceType, statusEl) {
-    var sigRes = await fetch("/musica/upload-url?folder=" + folder);
+    var sigRes = await fetch("/musica/upload-url?folder=" + folder + "&resource_type=" + resourceType);
     if (!sigRes.ok) throw new Error("Error obteniendo firma de subida");
     var sig = await sigRes.json();
 

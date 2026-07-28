@@ -89,7 +89,7 @@ def _delete_cloudinary(url):
         pass
 
 
-def get_upload_signature(folder):
+def get_upload_signature(folder, resource_type="image"):
     try:
         cloud_name = os.getenv("CLOUDINARY_CLOUD_NAME")
         api_key = os.getenv("CLOUDINARY_API_KEY")
@@ -99,17 +99,19 @@ def get_upload_signature(folder):
         params_to_sign = {
             "folder": folder,
             "timestamp": timestamp,
+            "resource_type": resource_type,
         }
         signature = cloudinary.utils.api_sign_request(
             params_to_sign, api_secret
         )
 
         return {
-            "upload_url": f"https://api.cloudinary.com/v1_1/{cloud_name}/upload",
+            "upload_url": f"https://api.cloudinary.com/v1_1/{cloud_name}/{resource_type}/upload",
             "api_key": api_key,
             "timestamp": timestamp,
             "signature": signature,
             "folder": folder,
+            "resource_type": resource_type,
         }
     except Exception as e:
         print(f"[SIGNATURE ERROR] {e}")

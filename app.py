@@ -1,3 +1,5 @@
+import os
+
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 
@@ -22,11 +24,12 @@ app.add_middleware(
 
 # Archivos estáticos
 app.mount("/static", StaticFiles(directory="static"), name="static")
-app.mount(
-    "/uploads",
-    StaticFiles(directory="uploads"),
-    name="uploads"
-)
+if os.path.isdir("uploads"):
+    app.mount(
+        "/uploads",
+        StaticFiles(directory="uploads"),
+        name="uploads"
+    )
 
 # Rutas
 app.include_router(inicio_router)

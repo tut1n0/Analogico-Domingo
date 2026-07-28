@@ -50,7 +50,7 @@ def listar_programas(request: Request):
 # =====================================================
 
 @router.get("/upload-url")
-def upload_url(request: Request, folder: str = "programas"):
+def upload_url(request: Request, folder: str = "programas", resource_type: str = "video"):
 
     respuesta = verificar_login(request)
 
@@ -60,7 +60,7 @@ def upload_url(request: Request, folder: str = "programas"):
             content={"error": "No autenticado"}
         )
 
-    params = get_upload_signature(folder)
+    params = get_upload_signature(folder, resource_type)
 
     return JSONResponse(content=params)
 

@@ -109,7 +109,7 @@ document.getElementById("form-programa").addEventListener("submit", async functi
     btn.disabled = true;
 
     try {
-        var sigRes = await fetch("/programas/upload-url?folder=programas");
+        var sigRes = await fetch("/programas/upload-url?folder=programas&resource_type=video");
         if (!sigRes.ok) throw new Error("No se pudo obtener firma de subida (HTTP " + sigRes.status + ")");
         var sig = await sigRes.json();
 
