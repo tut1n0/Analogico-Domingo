@@ -15,8 +15,8 @@ body {
 
 header{
 
-    background:#1c1c1c;
-
+    background: url('/static/header.jpg') center/cover no-repeat;
+    position: relative;
     padding:30px;
 
     display:flex;
@@ -27,6 +27,18 @@ header{
 
     border-bottom:1px solid #333;
 
+}
+
+header::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.6);
+}
+
+header > * {
+    position: relative;
+    z-index: 1;
 }
 
 .logo h1{
