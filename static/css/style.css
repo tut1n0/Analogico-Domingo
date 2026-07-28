@@ -135,7 +135,12 @@ main{
 .boton:hover{
 
     background:white;
+    color:#111;
 
+}
+
+.acciones a.boton {
+    color:#111;
 }
 
 footer{
