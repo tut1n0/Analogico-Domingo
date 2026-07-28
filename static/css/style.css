@@ -834,6 +834,11 @@ footer{
         margin-top: 20px;
     }
 
+    .detalle-musica {
+        display: block;
+        margin-top: 20px;
+    }
+
     .detalle-portada {
         text-align: center;
         margin-bottom: 25px;
@@ -988,6 +993,10 @@ footer{
     }
 
     .detalle-disco {
+        margin-top: 15px;
+    }
+
+    .detalle-musica {
         margin-top: 15px;
     }
 
