@@ -1,8 +1,8 @@
-from fastapi import APIRouter, Request, Form
+from fastapi import APIRouter, Request, Form, UploadFile, File
 from fastapi.responses import RedirectResponse, HTMLResponse, JSONResponse
 from utils.render import render
 from utils.auth import verificar_login
-from utils.storage import delete_file, get_upload_signature
+from utils.storage import delete_file, get_upload_signature, upload_file_local
 
 from models import (
     obtener_musica,
@@ -31,6 +31,19 @@ def upload_url(request: Request, folder: str = "musica"):
         return JSONResponse(status_code=401, content={"error": "No autenticado"})
     params = get_upload_signature(folder)
     return JSONResponse(content=params)
+
+
+@router.post("/upload-local")
+async def upload_local(request: Request, file: UploadFile = File(...), folder: str = "musica"):
+    respuesta = verificar_login(request)
+    if respuesta:
+        return JSONResponse(status_code=401, content={"error": "No autenticado"})
+
+    try:
+        url = upload_file_local(file, folder)
+        return JSONResponse(content={"url": url})
+    except Exception as e:
+        return JSONResponse(status_code=500, content={"error": str(e)})
 
 
 @router.get("/nuevo")
