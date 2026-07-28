@@ -9,7 +9,7 @@
 body {
     font-family: "Alumni Sans", sans-serif;
     background: #F5E6C8 url('/static/body-bg.jpg') center/cover fixed no-repeat;
-    color: #ffbf00;
+    color: white;
     font-size: 20px;
 }
 
@@ -98,7 +98,7 @@ main{
 
 .hero p{
 
-    color:#1c1c1c;
+    color:rgba(255,255,255,0.85);
 
     line-height:1.8;
 
@@ -146,9 +146,9 @@ footer{
 
     text-align:center;
 
-    border-top:1px solid #333;
+    border-top:1px solid rgba(255,255,255,0.2);
 
-    color:#777;
+    color:rgba(255,255,255,0.5);
 
 }
 .formulario{
@@ -231,7 +231,7 @@ footer{
 .tarjeta p{
 
     margin:4px 0;
-    color:#ccc;
+    color:white;
 
 }
 
@@ -245,7 +245,7 @@ footer{
 
 .acciones a{
 
-    color:#000000;
+    color:white;
     text-decoration:none;
 
 }
@@ -284,7 +284,7 @@ footer{
 }
 
 .tabla td{
-    color:#555;
+    color:#ddd;
 }
 
 .tabla th{
@@ -515,7 +515,7 @@ footer{
 
     margin-bottom:12px;
     line-height:1.7;
-    color:#555;
+    color:rgba(255,255,255,0.85);
 
 }
 
@@ -523,7 +523,7 @@ footer{
 
     white-space:pre-line;
     text-align:justify;
-    color:#444;
+    color:rgba(255,255,255,0.85);
 
 }
 
