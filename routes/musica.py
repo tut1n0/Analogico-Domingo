@@ -25,11 +25,11 @@ def listar_musica(request: Request):
 
 
 @router.get("/upload-url")
-def upload_url(request: Request, folder: str = "musica", resource_type: str = "image"):
+def upload_url(request: Request, folder: str = "musica"):
     respuesta = verificar_login(request)
     if respuesta:
         return JSONResponse(status_code=401, content={"error": "No autenticado"})
-    params = get_upload_signature(folder, resource_type)
+    params = get_upload_signature(folder)
     return JSONResponse(content=params)
 
 

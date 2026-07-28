@@ -61,6 +61,26 @@ async function uploadToServer(file, folder, statusEl) {
     return data.url;
 }
 
+async function uploadAudioToCloudinary(file, folder, statusEl) {
+    var sigRes = await fetch("/musica/upload-url?folder=" + folder);
+    if (!sigRes.ok) throw new Error("Error obteniendo firma");
+    var sig = await sigRes.json();
+
+    var fd = new FormData();
+    fd.append("file", file);
+    fd.append("api_key", sig.api_key);
+    fd.append("timestamp", sig.timestamp);
+    fd.append("signature", sig.signature);
+    fd.append("folder", sig.folder);
+    fd.append("resource_type", "video");
+
+    statusEl.textContent = "Subiendo audio...";
+    var res = await fetch(sig.upload_url, { method: "POST", body: fd });
+    var data = await res.json();
+    if (data.error) throw new Error(data.error.message);
+    return data.secure_url;
+}
+
 document.getElementById("form-musica").addEventListener("submit", async function(e) {
     var portadaInput = document.getElementById("input-portada");
     var audioInput = document.getElementById("input-audio");
@@ -87,7 +107,7 @@ document.getElementById("form-musica").addEventListener("submit", async function
 
         if (hasAudio) {
             status.textContent = "Subiendo audio (puede tardar)...";
-            var url = await uploadToServer(audioInput.files[0], "musica", status);
+            var url = await uploadAudioToCloudinary(audioInput.files[0], "musica", status);
             document.getElementById("audio_url").value = url;
         }
 

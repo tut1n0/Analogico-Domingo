@@ -107,15 +107,23 @@ document.getElementById("form-programa").addEventListener("submit", async functi
     btn.disabled = true;
 
     try {
+        var sigRes = await fetch("/programas/upload-url?folder=programas");
+        if (!sigRes.ok) throw new Error("Error obteniendo firma");
+        var sig = await sigRes.json();
+
         var fd = new FormData();
         fd.append("file", fileInput.files[0]);
-        fd.append("folder", "programas");
-        var res = await fetch("/programas/upload-local", { method: "POST", body: fd });
-        if (!res.ok) throw new Error("Error del servidor: " + res.status);
-        var data = await res.json();
-        if (data.error) throw new Error(data.error);
+        fd.append("api_key", sig.api_key);
+        fd.append("timestamp", sig.timestamp);
+        fd.append("signature", sig.signature);
+        fd.append("folder", sig.folder);
+        fd.append("resource_type", "video");
 
-        document.getElementById("audio_url").value = data.url;
+        var res = await fetch(sig.upload_url, { method: "POST", body: fd });
+        var data = await res.json();
+        if (data.error) throw new Error(data.error.message);
+
+        document.getElementById("audio_url").value = data.secure_url;
         status.textContent = "Audio subido. Guardando programa...";
         fileInput.value = "";
         this.submit();

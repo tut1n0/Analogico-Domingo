@@ -50,7 +50,7 @@ def listar_programas(request: Request):
 # =====================================================
 
 @router.get("/upload-url")
-def upload_url(request: Request, folder: str = "programas", resource_type: str = "video"):
+def upload_url(request: Request, folder: str = "programas"):
 
     respuesta = verificar_login(request)
 
@@ -60,27 +60,9 @@ def upload_url(request: Request, folder: str = "programas", resource_type: str =
             content={"error": "No autenticado"}
         )
 
-    params = get_upload_signature(folder, resource_type)
+    params = get_upload_signature(folder)
 
     return JSONResponse(content=params)
-
-
-# =====================================================
-# UPLOAD LOCAL (server-side upload a Cloudinary)
-# =====================================================
-
-@router.post("/upload-local")
-async def upload_local(request: Request, file: UploadFile = File(...), folder: str = "programas"):
-    respuesta = verificar_login(request)
-    if respuesta:
-        return JSONResponse(status_code=401, content={"error": "No autenticado"})
-
-    try:
-        url = upload_file(file, folder)
-        return JSONResponse(content={"url": url})
-    except Exception as e:
-        print(f"[UPLOAD LOCAL ERROR] {e}")
-        return JSONResponse(status_code=500, content={"error": str(e)})
 
 
 # =====================================================
