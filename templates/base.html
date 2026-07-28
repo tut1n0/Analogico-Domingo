@@ -70,7 +70,10 @@
         <button id="rp-btn-play" onclick="rpToggle()">▶</button>
         <div class="reproductor-progreso">
             <span id="rp-actual">0:00</span>
-            <input type="range" id="rp-seek" min="0" max="100" value="0" step="1" oninput="rpSeek(this.value)">
+            <div class="rp-barra" id="rp-barra">
+                <div class="rp-barra-fill" id="rp-barra-fill"></div>
+                <div class="rp-barra-thumb" id="rp-barra-thumb"></div>
+            </div>
             <span id="rp-duracion">0:00</span>
         </div>
         <div class="reproductor-volumen">
@@ -85,11 +88,14 @@
 var rpAudio = document.getElementById("rp-audio");
 var rpBar = document.getElementById("reproductor");
 var rpBtnPlay = document.getElementById("rp-btn-play");
-var rpSeek = document.getElementById("rp-seek");
 var rpActual = document.getElementById("rp-actual");
 var rpDuracion = document.getElementById("rp-duracion");
 var rpTitulo = document.getElementById("rp-titulo");
 var rpVolumenSlider = document.getElementById("rp-volumen");
+var rpBarra = document.getElementById("rp-barra");
+var rpBarraFill = document.getElementById("rp-barra-fill");
+var rpBarraThumb = document.getElementById("rp-barra-thumb");
+var rpDragging = false;
 
 rpAudio.volume = 0.8;
 
@@ -98,6 +104,52 @@ function rpFormato(segundos) {
     var s = Math.floor(segundos % 60);
     return m + ":" + (s < 10 ? "0" : "") + s;
 }
+
+function rpBarraPorcentaje(e) {
+    var rect = rpBarra.getBoundingClientRect();
+    var clientX = e.touches ? e.touches[0].clientX : e.clientX;
+    var pct = ((clientX - rect.left) / rect.width) * 100;
+    if (pct < 0) pct = 0;
+    if (pct > 100) pct = 100;
+    return pct;
+}
+
+function rpBarraActualizar() {
+    if (!rpAudio.duration) return;
+    var pct = (rpAudio.currentTime / rpAudio.duration) * 100;
+    rpBarraFill.style.width = pct + "%";
+    rpBarraThumb.style.left = pct + "%";
+    rpActual.textContent = rpFormato(rpAudio.currentTime);
+}
+
+function rpBarraIr(e) {
+    if (!rpAudio.duration) return;
+    var pct = rpBarraPorcentaje(e);
+    rpAudio.currentTime = (pct / 100) * rpAudio.duration;
+    rpBarraActualizar();
+}
+
+function rpBarraDragStart(e) {
+    e.preventDefault();
+    rpDragging = true;
+    rpBarraIr(e);
+}
+
+function rpBarraDragMove(e) {
+    if (!rpDragging) return;
+    rpBarraIr(e);
+}
+
+function rpBarraDragEnd() {
+    rpDragging = false;
+}
+
+rpBarra.addEventListener("mousedown", rpBarraDragStart);
+rpBarra.addEventListener("touchstart", rpBarraDragStart, {passive: false});
+document.addEventListener("mousemove", rpBarraDragMove);
+document.addEventListener("touchmove", rpBarraDragMove, {passive: false});
+document.addEventListener("mouseup", rpBarraDragEnd);
+document.addEventListener("touchend", rpBarraDragEnd);
 
 function rpGuardar() {
     if (!rpAudio.src) return;
@@ -123,19 +175,18 @@ function rpRestore() {
         rpAudio.addEventListener("loadedmetadata", function onLoad() {
             rpAudio.removeEventListener("loadedmetadata", onLoad);
             rpAudio.currentTime = state.currentTime || 0;
-            rpAudio.play().catch(function() {});
+            if (state.playing) rpAudio.play().catch(function() {});
         });
     } catch(e) {}
 }
 
 rpAudio.addEventListener("timeupdate", function() {
-    if (!rpAudio.duration) return;
-    rpSeek.value = (rpAudio.currentTime / rpAudio.duration) * 100;
-    rpActual.textContent = rpFormato(rpAudio.currentTime);
+    rpBarraActualizar();
 });
 
 rpAudio.addEventListener("loadedmetadata", function() {
     rpDuracion.textContent = rpFormato(rpAudio.duration);
+    rpBarraActualizar();
 });
 
 rpAudio.addEventListener("play", function() {
@@ -150,6 +201,9 @@ rpAudio.addEventListener("pause", function() {
 
 rpAudio.addEventListener("ended", function() {
     rpBtnPlay.textContent = "▶";
+    rpBarraFill.style.width = "0%";
+    rpBarraThumb.style.left = "0%";
+    rpActual.textContent = "0:00";
     localStorage.removeItem("rp_state");
     sessionStorage.removeItem("rp_active");
 });
@@ -163,11 +217,6 @@ function rpToggle() {
     }
 }
 
-function rpSeek(pct) {
-    if (!rpAudio.duration) return;
-    rpAudio.currentTime = (pct / 100) * rpAudio.duration;
-}
-
 function rpVolumen(pct) {
     rpAudio.volume = pct / 100;
     rpGuardar();
@@ -176,6 +225,8 @@ function rpVolumen(pct) {
 function rpCerrar() {
     rpAudio.pause();
     rpAudio.src = "";
+    rpBarraFill.style.width = "0%";
+    rpBarraThumb.style.left = "0%";
     rpBar.style.display = "none";
     localStorage.removeItem("rp_state");
     sessionStorage.removeItem("rp_active");
