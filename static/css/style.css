@@ -607,6 +607,31 @@ footer{
 }
 
 /* =====================================
+   ACCIONES MUSICA (botones detalle)
+===================================== */
+
+.acciones-musica {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 25px;
+}
+
+.acciones-musica .boton {
+    width: auto;
+}
+
+@media (max-width: 480px) {
+    .acciones-musica {
+        flex-direction: column;
+    }
+    .acciones-musica .boton {
+        width: 100%;
+        text-align: center;
+    }
+}
+
+/* =====================================
    DETALLE MUSICA
 ===================================== */
 

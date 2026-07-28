@@ -29,24 +29,22 @@
         <p class="descripcion">{{ musica.descripcion }}</p>
         {% endif %}
 
-        {% if musica.audio %}
-        <div style="margin-top:25px;">
+        <div class="acciones-musica">
+            {% if musica.audio %}
             <button
                 class="boton"
                 onclick="reproducirMusica('{{ musica.audio }}', '{{ musica.artista }} - {{ musica.titulo }}')">
                 ▶ Escuchar
             </button>
-        </div>
-        {% endif %}
+            {% endif %}
 
-        {% if session.usuario %}
-        <div class="acciones-admin">
+            {% if session.usuario %}
             <a href="/musica/editar/{{ musica.id_musica }}" class="boton boton-editar">Editar</a>
             <a href="/musica/eliminar/{{ musica.id_musica }}" class="boton boton-eliminar" onclick="return confirm('¿Eliminar?')">Eliminar</a>
-        </div>
-        {% endif %}
+            {% endif %}
 
-        <a href="/musica/" class="boton volver">Volver</a>
+            <a href="/musica/" class="boton volver" onclick="rpGuardar()">Volver</a>
+        </div>
 
     </div>
 
