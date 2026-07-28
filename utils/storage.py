@@ -99,7 +99,6 @@ def get_upload_signature(folder, resource_type="image"):
         params_to_sign = {
             "folder": folder,
             "timestamp": timestamp,
-            "resource_type": resource_type,
         }
         signature = cloudinary.utils.api_sign_request(
             params_to_sign, api_secret
