@@ -8,7 +8,7 @@
 
 body {
     font-family: "Alumni Sans", sans-serif;
-    background: #F5E6C8;
+    background: #F5E6C8 url('/static/body-bg.jpg') center/cover fixed no-repeat;
     color: #ffbf00;
     font-size: 20px;
 }
