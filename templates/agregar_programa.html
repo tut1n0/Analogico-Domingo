@@ -103,29 +103,19 @@ document.getElementById("form-programa").addEventListener("submit", async functi
     e.preventDefault();
     error.style.display = "none";
     status.style.display = "block";
-    status.textContent = "Obteniendo firma de subida...";
+    status.textContent = "Subiendo audio...";
     btn.disabled = true;
 
     try {
-        var sigRes = await fetch("/programas/upload-url?folder=programas&resource_type=video");
-        if (!sigRes.ok) throw new Error("No se pudo obtener firma de subida (HTTP " + sigRes.status + ")");
-        var sig = await sigRes.json();
-
-        status.textContent = "Subiendo audio a Cloudinary...";
         var fd = new FormData();
         fd.append("file", fileInput.files[0]);
-        fd.append("api_key", sig.api_key);
-        fd.append("timestamp", sig.timestamp);
-        fd.append("signature", sig.signature);
-        fd.append("folder", sig.folder);
-        fd.append("resource_type", "video");
+        fd.append("folder", "programas");
+        var res = await fetch("/programas/upload-local", { method: "POST", body: fd });
+        if (!res.ok) throw new Error("Error del servidor: " + res.status);
+        var data = await res.json();
+        if (data.error) throw new Error(data.error);
 
-        var uploadRes = await fetch(sig.upload_url, { method: "POST", body: fd });
-        var uploadData = await uploadRes.json();
-
-        if (uploadData.error) throw new Error(uploadData.error.message);
-
-        document.getElementById("audio_url").value = uploadData.secure_url;
+        document.getElementById("audio_url").value = data.url;
         status.textContent = "Audio subido. Guardando programa...";
         fileInput.value = "";
         this.submit();

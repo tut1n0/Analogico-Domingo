@@ -38,26 +38,15 @@
 </form>
 
 <script>
-async function uploadToCloudinary(file, folder, resourceType, statusEl) {
-    var sigRes = await fetch("/musica/upload-url?folder=" + folder + "&resource_type=" + resourceType);
-    if (!sigRes.ok) throw new Error("Error obteniendo firma de subida");
-    var sig = await sigRes.json();
-
-    statusEl.textContent = "Subiendo " + (resourceType === "image" ? "portada" : "audio") + "...";
-
+async function uploadToServer(file, folder, statusEl) {
     var fd = new FormData();
     fd.append("file", file);
-    fd.append("api_key", sig.api_key);
-    fd.append("timestamp", sig.timestamp);
-    fd.append("signature", sig.signature);
-    fd.append("folder", sig.folder);
-    fd.append("resource_type", resourceType);
-
-    var uploadRes = await fetch(sig.upload_url, { method: "POST", body: fd });
-    var data = await uploadRes.json();
-
-    if (data.error) throw new Error(data.error.message);
-    return data.secure_url;
+    fd.append("folder", folder);
+    var res = await fetch("/musica/upload-local", { method: "POST", body: fd });
+    if (!res.ok) throw new Error("Error del servidor: " + res.status);
+    var data = await res.json();
+    if (data.error) throw new Error(data.error);
+    return data.url;
 }
 
 document.getElementById("form-musica").addEventListener("submit", async function(e) {
@@ -79,13 +68,14 @@ document.getElementById("form-musica").addEventListener("submit", async function
 
     try {
         if (hasPortada) {
-            var url = await uploadToCloudinary(portadaInput.files[0], "musica", "image", status);
+            status.textContent = "Subiendo portada...";
+            var url = await uploadToServer(portadaInput.files[0], "musica", status);
             document.getElementById("portada_url").value = url;
         }
 
         if (hasAudio) {
             status.textContent = "Subiendo audio (puede tardar)...";
-            var url = await uploadToCloudinary(audioInput.files[0], "musica", "video", status);
+            var url = await uploadToServer(audioInput.files[0], "musica", status);
             document.getElementById("audio_url").value = url;
         }
 
