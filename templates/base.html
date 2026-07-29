@@ -183,6 +183,9 @@ function rpRestore() {
         rpAudio.addEventListener("loadedmetadata", function onLoad() {
             rpAudio.removeEventListener("loadedmetadata", onLoad);
             rpAudio.currentTime = state.currentTime || 0;
+            if (state.playing) {
+                rpAudio.play().catch(function() {});
+            }
         });
     } catch(e) {}
 }
