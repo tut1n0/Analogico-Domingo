@@ -1,5 +1,14 @@
 {% extends "base.html" %}
 
+{% block head %}
+<meta property="og:title" content="{{ musica.artista }} - {{ musica.titulo }}">
+<meta property="og:description" content="{{ musica.descripcion or '' }}">
+<meta property="og:image" content="{{ musica.portada or '' }}">
+<meta property="og:url" content="{{ request.url }}">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary_large_image">
+{% endblock %}
+
 {% block contenido %}
 
 <div class="cabecera-disco">
@@ -42,6 +51,8 @@
             <a href="/musica/editar/{{ musica.id_musica }}" class="boton boton-editar">Editar</a>
             <a href="/musica/eliminar/{{ musica.id_musica }}" class="boton boton-eliminar" onclick="return confirm('¿Eliminar?')">Eliminar</a>
             {% endif %}
+
+            <button class="boton" onclick="compartir('{{ request.url }}', '{{ musica.artista }} - {{ musica.titulo }}')">Compartir</button>
 
             <a href="/musica/" class="boton volver" onclick="rpGuardar()">Volver</a>
         </div>

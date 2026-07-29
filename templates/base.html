@@ -22,6 +22,8 @@
   gtag('config', 'G-GBV5G4BQG6');
 </script>
 
+{% block head %}{% endblock %}
+
 </head>
 
 <body>
@@ -253,6 +255,18 @@ function reproducirMusica(url, titulo) {
     rpBar.style.display = "flex";
     sessionStorage.setItem("rp_active", "1");
     rpAudio.play().catch(function() {});
+}
+
+function compartir(url, titulo) {
+    if (navigator.share) {
+        navigator.share({ title: titulo, url: url }).catch(function() {});
+    } else {
+        navigator.clipboard.writeText(url).then(function() {
+            alert('Enlace copiado al portapapeles');
+        }).catch(function() {
+            prompt('Copiá este enlace:', url);
+        });
+    }
 }
 
 window.addEventListener("load", rpRestore);

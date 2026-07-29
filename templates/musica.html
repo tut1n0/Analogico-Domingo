@@ -23,6 +23,7 @@
             <th>Artista</th>
             <th>Año</th>
             <th>Audio</th>
+            <th></th>
             {% if session.usuario %}
             <th>Acciones</th>
             {% endif %}
@@ -64,6 +65,10 @@
                 {% else %}
                     Sin audio
                 {% endif %}
+            </td>
+
+            <td>
+                <a href="/musica/{{ item.id_musica }}" class="boton-compartir">🔗</a>
             </td>
 
             {% if session.usuario %}
