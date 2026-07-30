@@ -12,9 +12,10 @@ def obtener_discos():
         with conexion.cursor() as cursor:
 
             sql = """
-                SELECT *
-                FROM discos
-                ORDER BY artista ASC, titulo ASC
+                SELECT d.*, m.audio AS musica_audio
+                FROM discos d
+                LEFT JOIN musica m ON d.id_musica = m.id_musica
+                ORDER BY d.artista ASC, d.titulo ASC
             """
 
             cursor.execute(sql)
@@ -32,9 +33,10 @@ def obtener_disco(id_disco):
         with conexion.cursor() as cursor:
 
             sql = """
-                SELECT *
-                FROM discos
-                WHERE id_disco = ?
+                SELECT d.*, m.audio AS musica_audio
+                FROM discos d
+                LEFT JOIN musica m ON d.id_musica = m.id_musica
+                WHERE d.id_disco = ?
             """
 
             cursor.execute(sql, (id_disco,))
@@ -63,9 +65,10 @@ def agregar_disco(datos):
                     duracion,
                     descripcion,
                     portada,
+                    id_musica,
                     escuchado
                 )
-                VALUES (?,?,?,?,?,?,?,?,?,?)
+                VALUES (?,?,?,?,?,?,?,?,?,?,?)
             """
 
             cursor.execute(sql, (
@@ -79,6 +82,7 @@ def agregar_disco(datos):
                 datos["duracion"],
                 datos["descripcion"],
                 datos["portada"],
+                datos["id_musica"],
                 datos["escuchado"]
 
             ))
@@ -116,6 +120,7 @@ def actualizar_disco(id_disco, datos):
                     duracion=?,
                     descripcion=?,
                     portada=?,
+                    id_musica=?,
                     escuchado=?
                 WHERE id_disco=?
             """
@@ -131,6 +136,7 @@ def actualizar_disco(id_disco, datos):
                 datos["duracion"],
                 datos["descripcion"],
                 datos["portada"],
+                datos["id_musica"],
                 datos["escuchado"],
                 id_disco
 

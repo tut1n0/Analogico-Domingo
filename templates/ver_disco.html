@@ -98,6 +98,14 @@
                 name="portada"
                 accept=".jpg,.jpeg,.png,.webp">
 
+            <label>Tema de Música vinculado</label>
+            <select name="id_musica">
+                <option value="">--- Sin vínculo ---</option>
+                {% for m in musica_list %}
+                    <option value="{{ m.id_musica }}" {% if disco.id_musica == m.id_musica %}selected{% endif %}>{{ m.artista }} - {{ m.titulo }}{% if m.audio %} (con audio){% endif %}</option>
+                {% endfor %}
+            </select>
+
             <br>
 
             <button
@@ -138,9 +146,24 @@
             {{ disco.descripcion }}
         </p>
 
-        {% if session.usuario %}
+        <div class="acciones-disco">
 
-        <div class="acciones-admin">
+            {% if disco.musica_audio %}
+            <button
+                class="boton"
+                onclick="reproducirMusica('{{ disco.musica_audio }}', '{{ disco.artista }} - {{ disco.titulo }}')">
+                ▶ Escuchar
+            </button>
+            {% endif %}
+
+            <a
+                href="/discos/"
+                class="boton"
+                onclick="rpGuardar()">
+                ← Volver al catálogo
+            </a>
+
+            {% if session.usuario %}
 
             <a
                 href="/discos/{{ disco.id_disco }}?editar=true"
@@ -155,16 +178,9 @@
                 🗑 Eliminar disco
             </a>
 
+            {% endif %}
+
         </div>
-
-        {% endif %}
-
-        <a
-            href="/discos/"
-            class="boton"
-            onclick="rpGuardar()">
-            ← Volver al catálogo
-        </a>
 
         {% endif %}
 

@@ -11,7 +11,8 @@ from models import (
     obtener_disco,
     agregar_disco,
     actualizar_disco,
-    eliminar_disco
+    eliminar_disco,
+    obtener_musica
 )
 
 router = APIRouter(
@@ -51,10 +52,14 @@ def nuevo_disco(request: Request):
     if respuesta:
         return respuesta
 
+    musica_list = obtener_musica()
+
     return render(
         request,
         "agregar_disco.html",
-        {}
+        {
+            "musica_list": musica_list
+        }
     )
 
 
@@ -75,6 +80,8 @@ def guardar_disco(
     productor: str = Form(None),
     duracion: str = Form(None),
     descripcion: str = Form(None),
+
+    id_musica: int = Form(None),
 
     portada: UploadFile = File(None)
 
@@ -101,6 +108,7 @@ def guardar_disco(
         "duracion": duracion,
         "descripcion": descripcion,
         "portada": portada_url,
+        "id_musica": id_musica,
         "escuchado": 0
 
     }
@@ -153,6 +161,7 @@ def actualizar(
     productor: str = Form(None),
     duracion: str = Form(None),
     descripcion: str = Form(None),
+    id_musica: int = Form(None),
     escuchado: bool = Form(False),
 
     portada: UploadFile = File(None)
@@ -182,6 +191,7 @@ def actualizar(
         "duracion": duracion,
         "descripcion": descripcion,
         "portada": portada_url,
+        "id_musica": id_musica,
         "escuchado": int(escuchado)
 
     }
@@ -230,12 +240,14 @@ def ver_disco(
 ):
 
     disco = obtener_disco(id_disco)
+    musica_list = obtener_musica()
 
     return render(
         request,
         "ver_disco.html",
         {
             "disco": disco,
-            "editar": editar
+            "editar": editar,
+            "musica_list": musica_list
         }
     )

@@ -33,6 +33,14 @@
     <label>Portada</label>
     <input type="file" name="portada" accept=".jpg,.jpeg,.png,.webp">
 
+    <label>Vincular tema de Música (con audio)</label>
+    <select name="id_musica">
+        <option value="">--- Sin vínculo ---</option>
+        {% for m in musica_list %}
+            <option value="{{ m.id_musica }}">{{ m.artista }} - {{ m.titulo }}{% if m.audio %} (con audio){% endif %}</option>
+        {% endfor %}
+    </select>
+
     <button type="submit" class="boton">
         Guardar Disco
     </button>

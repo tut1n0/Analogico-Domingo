@@ -56,6 +56,16 @@
 
     <p>{{ disco.sello }}</p>
 
+    {% if disco.musica_audio %}
+    <div class="acciones-play">
+        <button
+            class="boton-play"
+            onclick="reproducirMusica('{{ disco.musica_audio }}', '{{ disco.artista }} - {{ disco.titulo }}')">
+            ▶ Escuchar
+        </button>
+    </div>
+    {% endif %}
+
     {% if session.usuario %}
     <div class="acciones">
 

@@ -621,11 +621,39 @@ footer{
     width: auto;
 }
 
+.acciones-disco {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 25px;
+}
+
+.acciones-disco .boton {
+    width: auto;
+}
+
+.acciones-play {
+    margin-top: 12px;
+}
+
+.acciones-play .boton-play {
+    width: 100%;
+    padding: 10px 14px;
+    font-size: 16px;
+}
+
 @media (max-width: 480px) {
     .acciones-musica {
         flex-direction: column;
     }
     .acciones-musica .boton {
+        width: 100%;
+        text-align: center;
+    }
+    .acciones-disco {
+        flex-direction: column;
+    }
+    .acciones-disco .boton {
         width: 100%;
         text-align: center;
     }
