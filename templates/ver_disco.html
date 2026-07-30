@@ -149,11 +149,11 @@
         <div class="acciones-disco">
 
             {% if disco.musica_audio %}
-            <button
+            <a
                 class="boton"
-                onclick="reproducirMusica('{{ disco.musica_audio }}', '{{ disco.artista }} - {{ disco.titulo }}')">
+                href="/musica/{{ disco.id_musica }}">
                 ▶ Escuchar
-            </button>
+            </a>
             {% endif %}
 
             <a
