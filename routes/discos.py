@@ -81,7 +81,7 @@ def guardar_disco(
     duracion: str = Form(None),
     descripcion: str = Form(None),
 
-    id_musica: int = Form(None),
+    id_musica_raw: str = Form(""),
 
     portada: UploadFile = File(None)
 
@@ -96,6 +96,8 @@ def guardar_disco(
 
     if portada and portada.filename:
         portada_url = upload_file(portada, "portadas")
+
+    id_musica = int(id_musica_raw) if id_musica_raw else None
 
     datos = {
 
@@ -161,7 +163,7 @@ def actualizar(
     productor: str = Form(None),
     duracion: str = Form(None),
     descripcion: str = Form(None),
-    id_musica: int = Form(None),
+    id_musica_raw: str = Form(""),
     escuchado: bool = Form(False),
 
     portada: UploadFile = File(None)
@@ -179,6 +181,8 @@ def actualizar(
         if portada_url:
             delete_file(portada_url)
         portada_url = upload_file(portada, "portadas")
+
+    id_musica = int(id_musica_raw) if id_musica_raw else None
 
     datos = {
 
