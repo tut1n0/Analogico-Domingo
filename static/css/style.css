@@ -130,6 +130,14 @@ main{
 
     font-weight:bold;
 
+    font-family:inherit;
+
+    font-size:16px;
+
+    border:none;
+
+    cursor:pointer;
+
 }
 
 .boton:hover{
@@ -554,12 +562,6 @@ footer{
     align-items:center;
     margin-top:40px;
     gap:20px;
-
-}
-
-.boton-editar{
-
-    font-size:15px;
 
 }
 
