@@ -78,6 +78,10 @@ main{
 
     padding:40px;
 
+    background:rgba(0, 0, 0, 0.55);
+
+    border-radius:12px;
+
 }
 
 .hero{
