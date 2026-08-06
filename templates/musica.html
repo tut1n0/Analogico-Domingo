@@ -38,7 +38,7 @@
             <td>
                 {% if item.portada %}
                 <a href="/musica/{{ item.id_musica }}">
-                    <img src="{{ item.portada }}" alt="" style="height:60px; border-radius:4px; object-fit:cover;">
+                    <img src="{{ img(item.portada, 150) }}" alt="" style="height:60px; border-radius:4px; object-fit:cover;" loading="lazy" decoding="async">
                 </a>
                 {% else %}
                 Sin portada
@@ -85,5 +85,7 @@
     </tbody>
 
 </table>
+
+{% include "_paginacion.html" %}
 
 {% endblock %}

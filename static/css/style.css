@@ -1093,3 +1093,32 @@ footer{
     }
 
 }
+
+/* =====================================
+   PAGINACION
+===================================== */
+
+.paginacion {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 15px;
+    margin-top: 30px;
+    padding-top: 15px;
+    border-top: 1px solid rgba(255, 255, 255, 0.15);
+    flex-wrap: wrap;
+}
+
+.paginacion-info {
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.paginacion-botones {
+    display: flex;
+    gap: 10px;
+}
+
+.paginacion-botones .boton {
+    padding: 10px 20px;
+    font-size: 15px;
+}

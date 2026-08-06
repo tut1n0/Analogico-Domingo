@@ -27,7 +27,7 @@
 
     <label>Portada actual</label>
     {% if musica.portada %}
-    <p><img src="{{ musica.portada }}" style="max-height:200px; border-radius:6px;"></p>
+    <p><img src="{{ img(musica.portada, 300) }}" style="max-height:200px; border-radius:6px;"></p>
     {% endif %}
 
     <label>Nueva portada (opcional)</label>

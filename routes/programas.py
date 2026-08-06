@@ -1,6 +1,7 @@
 from typing import List
+import math
 
-from fastapi import APIRouter, Request, Form, UploadFile, File
+from fastapi import APIRouter, Request, Form, UploadFile, File, Query
 from fastapi.responses import RedirectResponse, JSONResponse, HTMLResponse
 from utils.render import render
 from utils.auth import verificar_login
@@ -8,11 +9,14 @@ from utils.storage import upload_file, delete_file, get_upload_signature
 
 from models import (
     obtener_programas,
+    obtener_programas_paginados,
+    contar_programas,
     obtener_programa,
     agregar_programa,
     actualizar_programa,
     eliminar_programa,
     obtener_discos,
+    obtener_discos_pendientes,
     obtener_discos_programa,
     agregar_disco_a_programa,
     eliminar_discos_programa,
@@ -24,6 +28,8 @@ router = APIRouter(
     tags=["Programas"]
 )
 
+POR_PAGINA = 20
+
 
 
 
@@ -32,15 +38,20 @@ router = APIRouter(
 # =====================================================
 
 @router.get("/")
-def listar_programas(request: Request):
+def listar_programas(request: Request, page: int = Query(1, ge=1)):
 
-    programas = obtener_programas()
+    programas = obtener_programas_paginados(page, POR_PAGINA)
+    total = contar_programas()
+    total_paginas = max(math.ceil(total / POR_PAGINA), 1)
 
     return render(
         request,
         "programas.html",
         {
-            "programas": programas
+            "programas": programas,
+            "pagina": page,
+            "total_paginas": total_paginas,
+            "total": total
         }
     )
 
@@ -77,7 +88,7 @@ def nuevo_programa(request: Request):
     if respuesta:
         return respuesta
 
-    discos = obtener_discos()
+    discos = obtener_discos_pendientes()
 
     return render(
         request,

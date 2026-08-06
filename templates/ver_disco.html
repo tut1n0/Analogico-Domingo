@@ -9,7 +9,7 @@
         {% if disco.portada %}
 
             <img
-                src="{{ disco.portada }}"
+                src="{{ img(disco.portada, 1000) }}"
                 alt="{{ disco.titulo }}">
 
         {% else %}
@@ -90,7 +90,7 @@
 
             {% if disco.portada %}
                 <p style="margin-bottom: 4px;">Portada actual:</p>
-                <img src="{{ disco.portada }}" alt="Portada actual" style="max-width: 200px; margin-bottom: 8px;">
+                <img src="{{ img(disco.portada, 300) }}" alt="Portada actual" style="max-width: 200px; margin-bottom: 8px;">
             {% endif %}
 
             <input

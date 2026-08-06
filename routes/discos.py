@@ -1,3 +1,5 @@
+import math
+
 from fastapi import Query
 from fastapi import APIRouter, Request, Form, UploadFile, File
 from fastapi.responses import RedirectResponse
@@ -8,6 +10,8 @@ from utils.storage import upload_file, delete_file
 
 from models import (
     obtener_discos,
+    obtener_discos_paginados,
+    contar_discos,
     obtener_disco,
     agregar_disco,
     actualizar_disco,
@@ -20,6 +24,8 @@ router = APIRouter(
     tags=["Discos"]
 )
 
+POR_PAGINA = 24
+
 
 
 # ======================================================
@@ -27,15 +33,20 @@ router = APIRouter(
 # ======================================================
 
 @router.get("/")
-def listar_discos(request: Request):
+def listar_discos(request: Request, page: int = Query(1, ge=1)):
 
-    discos = obtener_discos()
+    discos = obtener_discos_paginados(page, POR_PAGINA)
+    total = contar_discos()
+    total_paginas = max(math.ceil(total / POR_PAGINA), 1)
 
     return render(
         request,
         "discos.html",
         {
-            "discos": discos
+            "discos": discos,
+            "pagina": page,
+            "total_paginas": total_paginas,
+            "total": total
         }
     )
 

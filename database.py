@@ -1,3 +1,4 @@
+import contextvars
 import os
 import sqlite3
 from dotenv import load_dotenv
@@ -5,6 +6,8 @@ from dotenv import load_dotenv
 load_dotenv()
 
 DB_DRIVER = os.getenv("DB_DRIVER", "sqlite")
+
+_conexion_request = contextvars.ContextVar("conexion_request", default=None)
 
 
 class SqliteCursorWrapper:
@@ -36,8 +39,9 @@ class SqliteCursorWrapper:
 
 
 class SqliteConnectionWrapper:
-    def __init__(self, sqlite_conn):
+    def __init__(self, sqlite_conn, compartida=False):
         self._conn = sqlite_conn
+        self._compartida = compartida
 
     def cursor(self):
         return SqliteCursorWrapper(self._conn.cursor())
@@ -49,6 +53,8 @@ class SqliteConnectionWrapper:
         self._conn.rollback()
 
     def close(self):
+        if self._compartida:
+            return
         self._conn.close()
 
 
@@ -89,8 +95,9 @@ class PgCursorWrapper:
 
 
 class PgConnectionWrapper:
-    def __init__(self, pg_conn):
+    def __init__(self, pg_conn, compartida=False):
         self._conn = pg_conn
+        self._compartida = compartida
 
     def cursor(self):
         from psycopg2.extras import RealDictCursor
@@ -103,12 +110,17 @@ class PgConnectionWrapper:
         self._conn.rollback()
 
     def close(self):
+        if self._compartida:
+            return
         self._conn.close()
 
 
-def get_connection():
+def _nueva_conexion():
     if DB_DRIVER == "sqlite":
-        conn = sqlite3.connect("analogico_domingo.db")
+        conn = sqlite3.connect(
+            "analogico_domingo.db",
+            check_same_thread=False
+        )
         conn.row_factory = sqlite3.Row
         conn.execute("PRAGMA foreign_keys = ON")
         return SqliteConnectionWrapper(conn)
@@ -126,3 +138,35 @@ def get_connection():
 
     else:
         raise ValueError(f"DB_DRIVER desconocido: {DB_DRIVER}")
+
+
+def get_connection():
+    holder = _conexion_request.get()
+
+    if holder is not None:
+        if holder["conexion"] is None:
+            conexion = _nueva_conexion()
+            conexion._compartida = True
+            holder["conexion"] = conexion
+        return holder["conexion"]
+
+    return _nueva_conexion()
+
+
+def iniciar_conexion_request():
+    holder = {"conexion": None}
+    _conexion_request.set(holder)
+    return holder
+
+
+def cerrar_conexion_request(holder):
+    conexion = holder["conexion"]
+
+    if conexion is not None:
+        try:
+            conexion._compartida = False
+            conexion.close()
+        except Exception:
+            pass
+
+    _conexion_request.set(None)

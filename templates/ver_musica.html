@@ -19,7 +19,7 @@
 
     <div class="detalle-portada">
         {% if musica.portada %}
-        <img src="{{ musica.portada }}" alt="{{ musica.titulo }}">
+        <img src="{{ img(musica.portada, 1000) }}" alt="{{ musica.titulo }}">
         {% else %}
         <div class="portada">Sin portada</div>
         {% endif %}

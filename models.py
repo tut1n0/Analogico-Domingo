@@ -47,6 +47,56 @@ def obtener_disco(id_disco):
         conexion.close()
 
 
+def obtener_discos_paginados(page, por_pagina):
+    conexion = get_connection()
+
+    try:
+        with conexion.cursor() as cursor:
+
+            sql = """
+                SELECT
+                    d.id_disco,
+                    d.titulo,
+                    d.artista,
+                    d.anio,
+                    d.genero,
+                    d.sello,
+                    d.portada,
+                    d.escuchado,
+                    d.id_musica,
+                    m.audio AS musica_audio
+                FROM discos d
+                LEFT JOIN musica m ON d.id_musica = m.id_musica
+                ORDER BY d.artista ASC, d.titulo ASC
+                LIMIT ? OFFSET ?
+            """
+
+            offset = (page - 1) * por_pagina
+
+            cursor.execute(sql, (por_pagina, offset))
+
+            return cursor.fetchall()
+
+    finally:
+        conexion.close()
+
+
+def contar_discos():
+    conexion = get_connection()
+
+    try:
+        with conexion.cursor() as cursor:
+
+            cursor.execute("SELECT COUNT(*) AS total FROM discos")
+
+            fila = cursor.fetchone()
+
+            return fila["total"] if fila else 0
+
+    finally:
+        conexion.close()
+
+
 def agregar_disco(datos):
     conexion = get_connection()
 
@@ -238,6 +288,47 @@ def obtener_programas():
             cursor.execute(sql)
 
             return cursor.fetchall()
+
+    finally:
+
+        conexion.close()
+
+
+def obtener_programas_paginados(page, por_pagina):
+    conexion = get_connection()
+
+    try:
+        with conexion.cursor() as cursor:
+
+            sql = """
+                SELECT id_programa, numero, fecha, observaciones, audio
+                FROM programas
+                ORDER BY fecha DESC
+                LIMIT ? OFFSET ?
+            """
+
+            offset = (page - 1) * por_pagina
+
+            cursor.execute(sql, (por_pagina, offset))
+
+            return cursor.fetchall()
+
+    finally:
+
+        conexion.close()
+
+
+def contar_programas():
+    conexion = get_connection()
+
+    try:
+        with conexion.cursor() as cursor:
+
+            cursor.execute("SELECT COUNT(*) AS total FROM programas")
+
+            fila = cursor.fetchone()
+
+            return fila["total"] if fila else 0
 
     finally:
 
@@ -514,6 +605,34 @@ def obtener_musica():
             sql = "SELECT * FROM musica ORDER BY artista ASC, titulo ASC"
             cursor.execute(sql)
             return cursor.fetchall()
+    finally:
+        conexion.close()
+
+
+def obtener_musica_paginados(page, por_pagina):
+    conexion = get_connection()
+    try:
+        with conexion.cursor() as cursor:
+            sql = """
+                SELECT id_musica, titulo, artista, anio, portada, audio
+                FROM musica
+                ORDER BY artista ASC, titulo ASC
+                LIMIT ? OFFSET ?
+            """
+            offset = (page - 1) * por_pagina
+            cursor.execute(sql, (por_pagina, offset))
+            return cursor.fetchall()
+    finally:
+        conexion.close()
+
+
+def contar_musica():
+    conexion = get_connection()
+    try:
+        with conexion.cursor() as cursor:
+            cursor.execute("SELECT COUNT(*) AS total FROM musica")
+            fila = cursor.fetchone()
+            return fila["total"] if fila else 0
     finally:
         conexion.close()
 

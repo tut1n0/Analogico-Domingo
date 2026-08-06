@@ -1,4 +1,6 @@
-from fastapi import APIRouter, Request, Form, UploadFile, File
+import math
+
+from fastapi import APIRouter, Request, Form, UploadFile, File, Query
 from fastapi.responses import RedirectResponse, HTMLResponse, JSONResponse
 from utils.render import render
 from utils.auth import verificar_login
@@ -6,6 +8,8 @@ from utils.storage import delete_file, get_upload_signature
 
 from models import (
     obtener_musica,
+    obtener_musica_paginados,
+    contar_musica,
     obtener_musica_por_id,
     agregar_musica,
     actualizar_musica,
@@ -17,11 +21,24 @@ router = APIRouter(
     tags=["Musica"]
 )
 
+POR_PAGINA = 20
+
 
 @router.get("/")
-def listar_musica(request: Request):
-    musica = obtener_musica()
-    return render(request, "musica.html", {"musica": musica})
+def listar_musica(request: Request, page: int = Query(1, ge=1)):
+    musica = obtener_musica_paginados(page, POR_PAGINA)
+    total = contar_musica()
+    total_paginas = max(math.ceil(total / POR_PAGINA), 1)
+    return render(
+        request,
+        "musica.html",
+        {
+            "musica": musica,
+            "pagina": page,
+            "total_paginas": total_paginas,
+            "total": total
+        }
+    )
 
 
 @router.get("/upload-url")

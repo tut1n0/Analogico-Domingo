@@ -29,8 +29,10 @@
     {% if disco.portada %}
 
         <img
-        src="{{ disco.portada }}"
-        alt="{{ disco.titulo }}">
+        src="{{ img(disco.portada, 600) }}"
+        alt="{{ disco.titulo }}"
+        loading="lazy"
+        decoding="async">
 
     {% else %}
 
@@ -79,5 +81,7 @@
 {% endfor %}
 
 </div>
+
+{% include "_paginacion.html" %}
 
 {% endblock %}
