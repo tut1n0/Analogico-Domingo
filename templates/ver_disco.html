@@ -1,5 +1,25 @@
 {% extends "base.html" %}
 
+{% block head %}
+<meta property="og:site_name" content="Analógico Domingo">
+<meta property="og:title" content="{{ disco.artista }} - {{ disco.titulo }}">
+<meta property="og:description" content="{{ (disco.descripcion or '')|truncate(200) }}">
+<meta property="og:type" content="music.album">
+<meta property="og:url" content="{{ request.url }}">
+{% if disco.portada %}
+{% if disco.portada.startswith('http') %}{% set og_img = img_social(disco.portada) %}{% else %}{% set og_img = request.base_url ~ disco.portada.lstrip('/') %}{% endif %}
+<meta property="og:image" content="{{ og_img }}">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="{{ disco.artista }} - {{ disco.titulo }}">
+<meta name="twitter:image" content="{{ og_img }}">
+{% else %}
+<meta property="og:image" content="{{ request.base_url }}static/header.jpg">
+<meta name="twitter:image" content="{{ request.base_url }}static/header.jpg">
+{% endif %}
+<meta name="twitter:card" content="summary_large_image">
+{% endblock %}
+
 {% block contenido %}
 
 <div class="detalle-disco">

@@ -1,11 +1,21 @@
 {% extends "base.html" %}
 
 {% block head %}
+<meta property="og:site_name" content="Analógico Domingo">
 <meta property="og:title" content="{{ musica.artista }} - {{ musica.titulo }}">
-<meta property="og:description" content="{{ musica.descripcion or '' }}">
-<meta property="og:image" content="{{ musica.portada or '' }}">
+<meta property="og:description" content="{{ (musica.descripcion or '')|truncate(200) }}">
+<meta property="og:type" content="music.song">
 <meta property="og:url" content="{{ request.url }}">
-<meta property="og:type" content="website">
+{% if musica.portada %}
+<meta property="og:image" content="{{ img_social(musica.portada) }}">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="{{ musica.artista }} - {{ musica.titulo }}">
+<meta name="twitter:image" content="{{ img_social(musica.portada) }}">
+{% else %}
+<meta property="og:image" content="{{ request.base_url }}static/header.jpg">
+<meta name="twitter:image" content="{{ request.base_url }}static/header.jpg">
+{% endif %}
 <meta name="twitter:card" content="summary_large_image">
 {% endblock %}
 

@@ -9,3 +9,16 @@ def optimizar_imagen(url, ancho):
             return f"{base}{marker}w_{ancho},q_auto,f_auto/{resto}"
 
     return url
+
+
+def imagen_social(url):
+    if not url:
+        return url
+
+    if "res.cloudinary.com" in url:
+        marker = "/image/upload/"
+        if marker in url:
+            base, resto = url.split(marker, 1)
+            return f"{base}{marker}w_1200,h_630,c_fill,q_auto,f_auto/{resto}"
+
+    return url

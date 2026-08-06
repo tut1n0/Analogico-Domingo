@@ -24,7 +24,17 @@
   gtag('config', 'G-GBV5G4BQG6');
 </script>
 
-{% block head %}{% endblock %}
+{% block head %}
+<meta property="og:site_name" content="Analógico Domingo">
+<meta property="og:title" content="Analógico Domingo - Archivo del programa">
+<meta property="og:description" content="Archivo del programa Analógico Domingo: discos, música y emisiones.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="{{ request.url }}">
+<meta property="og:image" content="{{ request.base_url }}static/header.jpg">
+<meta property="og:image:alt" content="Analógico Domingo">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="{{ request.base_url }}static/header.jpg">
+{% endblock %}
 
 </head>
 
