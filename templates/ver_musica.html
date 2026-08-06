@@ -62,6 +62,14 @@
             <a href="/musica/eliminar/{{ musica.id_musica }}" class="boton boton-eliminar" onclick="return confirm('¿Eliminar?')">Eliminar</a>
             {% endif %}
 
+            {% if musica.portada %}
+            <button
+                class="boton"
+                onclick="compartirInstagram('{{ img(musica.portada, 1080) }}', '{{ musica.artista }} - {{ musica.titulo }}', '{{ request.url }}')">
+                📸 Compartir en historias
+            </button>
+            {% endif %}
+
             <button class="boton" onclick="compartir('{{ request.url }}', '{{ musica.artista }} - {{ musica.titulo }}')">Compartir</button>
 
             <a href="/musica/" class="boton volver" onclick="rpGuardar()">Volver</a>

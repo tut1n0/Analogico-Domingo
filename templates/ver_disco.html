@@ -176,6 +176,14 @@
             </a>
             {% endif %}
 
+            {% if disco.portada %}
+            <button
+                class="boton"
+                onclick="compartirInstagram('{{ img(disco.portada, 1080) }}', '{{ disco.artista }} - {{ disco.titulo }}', '{{ request.url }}')">
+                📸 Compartir en historias
+            </button>
+            {% endif %}
+
             <a
                 href="/discos/"
                 class="boton"

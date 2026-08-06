@@ -281,6 +281,27 @@ function compartir(url, titulo) {
     }
 }
 
+async function compartirInstagram(imagenUrl, titulo, enlace) {
+    if (imagenUrl) {
+        try {
+            var resp = await fetch(imagenUrl);
+            if (resp.ok) {
+                var blob = await resp.blob();
+                var ext = (imagenUrl.split('?')[0].split('.').pop() || 'jpg').toLowerCase();
+                var archivo = new File([blob], 'portada.' + ext, { type: blob.type || 'image/jpeg' });
+                var datos = { files: [archivo] };
+                if (navigator.canShare && navigator.canShare(datos)) {
+                    await navigator.share(datos);
+                    return;
+                }
+            }
+        } catch (err) {
+            if (err && err.name === 'AbortError') return;
+        }
+    }
+    compartir(enlace, titulo);
+}
+
 window.addEventListener("load", rpRestore);
 
 window.addEventListener("beforeunload", rpGuardar);
