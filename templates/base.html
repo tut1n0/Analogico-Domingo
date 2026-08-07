@@ -118,6 +118,7 @@ var rpBarra = document.getElementById("rp-barra");
 var rpBarraFill = document.getElementById("rp-barra-fill");
 var rpBarraThumb = document.getElementById("rp-barra-thumb");
 var rpDragging = false;
+var rpPendienteReanudar = false;
 
 rpAudio.volume = 0.8;
 
@@ -198,7 +199,9 @@ function rpRestore() {
             rpAudio.removeEventListener("loadedmetadata", onLoad);
             rpAudio.currentTime = state.currentTime || 0;
             if (state.playing) {
-                rpAudio.play().catch(function() {});
+                rpAudio.play().catch(function() {
+                    rpPendienteReanudar = true;
+                });
             }
         });
     } catch(e) {}
@@ -220,6 +223,7 @@ rpAudio.addEventListener("play", function() {
 
 rpAudio.addEventListener("pause", function() {
     rpBtnPlay.textContent = "▶";
+    rpPendienteReanudar = false;
     rpGuardar();
 });
 
@@ -266,7 +270,9 @@ function reproducirMusica(url, titulo) {
     rpAudio.src = url;
     rpBar.style.display = "flex";
     sessionStorage.setItem("rp_active", "1");
-    rpAudio.play().catch(function() {});
+    rpAudio.play().catch(function() {
+        rpPendienteReanudar = true;
+    });
 }
 
 function compartir(url, titulo) {
@@ -305,6 +311,65 @@ async function compartirInstagram(imagenUrl, titulo, enlace) {
 window.addEventListener("load", rpRestore);
 
 window.addEventListener("beforeunload", rpGuardar);
+window.addEventListener("pagehide", rpGuardar);
+
+function rpReintentarPlay() {
+    if (!rpPendienteReanudar) return;
+    if (!rpAudio.src || !rpAudio.paused) return;
+    rpPendienteReanudar = false;
+    rpAudio.play().catch(function() {});
+}
+document.addEventListener("pointerdown", rpReintentarPlay, true);
+document.addEventListener("keydown", rpReintentarPlay, true);
+
+var rpMain = document.querySelector("main");
+
+var rpExcluirAdmin = { login: true, logout: true, nuevo: true, editar: true, eliminar: true };
+
+function rpCargar(url, push) {
+    fetch(url)
+        .then(function(resp) {
+            if (!resp.ok) throw new Error();
+            return resp.text().then(function(html) {
+                return { html: html, finalUrl: resp.url };
+            });
+        })
+        .then(function(datos) {
+            var doc = new DOMParser().parseFromString(datos.html, "text/html");
+            var nuevoMain = doc.querySelector("main");
+            if (!nuevoMain) throw new Error();
+            rpMain.innerHTML = nuevoMain.innerHTML;
+            var titulo = doc.querySelector("title");
+            if (titulo) document.title = titulo.textContent;
+            if (push !== false) history.pushState({}, "", datos.finalUrl);
+            window.scrollTo(0, 0);
+        })
+        .catch(function() {
+            window.location.href = url;
+        });
+}
+
+document.addEventListener("click", function(e) {
+    if (e.defaultPrevented) return;
+    if (e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+    var objetivo = e.target;
+    var enlace = objetivo && objetivo.closest ? objetivo.closest("a") : null;
+    if (!enlace) return;
+    if (enlace.target === "_blank") return;
+    if (enlace.hasAttribute("download")) return;
+    var href = enlace.getAttribute("href");
+    if (!href || href.charAt(0) === "#") return;
+    if (enlace.origin !== location.origin) return;
+    var segmentos = enlace.pathname.split("/").filter(Boolean);
+    var esAdmin = segmentos.some(function(s) { return rpExcluirAdmin[s]; });
+    if (esAdmin) return;
+    e.preventDefault();
+    rpCargar(enlace.href, true);
+});
+
+window.addEventListener("popstate", function() {
+    rpCargar(location.href, false);
+});
 </script>
 
 </body>
