@@ -7,7 +7,7 @@
 }
 
 body {
-    font-family: "Alumni Sans", sans-serif;
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
     background: #F5E6C8 url('/static/body-bg.jpg') center/cover fixed no-repeat;
     color: white;
     font-size: 20px;
