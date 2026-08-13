@@ -1,12 +1,13 @@
 {% if total_paginas > 1 %}
+{% set qs = ('&q=' ~ q|urlencode) if q else '' %}
 <div class="paginacion">
     <span class="paginacion-info">Página {{ pagina }} de {{ total_paginas }} ({{ total }} en total)</span>
     <div class="paginacion-botones">
         {% if pagina > 1 %}
-        <a class="boton" href="{{ request.url.path }}?page={{ pagina - 1 }}">← Anterior</a>
+        <a class="boton" href="{{ request.url.path }}?page={{ pagina - 1 }}{{ qs }}">← Anterior</a>
         {% endif %}
         {% if pagina < total_paginas %}
-        <a class="boton" href="{{ request.url.path }}?page={{ pagina + 1 }}">Siguiente →</a>
+        <a class="boton" href="{{ request.url.path }}?page={{ pagina + 1 }}{{ qs }}">Siguiente →</a>
         {% endif %}
     </div>
 </div>

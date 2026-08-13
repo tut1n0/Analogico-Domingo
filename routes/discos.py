@@ -33,10 +33,16 @@ POR_PAGINA = 24
 # ======================================================
 
 @router.get("/")
-def listar_discos(request: Request, page: int = Query(1, ge=1)):
+def listar_discos(
+    request: Request,
+    page: int = Query(1, ge=1),
+    q: str = Query("", max_length=60)
+):
 
-    discos = obtener_discos_paginados(page, POR_PAGINA)
-    total = contar_discos()
+    texto = q.strip() if q else ""
+
+    discos = obtener_discos_paginados(page, POR_PAGINA, texto)
+    total = contar_discos(texto)
     total_paginas = max(math.ceil(total / POR_PAGINA), 1)
 
     return render(
@@ -46,7 +52,8 @@ def listar_discos(request: Request, page: int = Query(1, ge=1)):
             "discos": discos,
             "pagina": page,
             "total_paginas": total_paginas,
-            "total": total
+            "total": total,
+            "q": texto
         }
     )
 

@@ -146,6 +146,10 @@
 
         <h2>{{ disco.titulo }}</h2>
 
+        {% if disco.escuchado %}
+        <span class="badge-escuchado badge-detalle">Sonó en el aire</span>
+        {% endif %}
+
         <h3>{{ disco.artista }}</h3>
 
         <p><strong>Año:</strong> {{ disco.anio }}</p>

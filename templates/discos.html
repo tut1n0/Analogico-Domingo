@@ -16,6 +16,25 @@
 
 </div>
 
+<form class="buscador" action="/discos/" method="get" id="form-buscar">
+    <input
+        type="search"
+        name="q"
+        value="{{ q }}"
+        placeholder="Buscar por título, artista, género, sello o productor..."
+        aria-label="Buscar discos">
+    <button type="submit" class="boton">Buscar</button>
+</form>
+
+{% if q %}
+<p class="resultados-busqueda">
+    {{ total }} resultado(s) para <strong>"{{ q }}"</strong>
+    {% if total %}<a href="/discos/" class="limpiar-busqueda">✕ Limpiar</a>{% endif %}
+</p>
+{% endif %}
+
+{% if discos %}
+
 <div class="contenedor-discos">
 
 {% for disco in discos %}
@@ -23,6 +42,10 @@
 <div class="tarjeta">
 
     <div class="portada">
+
+    {% if disco.escuchado %}
+    <span class="badge-escuchado">Sonó en el aire</span>
+    {% endif %}
 
     <a href="/discos/{{ disco.id_disco }}">
 
@@ -82,6 +105,26 @@
 
 </div>
 
+{% else %}
+
+<p class="sin-resultados">No se encontraron discos{% if q %} para <strong>"{{ q }}"</strong>{% endif %}.</p>
+
+{% endif %}
+
 {% include "_paginacion.html" %}
+
+<script>
+(function() {
+    var form = document.getElementById("form-buscar");
+    if (!form) return;
+    form.addEventListener("submit", function(e) {
+        var valor = form.querySelector('input[name="q"]').value.trim();
+        var url = "/discos/";
+        if (valor) url += "?q=" + encodeURIComponent(valor);
+        e.preventDefault();
+        rpCargar(url, true);
+    });
+})();
+</script>
 
 {% endblock %}

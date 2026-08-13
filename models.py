@@ -47,7 +47,22 @@ def obtener_disco(id_disco):
         conexion.close()
 
 
-def obtener_discos_paginados(page, por_pagina):
+def _where_busqueda_discos():
+    return """
+        WHERE d.titulo LIKE ?
+           OR d.artista LIKE ?
+           OR d.genero LIKE ?
+           OR d.sello LIKE ?
+           OR d.productor LIKE ?
+    """
+
+
+def _params_busqueda_discos(texto):
+    busqueda = f"%{texto}%"
+    return (busqueda, busqueda, busqueda, busqueda, busqueda)
+
+
+def obtener_discos_paginados(page, por_pagina, texto=None):
     conexion = get_connection()
 
     try:
@@ -67,13 +82,21 @@ def obtener_discos_paginados(page, por_pagina):
                     m.audio AS musica_audio
                 FROM discos d
                 LEFT JOIN musica m ON d.id_musica = m.id_musica
-                ORDER BY d.artista ASC, d.titulo ASC
-                LIMIT ? OFFSET ?
             """
+
+            params = []
+
+            if texto:
+                sql += _where_busqueda_discos()
+                params += _params_busqueda_discos(texto)
+
+            sql += " ORDER BY d.artista ASC, d.titulo ASC LIMIT ? OFFSET ?"
 
             offset = (page - 1) * por_pagina
 
-            cursor.execute(sql, (por_pagina, offset))
+            params += [por_pagina, offset]
+
+            cursor.execute(sql, params)
 
             return cursor.fetchall()
 
@@ -81,13 +104,21 @@ def obtener_discos_paginados(page, por_pagina):
         conexion.close()
 
 
-def contar_discos():
+def contar_discos(texto=None):
     conexion = get_connection()
 
     try:
         with conexion.cursor() as cursor:
 
-            cursor.execute("SELECT COUNT(*) AS total FROM discos")
+            sql = "SELECT COUNT(*) AS total FROM discos d"
+
+            params = []
+
+            if texto:
+                sql += _where_busqueda_discos()
+                params += _params_busqueda_discos(texto)
+
+            cursor.execute(sql, params)
 
             fila = cursor.fetchone()
 
