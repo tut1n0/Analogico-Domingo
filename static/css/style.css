@@ -216,6 +216,14 @@ footer{
 
 }
 
+.tarjeta-escuchado{
+
+    border:1px solid #3a9d5d;
+    background:rgba(58,157,93,0.08);
+    box-shadow:0 0 12px rgba(58,157,93,0.25);
+
+}
+
 .portada{
 
     height:250px;

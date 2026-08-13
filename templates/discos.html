@@ -39,13 +39,9 @@
 
 {% for disco in discos %}
 
-<div class="tarjeta">
+<div class="tarjeta{% if disco.escuchado %} tarjeta-escuchado{% endif %}">
 
     <div class="portada">
-
-    {% if disco.escuchado %}
-    <span class="badge-escuchado">Sonó en el aire</span>
-    {% endif %}
 
     <a href="/discos/{{ disco.id_disco }}">
 
