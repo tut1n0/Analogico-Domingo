@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+
+{% block contenido %}
+
+<div class="barra-superior">
+
+    <h2>Entrevistas</h2>
+
+    {% if session.usuario %}
+    <a href="/entrevistas/nuevo" class="boton">
+        + Nueva Entrevista
+    </a>
+    {% endif %}
+
+</div>
+
+{% if entrevistas %}
+
+<ul class="lista-entrevistas">
+
+{% for ent in entrevistas %}
+
+    <li class="item-entrevista">
+
+        <div class="item-entrevista-info">
+            <a href="/entrevistas/{{ ent.id_entrevista }}" class="item-entrevista-titulo">
+                {{ ent.titulo }}
+            </a>
+            {% if ent.fecha %}
+            <span class="item-entrevista-fecha">{{ ent.fecha }}</span>
+            {% endif %}
+        </div>
+
+        <div class="item-entrevista-acciones">
+            {% if ent.archivo_url %}
+                {% if ent.tipo_archivo == "video" %}
+                <a href="/entrevistas/{{ ent.id_entrevista }}" class="boton-play">▶ Ver</a>
+                {% else %}
+                <a href="/entrevistas/{{ ent.id_entrevista }}" class="boton-play">▶ Escuchar</a>
+                {% endif %}
+            {% endif %}
+            {% if session.usuario %}
+            <a href="/entrevistas/editar/{{ ent.id_entrevista }}" class="item-link-admin">Editar</a>
+            <a href="/entrevistas/eliminar/{{ ent.id_entrevista }}" class="item-link-admin item-link-eliminar" onclick="return confirm('¿Eliminar esta entrevista?')">Eliminar</a>
+            {% endif %}
+        </div>
+
+    </li>
+
+{% endfor %}
+
+</ul>
+
+{% else %}
+
+<p class="sin-resultados">No hay entrevistas documentadas.</p>
+
+{% endif %}
+
+{% include "_paginacion.html" %}
+
+{% endblock %}

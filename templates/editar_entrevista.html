@@ -1,0 +1,114 @@
+{% extends "base.html" %}
+
+{% block contenido %}
+
+<h2>Editar Entrevista</h2>
+
+<div id="upload-status" style="display:none; color:blue; margin:10px 0;"></div>
+<div id="upload-error" style="display:none; color:red; margin:10px 0;"></div>
+
+<form
+    action="/entrevistas/editar/{{ entrevista.id_entrevista }}"
+    method="post"
+    enctype="multipart/form-data"
+    class="formulario"
+    id="form-entrevista">
+
+    <label>Título</label>
+
+    <input
+        type="text"
+        name="titulo"
+        value="{{ entrevista.titulo }}"
+        required>
+
+    <label>Fecha</label>
+
+    <input
+        type="date"
+        name="fecha"
+        value="{{ entrevista.fecha }}">
+
+    <label>Archivo (audio o video)</label>
+
+    {% if entrevista.archivo_url %}
+        {% if entrevista.tipo_archivo == "video" %}
+        <video controls style="max-width:100%; border-radius:8px; margin-bottom:10px;">
+            <source src="{{ entrevista.archivo_url }}">
+        </video>
+        {% else %}
+        <audio controls style="width:100%; margin-bottom:10px;">
+            <source src="{{ entrevista.archivo_url }}">
+        </audio>
+        {% endif %}
+        <p style="color:rgba(255,255,255,0.6); font-size:14px; margin-bottom:8px;">Archivo actual. Subí uno nuevo para reemplazarlo.</p>
+    {% endif %}
+
+    <input
+        type="file"
+        name="archivo"
+        accept="audio/*,video/*"
+        id="input-archivo">
+
+    <input type="hidden" name="archivo_url" id="archivo_url" value="">
+
+    <button
+        type="submit"
+        class="boton"
+        id="btn-submit">
+
+        Guardar Cambios
+
+    </button>
+
+    <a href="/entrevistas/" class="boton" style="text-align:center;">Cancelar</a>
+
+</form>
+
+<script>
+document.getElementById("form-entrevista").addEventListener("submit", async function(e) {
+    var fileInput = document.getElementById("input-archivo");
+    var archivoUrl = document.getElementById("archivo_url").value;
+    var status = document.getElementById("upload-status");
+    var error = document.getElementById("upload-error");
+    var btn = document.getElementById("btn-submit");
+
+    if (!fileInput.files.length || archivoUrl) return;
+
+    e.preventDefault();
+    error.style.display = "none";
+    status.style.display = "block";
+    status.textContent = "Subiendo archivo...";
+    btn.disabled = true;
+
+    try {
+        var sigRes = await fetch("/entrevistas/upload-url?folder=entrevistas");
+        if (!sigRes.ok) throw new Error("Error obteniendo firma");
+        var sig = await sigRes.json();
+
+        var fd = new FormData();
+        fd.append("file", fileInput.files[0]);
+        fd.append("api_key", sig.api_key);
+        fd.append("timestamp", sig.timestamp);
+        fd.append("signature", sig.signature);
+        fd.append("folder", sig.folder);
+        fd.append("resource_type", "video");
+
+        var res = await fetch(sig.upload_url, { method: "POST", body: fd });
+        var data = await res.json();
+        if (data.error) throw new Error(data.error.message);
+
+        document.getElementById("archivo_url").value = data.secure_url;
+        status.textContent = "Archivo subido. Guardando cambios...";
+        fileInput.value = "";
+        this.submit();
+    } catch (err) {
+        status.style.display = "none";
+        error.style.display = "block";
+        error.textContent = "Error al subir archivo: " + err.message;
+        btn.disabled = false;
+    }
+});
+</script>
+
+{% endblock %}

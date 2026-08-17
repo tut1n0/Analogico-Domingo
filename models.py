@@ -743,13 +743,182 @@ def eliminar_musica(id_musica):
         conexion.rollback()
         raise
     finally:
+
+        conexion.close()
+
+
+# ==========================================
+# ENTREVISTAS
+# ==========================================
+
+def obtener_entrevistas_paginados(page, por_pagina):
+    conexion = get_connection()
+
+    try:
+        with conexion.cursor() as cursor:
+
+            sql = """
+                SELECT id_entrevista, titulo, fecha, archivo_url, tipo_archivo
+                FROM entrevistas
+                ORDER BY fecha DESC, id_entrevista DESC
+                LIMIT ? OFFSET ?
+            """
+
+            offset = (page - 1) * por_pagina
+
+            cursor.execute(sql, (por_pagina, offset))
+
+            return cursor.fetchall()
+
+    finally:
+
+        conexion.close()
+
+
+def contar_entrevistas():
+    conexion = get_connection()
+
+    try:
+        with conexion.cursor() as cursor:
+
+            cursor.execute("SELECT COUNT(*) AS total FROM entrevistas")
+
+            fila = cursor.fetchone()
+
+            return fila["total"] if fila else 0
+
+    finally:
+
+        conexion.close()
+
+
+def obtener_entrevista(id_entrevista):
+    conexion = get_connection()
+
+    try:
+        with conexion.cursor() as cursor:
+
+            sql = """
+                SELECT *
+                FROM entrevistas
+                WHERE id_entrevista = ?
+            """
+
+            cursor.execute(sql, (id_entrevista,))
+
+            return cursor.fetchone()
+
+    finally:
+
+        conexion.close()
+
+
+def agregar_entrevista(datos):
+    conexion = get_connection()
+
+    try:
+        with conexion.cursor() as cursor:
+
+            sql = """
+                INSERT INTO entrevistas
+                (
+                    titulo,
+                    fecha,
+                    archivo_url,
+                    tipo_archivo
+                )
+                VALUES (?, ?, ?, ?)
+            """
+
+            cursor.execute(sql, (
+                datos["titulo"],
+                datos["fecha"],
+                datos["archivo_url"],
+                datos["tipo_archivo"]
+            ))
+
+            conexion.commit()
+
+            return cursor.lastrowid
+
+    except Exception:
+
+        conexion.rollback()
+        raise
+
+    finally:
+
+        conexion.close()
+
+
+def actualizar_entrevista(id_entrevista, datos):
+    conexion = get_connection()
+
+    try:
+        with conexion.cursor() as cursor:
+
+            sql = """
+                UPDATE entrevistas
+                SET
+                    titulo=?,
+                    fecha=?,
+                    archivo_url=?,
+                    tipo_archivo=?
+                WHERE id_entrevista=?
+            """
+
+            cursor.execute(sql, (
+                datos["titulo"],
+                datos["fecha"],
+                datos["archivo_url"],
+                datos["tipo_archivo"],
+                id_entrevista
+            ))
+
+            conexion.commit()
+
+            return cursor.rowcount
+
+    except Exception:
+
+        conexion.rollback()
+        raise
+
+    finally:
+
+        conexion.close()
+
+
+def eliminar_entrevista(id_entrevista):
+    conexion = get_connection()
+
+    try:
+        with conexion.cursor() as cursor:
+
+            sql = """
+                DELETE FROM entrevistas
+                WHERE id_entrevista=?
+            """
+
+            cursor.execute(sql, (id_entrevista,))
+
+            conexion.commit()
+
+            return cursor.rowcount
+
+    except Exception:
+
+        conexion.rollback()
+        raise
+
+    finally:
+
         conexion.close()
 
 
 # ==========================================
 # USUARIOS
 # ==========================================
-
 def obtener_usuario(usuario):
     conexion = get_connection()
 

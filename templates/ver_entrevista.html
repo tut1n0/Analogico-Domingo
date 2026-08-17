@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+
+{% block head %}
+<meta property="og:site_name" content="Analógico Domingo">
+<meta property="og:title" content="{{ entrevista.titulo }} - Entrevista">
+<meta property="og:description" content="Entrevista documentada en Analógico Domingo: {{ entrevista.titulo }}">
+<meta property="og:type" content="video.other">
+<meta property="og:url" content="{{ request.url }}">
+<meta property="og:image" content="{{ request.base_url }}static/header.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="{{ request.base_url }}static/header.jpg">
+{% endblock %}
+
+{% block contenido %}
+
+<div class="detalle-entrevista">
+
+    <div class="cabecera-disco">
+        <h2>{{ entrevista.titulo }}</h2>
+    </div>
+
+    {% if entrevista.fecha %}
+    <p class="entrevista-fecha-detalle"><strong>Fecha:</strong> {{ entrevista.fecha }}</p>
+    {% endif %}
+
+    {% if entrevista.archivo_url %}
+    <div class="entrevista-reproductor">
+        {% if entrevista.tipo_archivo == "video" %}
+        <video controls style="width:100%; border-radius:8px;">
+            <source src="{{ entrevista.archivo_url }}">
+            Tu navegador no soporta video.
+        </video>
+        {% else %}
+        <audio controls style="width:100%;">
+            <source src="{{ entrevista.archivo_url }}">
+        </audio>
+        {% endif %}
+    </div>
+    {% endif %}
+
+    <div class="acciones-admin">
+
+        {% if session.usuario %}
+        <a href="/entrevistas/editar/{{ entrevista.id_entrevista }}" class="boton">
+            Editar
+        </a>
+        <a
+            href="/entrevistas/eliminar/{{ entrevista.id_entrevista }}"
+            class="boton boton-eliminar"
+            onclick="return confirm('¿Eliminar esta entrevista?')">
+            Eliminar
+        </a>
+        {% endif %}
+
+        <a href="/entrevistas/" class="boton volver">
+            Volver
+        </a>
+
+    </div>
+
+</div>
+
+{% endblock %}

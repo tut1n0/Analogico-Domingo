@@ -1237,3 +1237,107 @@ footer{
     padding: 10px 20px;
     font-size: 15px;
 }
+
+/* =====================================
+   ENTREVISTAS
+========================================= */
+
+.lista-entrevistas {
+    list-style: none;
+    margin-top: 25px;
+}
+
+.item-entrevista {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+    gap: 15px;
+}
+
+.item-entrevista:last-child {
+    border-bottom: none;
+}
+
+.item-entrevista-info {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    min-width: 0;
+}
+
+.item-entrevista-titulo {
+    color: #d39a0c;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 17px;
+    overflow-wrap: break-word;
+}
+
+.item-entrevista-titulo:hover {
+    text-decoration: underline;
+}
+
+.item-entrevista-fecha {
+    color: rgba(255, 255, 255, 0.55);
+    font-size: 14px;
+}
+
+.item-entrevista-acciones {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-shrink: 0;
+}
+
+.item-link-admin {
+    color: rgba(255, 255, 255, 0.65);
+    text-decoration: none;
+    font-size: 14px;
+}
+
+.item-link-admin:hover {
+    color: white;
+}
+
+.item-link-eliminar:hover {
+    color: #e55;
+}
+
+.detalle-entrevista {
+    margin-top: 20px;
+}
+
+.entrevista-fecha-detalle {
+    color: rgba(255, 255, 255, 0.85);
+    margin-bottom: 20px;
+    font-size: 16px;
+}
+
+.entrevista-reproductor {
+    margin: 20px 0;
+}
+
+@media (max-width: 768px) {
+    .item-entrevista {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+
+    .item-entrevista-acciones {
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+}
+
+@media (max-width: 480px) {
+    .item-entrevista-titulo {
+        font-size: 16px;
+    }
+
+    .item-entrevista-acciones {
+        width: 100%;
+    }
+}

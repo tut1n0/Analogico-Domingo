@@ -7,6 +7,7 @@ from routes.inicio import router as inicio_router
 from routes.discos import router as discos_router
 from routes.programas import router as programas_router
 from routes.musica import router as musica_router
+from routes.entrevistas import router as entrevistas_router
 from starlette.middleware.sessions import SessionMiddleware
 from routes.auth import router as auth_router
 
@@ -67,4 +68,5 @@ app.include_router(inicio_router)
 app.include_router(discos_router)
 app.include_router(programas_router)
 app.include_router(musica_router)
+app.include_router(entrevistas_router)
 app.include_router(auth_router)
