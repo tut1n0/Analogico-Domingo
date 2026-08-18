@@ -22,6 +22,19 @@
 
     <li class="item-entrevista">
 
+        {% if ent.tipo_archivo == "video" and ent.archivo_url %}
+        <a href="/entrevistas/{{ ent.id_entrevista }}" class="item-entrevista-miniatura">
+            {% set thumb = video_thumb(ent.archivo_url) %}
+            {% if thumb %}
+            <img src="{{ thumb }}" alt="{{ ent.titulo }}">
+            {% else %}
+            <div class="item-entrevista-miniatura-icono">
+                <svg viewBox="0 0 24 24" fill="currentColor" width="28" height="28"><path d="M8 5v14l11-7z"/></svg>
+            </div>
+            {% endif %}
+        </a>
+        {% endif %}
+
         <div class="item-entrevista-info">
             <a href="/entrevistas/{{ ent.id_entrevista }}" class="item-entrevista-titulo">
                 {{ ent.titulo }}
