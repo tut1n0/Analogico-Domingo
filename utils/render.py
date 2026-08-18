@@ -1,3 +1,4 @@
+import os
 from fastapi.templating import Jinja2Templates
 from utils.imagenes import optimizar_imagen, imagen_social
 
@@ -13,7 +14,8 @@ def video_thumbnail(url):
         return None
     base = url[:idx + len(marker)]
     rest = url[idx + len(marker):]
-    return f"{base}w_120,h_90,c_fill,so_0/{rest}.jpg"
+    root, _ = os.path.splitext(rest)
+    return f"{base}w_120,h_90,c_fill,so_0/{root}.jpg"
 
 
 def render(request, template, context=None):
