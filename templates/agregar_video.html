@@ -1,0 +1,97 @@
+{% extends "base.html" %}
+
+{% block contenido %}
+
+<h2>Nuevo Video</h2>
+
+<div id="upload-status" style="display:none; color:blue; margin:10px 0;"></div>
+<div id="upload-error" style="display:none; color:red; margin:10px 0;"></div>
+
+<form
+    action="/videos/nuevo"
+    method="post"
+    enctype="multipart/form-data"
+    class="formulario"
+    id="form-video">
+
+    <label>Título</label>
+
+    <input
+        type="text"
+        name="titulo"
+        required>
+
+    <label>Fecha</label>
+
+    <input
+        type="date"
+        name="fecha">
+
+    <label>Archivo (audio o video)</label>
+
+    <input
+        type="file"
+        name="archivo"
+        accept="audio/*,video/*"
+        id="input-archivo">
+
+    <input type="hidden" name="archivo_url" id="archivo_url" value="">
+
+    <button
+        type="submit"
+        class="boton"
+        id="btn-submit">
+
+        Guardar
+
+    </button>
+
+</form>
+
+<script>
+document.getElementById("form-video").addEventListener("submit", async function(e) {
+    var fileInput = document.getElementById("input-archivo");
+    var archivoUrl = document.getElementById("archivo_url").value;
+    var status = document.getElementById("upload-status");
+    var error = document.getElementById("upload-error");
+    var btn = document.getElementById("btn-submit");
+
+    if (!fileInput.files.length || archivoUrl) return;
+
+    e.preventDefault();
+    error.style.display = "none";
+    status.style.display = "block";
+    status.textContent = "Subiendo archivo...";
+    btn.disabled = true;
+
+    try {
+        var sigRes = await fetch("/videos/upload-url?folder=videos");
+        if (!sigRes.ok) throw new Error("Error obteniendo firma");
+        var sig = await sigRes.json();
+
+        var fd = new FormData();
+        fd.append("file", fileInput.files[0]);
+        fd.append("api_key", sig.api_key);
+        fd.append("timestamp", sig.timestamp);
+        fd.append("signature", sig.signature);
+        fd.append("folder", sig.folder);
+        fd.append("resource_type", "video");
+
+        var res = await fetch(sig.upload_url, { method: "POST", body: fd });
+        var data = await res.json();
+        if (data.error) throw new Error(data.error.message);
+
+        document.getElementById("archivo_url").value = data.secure_url;
+        status.textContent = "Archivo subido. Guardando video...";
+        fileInput.value = "";
+        this.submit();
+    } catch (err) {
+        status.style.display = "none";
+        error.style.display = "block";
+        error.textContent = "Error al subir archivo: " + err.message;
+        btn.disabled = false;
+    }
+});
+</script>
+
+{% endblock %}

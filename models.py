@@ -748,19 +748,19 @@ def eliminar_musica(id_musica):
 
 
 # ==========================================
-# ENTREVISTAS
+# VIDEOS
 # ==========================================
 
-def obtener_entrevistas_paginados(page, por_pagina):
+def obtener_videos_paginados(page, por_pagina):
     conexion = get_connection()
 
     try:
         with conexion.cursor() as cursor:
 
             sql = """
-                SELECT id_entrevista, titulo, fecha, archivo_url, tipo_archivo
-                FROM entrevistas
-                ORDER BY fecha DESC, id_entrevista DESC
+                SELECT id_video, titulo, fecha, archivo_url, tipo_archivo
+                FROM videos
+                ORDER BY fecha DESC, id_video DESC
                 LIMIT ? OFFSET ?
             """
 
@@ -775,13 +775,13 @@ def obtener_entrevistas_paginados(page, por_pagina):
         conexion.close()
 
 
-def contar_entrevistas():
+def contar_videos():
     conexion = get_connection()
 
     try:
         with conexion.cursor() as cursor:
 
-            cursor.execute("SELECT COUNT(*) AS total FROM entrevistas")
+            cursor.execute("SELECT COUNT(*) AS total FROM videos")
 
             fila = cursor.fetchone()
 
@@ -792,7 +792,7 @@ def contar_entrevistas():
         conexion.close()
 
 
-def obtener_entrevista(id_entrevista):
+def obtener_video(id_video):
     conexion = get_connection()
 
     try:
@@ -800,11 +800,11 @@ def obtener_entrevista(id_entrevista):
 
             sql = """
                 SELECT *
-                FROM entrevistas
-                WHERE id_entrevista = ?
+                FROM videos
+                WHERE id_video = ?
             """
 
-            cursor.execute(sql, (id_entrevista,))
+            cursor.execute(sql, (id_video,))
 
             return cursor.fetchone()
 
@@ -813,14 +813,14 @@ def obtener_entrevista(id_entrevista):
         conexion.close()
 
 
-def agregar_entrevista(datos):
+def agregar_video(datos):
     conexion = get_connection()
 
     try:
         with conexion.cursor() as cursor:
 
             sql = """
-                INSERT INTO entrevistas
+                INSERT INTO videos
                 (
                     titulo,
                     fecha,
@@ -851,20 +851,20 @@ def agregar_entrevista(datos):
         conexion.close()
 
 
-def actualizar_entrevista(id_entrevista, datos):
+def actualizar_video(id_video, datos):
     conexion = get_connection()
 
     try:
         with conexion.cursor() as cursor:
 
             sql = """
-                UPDATE entrevistas
+                UPDATE videos
                 SET
                     titulo=?,
                     fecha=?,
                     archivo_url=?,
                     tipo_archivo=?
-                WHERE id_entrevista=?
+                WHERE id_video=?
             """
 
             cursor.execute(sql, (
@@ -872,7 +872,7 @@ def actualizar_entrevista(id_entrevista, datos):
                 datos["fecha"],
                 datos["archivo_url"],
                 datos["tipo_archivo"],
-                id_entrevista
+                id_video
             ))
 
             conexion.commit()
@@ -889,18 +889,18 @@ def actualizar_entrevista(id_entrevista, datos):
         conexion.close()
 
 
-def eliminar_entrevista(id_entrevista):
+def eliminar_video(id_video):
     conexion = get_connection()
 
     try:
         with conexion.cursor() as cursor:
 
             sql = """
-                DELETE FROM entrevistas
-                WHERE id_entrevista=?
+                DELETE FROM videos
+                WHERE id_video=?
             """
 
-            cursor.execute(sql, (id_entrevista,))
+            cursor.execute(sql, (id_video,))
 
             conexion.commit()
 

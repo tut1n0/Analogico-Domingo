@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+
+{% block contenido %}
+
+<div class="barra-superior">
+
+    <h2>Videos</h2>
+
+    {% if session.usuario %}
+    <a href="/videos/nuevo" class="boton">
+        + Nuevo Video
+    </a>
+    {% endif %}
+
+</div>
+
+{% if videos %}
+
+<ul class="lista-videos">
+
+{% for vid in videos %}
+
+    <li class="item-video">
+
+        {% if vid.tipo_archivo == "video" and vid.archivo_url %}
+        <a href="/videos/{{ vid.id_video }}" class="item-video-miniatura">
+            {% set thumb = video_thumb(vid.archivo_url) %}
+            {% if thumb %}
+            <img src="{{ thumb }}" alt="{{ vid.titulo }}">
+            {% else %}
+            <div class="item-video-miniatura-icono">
+                <svg viewBox="0 0 24 24" fill="currentColor" width="28" height="28"><path d="M8 5v14l11-7z"/></svg>
+            </div>
+            {% endif %}
+        </a>
+        {% endif %}
+
+        <div class="item-video-info">
+            <a href="/videos/{{ vid.id_video }}" class="item-video-titulo">
+                {{ vid.titulo }}
+            </a>
+            {% if vid.fecha %}
+            <span class="item-video-fecha">{{ vid.fecha }}</span>
+            {% endif %}
+        </div>
+
+        <div class="item-video-acciones">
+            {% if vid.archivo_url %}
+                {% if vid.tipo_archivo == "video" %}
+                <a href="/videos/{{ vid.id_video }}" class="boton-play">▶ Ver</a>
+                {% else %}
+                <a href="/videos/{{ vid.id_video }}" class="boton-play">▶ Escuchar</a>
+                {% endif %}
+            {% endif %}
+            {% if session.usuario %}
+            <a href="/videos/editar/{{ vid.id_video }}" class="item-link-admin">Editar</a>
+            <a href="/videos/eliminar/{{ vid.id_video }}" class="item-link-admin item-link-eliminar" onclick="return confirm('¿Eliminar este video?')">Eliminar</a>
+            {% endif %}
+        </div>
+
+    </li>
+
+{% endfor %}
+
+</ul>
+
+{% else %}
+
+<p class="sin-resultados">No hay videos documentados.</p>
+
+{% endif %}
+
+{% include "_paginacion.html" %}
+
+{% endblock %}

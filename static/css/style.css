@@ -1239,15 +1239,15 @@ footer{
 }
 
 /* =====================================
-   ENTREVISTAS
+   VIDEOS
 ========================================= */
 
-.lista-entrevistas {
+.lista-videos {
     list-style: none;
     margin-top: 25px;
 }
 
-.item-entrevista {
+.item-video {
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -1256,18 +1256,18 @@ footer{
     gap: 15px;
 }
 
-.item-entrevista:last-child {
+.item-video:last-child {
     border-bottom: none;
 }
 
-.item-entrevista-info {
+.item-video-info {
     display: flex;
     flex-direction: column;
     gap: 4px;
     min-width: 0;
 }
 
-.item-entrevista-titulo {
+.item-video-titulo {
     color: #d39a0c;
     text-decoration: none;
     font-weight: bold;
@@ -1275,16 +1275,16 @@ footer{
     overflow-wrap: break-word;
 }
 
-.item-entrevista-titulo:hover {
+.item-video-titulo:hover {
     text-decoration: underline;
 }
 
-.item-entrevista-fecha {
+.item-video-fecha {
     color: rgba(255, 255, 255, 0.55);
     font-size: 14px;
 }
 
-.item-entrevista-acciones {
+.item-video-acciones {
     display: flex;
     align-items: center;
     gap: 12px;
@@ -1305,21 +1305,21 @@ footer{
     color: #e55;
 }
 
-.detalle-entrevista {
+.detalle-video {
     margin-top: 20px;
 }
 
-.entrevista-fecha-detalle {
+.video-fecha-detalle {
     color: rgba(255, 255, 255, 0.85);
     margin-bottom: 20px;
     font-size: 16px;
 }
 
-.entrevista-reproductor {
+.video-reproductor {
     margin: 20px 0;
 }
 
-.item-entrevista-miniatura {
+.item-video-miniatura {
     width: 100px;
     height: 75px;
     border-radius: 6px;
@@ -1332,13 +1332,13 @@ footer{
     justify-content: center;
 }
 
-.item-entrevista-miniatura img {
+.item-video-miniatura img {
     width: 100%;
     height: 100%;
     object-fit: cover;
 }
 
-.item-entrevista-miniatura-icono {
+.item-video-miniatura-icono {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -1348,34 +1348,34 @@ footer{
     background: rgba(0, 0, 0, 0.35);
 }
 
-.item-entrevista-miniatura:hover {
+.item-video-miniatura:hover {
     opacity: 0.85;
 }
 
 @media (max-width: 768px) {
-    .item-entrevista {
+    .item-video {
         flex-direction: column;
         align-items: flex-start;
         gap: 10px;
     }
 
-    .item-entrevista-miniatura {
+    .item-video-miniatura {
         width: 80px;
         height: 60px;
     }
 
-    .item-entrevista-acciones {
+    .item-video-acciones {
         flex-wrap: wrap;
         gap: 8px;
     }
 }
 
 @media (max-width: 480px) {
-    .item-entrevista-titulo {
+    .item-video-titulo {
         font-size: 16px;
     }
 
-    .item-entrevista-acciones {
+    .item-video-acciones {
         width: 100%;
     }
 }
