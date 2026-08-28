@@ -7,7 +7,7 @@
 }
 
 body {
-    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-family: "Alumni Sans", "Caacupe One", sans-serif;
     background: #000;
     color: white;
     font-size: 17px;
@@ -49,6 +49,7 @@ header > * {
     font-size:28px;
     color:#d39a0c;
     overflow-wrap:break-word;
+    font-family:"Caacupe One", "Alumni Sans", sans-serif;
 
 }
 
@@ -61,7 +62,7 @@ header > * {
 nav a{
 
     color:#d39a0c;
-
+    font-family:"Caacupe One", "Alumni Sans", sans-serif;
     text-decoration:none;
 
     margin-left:20px;
@@ -89,6 +90,10 @@ main{
 
 }
 
+main h1, main h2, main h3{
+    font-family:"Caacupe One", "Alumni Sans", sans-serif;
+}
+
 .hero{
 
     text-align:center;
@@ -100,7 +105,7 @@ main{
 .hero h2{
 
     font-size:34px;
-
+    font-family:"Caacupe One", "Alumni Sans", sans-serif;
     margin-bottom:20px;
     overflow-wrap:break-word;
 
@@ -290,6 +295,7 @@ footer{
     color:#d39a0c;
     margin-bottom:8px;
     overflow-wrap:break-word;
+    font-family:"Caacupe One", "Alumni Sans", sans-serif;
 
 }
 
@@ -331,6 +337,7 @@ footer{
 .barra-superior h2{
     min-width:0;
     overflow-wrap:break-word;
+    font-family:"Caacupe One", "Alumni Sans", sans-serif;
 }
 
 .buscador{
@@ -631,6 +638,7 @@ footer{
     color:#d39a0c;
     margin-bottom:10px;
     overflow-wrap:break-word;
+    font-family:"Caacupe One", "Alumni Sans", sans-serif;
 
 }
 
