@@ -8,7 +8,7 @@
 
 body {
     font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-    background: #F5E6C8 url('/static/body-bg.jpg') center/cover fixed no-repeat;
+    background: #000;
     color: white;
     font-size: 17px;
 }
@@ -83,7 +83,7 @@ main{
 
     padding:40px;
 
-    background:rgba(0, 0, 0, 0.55);
+    background:transparent;
 
     border-radius:12px;
 
