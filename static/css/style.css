@@ -219,7 +219,16 @@ footer{
     border-radius:8px;
     padding:20px;
     border:1px solid #dba801;
+    transition:transform 0.25s ease, box-shadow 0.25s ease;
+    will-change:transform;
 
+}
+
+.tarjeta:hover{
+    transform:scale(1.03);
+    box-shadow:0 10px 25px rgba(0,0,0,0.45);
+    z-index:5;
+    position:relative;
 }
 
 .tarjeta-escuchado{
