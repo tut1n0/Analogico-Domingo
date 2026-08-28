@@ -46,7 +46,7 @@ header > * {
 
 .logo h1{
 
-    font-size:28px;
+    font-size:34px;
     color:#d39a0c;
     overflow-wrap:break-word;
     font-family:"Caacupe One", "Alumni Sans", sans-serif;
@@ -64,6 +64,7 @@ nav a{
     color:#d39a0c;
     font-family:"Caacupe One", "Alumni Sans", sans-serif;
     text-decoration:none;
+    font-size:22px;
 
     margin-left:20px;
 
@@ -94,6 +95,14 @@ main h1, main h2, main h3{
     font-family:"Caacupe One", "Alumni Sans", sans-serif;
 }
 
+main h1, main h2{
+    font-size:40px;
+}
+
+main h3{
+    font-size:26px;
+}
+
 .hero{
 
     text-align:center;
@@ -104,7 +113,7 @@ main h1, main h2, main h3{
 
 .hero h2{
 
-    font-size:34px;
+    font-size:38px;
     font-family:"Caacupe One", "Alumni Sans", sans-serif;
     margin-bottom:20px;
     overflow-wrap:break-word;
@@ -296,6 +305,7 @@ footer{
     margin-bottom:8px;
     overflow-wrap:break-word;
     font-family:"Caacupe One", "Alumni Sans", sans-serif;
+    font-size:24px;
 
 }
 
@@ -634,7 +644,7 @@ footer{
 
 .detalle-info h2{
 
-    font-size:34px;
+    font-size:40px;
     color:#d39a0c;
     margin-bottom:10px;
     overflow-wrap:break-word;
