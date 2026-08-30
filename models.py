@@ -49,11 +49,11 @@ def obtener_disco(id_disco):
 
 def _where_busqueda_discos():
     return """
-        WHERE d.titulo LIKE ?
-           OR d.artista LIKE ?
-           OR d.genero LIKE ?
-           OR d.sello LIKE ?
-           OR d.productor LIKE ?
+        WHERE LOWER(d.titulo) LIKE LOWER(?)
+           OR LOWER(d.artista) LIKE LOWER(?)
+           OR LOWER(d.genero) LIKE LOWER(?)
+           OR LOWER(d.sello) LIKE LOWER(?)
+           OR LOWER(d.productor) LIKE LOWER(?)
     """
 
 

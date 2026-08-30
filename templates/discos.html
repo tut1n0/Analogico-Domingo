@@ -109,18 +109,4 @@
 
 {% include "_paginacion.html" %}
 
-<script>
-(function() {
-    var form = document.getElementById("form-buscar");
-    if (!form) return;
-    form.addEventListener("submit", function(e) {
-        var valor = form.querySelector('input[name="q"]').value.trim();
-        var url = "/discos/";
-        if (valor) url += "?q=" + encodeURIComponent(valor);
-        e.preventDefault();
-        rpCargar(url, true);
-    });
-})();
-</script>
-
 {% endblock %}

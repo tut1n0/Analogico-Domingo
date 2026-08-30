@@ -36,7 +36,7 @@ POR_PAGINA = 24
 def listar_discos(
     request: Request,
     page: int = Query(1, ge=1),
-    q: str = Query("", max_length=60)
+    q: str = Query("", max_length=200)
 ):
 
     texto = q.strip() if q else ""

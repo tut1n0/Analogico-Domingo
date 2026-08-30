@@ -370,6 +370,17 @@ document.addEventListener("click", function(e) {
 window.addEventListener("popstate", function() {
     rpCargar(location.href, false);
 });
+
+document.addEventListener("submit", function(e) {
+    var form = e.target;
+    if (!form || form.id !== "form-buscar") return;
+    var campo = form.querySelector('input[name="q"]');
+    var valor = (campo && campo.value ? campo.value : "").trim();
+    var url = "/discos/";
+    if (valor) url += "?q=" + encodeURIComponent(valor);
+    e.preventDefault();
+    rpCargar(url, true);
+});
 </script>
 
 </body>
