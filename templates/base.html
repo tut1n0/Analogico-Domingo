@@ -9,7 +9,7 @@
 
     <title>Analógico Domingo</title>
 
-    <link rel="stylesheet" href="/static/css/style.css?v=10">
+    <link rel="stylesheet" href="/static/css/style.css?v=11">
     <link rel="icon" type="image/svg+xml" href="/static/favicon.svg">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -89,7 +89,7 @@
         <span id="rp-titulo">---</span>
     </div>
     <div class="reproductor-controles">
-        <button id="rp-btn-play" onclick="rpToggle()">▶</button>
+        <button id="rp-btn-play" onclick="rpToggle()" aria-label="Reproducir / Pausar" aria-pressed="false">▶</button>
         <div class="reproductor-progreso">
             <span id="rp-actual">0:00</span>
             <div class="rp-barra" id="rp-barra">
@@ -218,12 +218,16 @@ rpAudio.addEventListener("loadedmetadata", function() {
 
 rpAudio.addEventListener("play", function() {
     rpBtnPlay.textContent = "⏸";
+    rpBtnPlay.setAttribute("aria-pressed", "true");
+    rpActualizarActivos();
     rpGuardar();
 });
 
 rpAudio.addEventListener("pause", function() {
     rpBtnPlay.textContent = "▶";
+    rpBtnPlay.setAttribute("aria-pressed", "false");
     rpPendienteReanudar = false;
+    rpActualizarActivos();
     rpGuardar();
 });
 
@@ -234,6 +238,7 @@ rpAudio.addEventListener("ended", function() {
     rpActual.textContent = "0:00";
     localStorage.removeItem("rp_state");
     sessionStorage.removeItem("rp_active");
+    rpActualizarActivos();
 });
 
 function rpToggle() {
@@ -275,16 +280,74 @@ function reproducirMusica(url, titulo) {
     });
 }
 
+function rpEsActiva(url) {
+    return rpAudio.src === url || rpAudio.src === location.origin + url;
+}
+
+function rpActualizarActivos() {
+    var activos = document.querySelectorAll("[data-play].activa");
+    activos.forEach(function(b) { b.classList.remove("activa"); b.innerHTML = "▶"; });
+    activos = document.querySelectorAll("[data-play]");
+    activos.forEach(function(b) {
+        var src = b.getAttribute("data-play");
+        if (rpEsActiva(src) && !rpAudio.paused) {
+            b.classList.add("activa");
+            b.innerHTML = "⏸";
+        }
+    });
+}
+
+document.addEventListener("click", function(e) {
+    var btn = e.target && e.target.closest ? e.target.closest("[data-play]") : null;
+    if (!btn) return;
+    e.preventDefault();
+    var src = btn.getAttribute("data-play");
+    var titulo = btn.getAttribute("data-titulo") || "Reproducción";
+    reproducirMusica(src, titulo);
+});
+
 function compartir(url, titulo) {
     if (navigator.share) {
         navigator.share({ title: titulo, url: url }).catch(function() {});
     } else {
+        rpToast('Copiando enlace…');
         navigator.clipboard.writeText(url).then(function() {
-            alert('Enlace copiado al portapapeles');
+            rpToast('Enlace copiado al portapapeles');
         }).catch(function() {
-            prompt('Copiá este enlace:', url);
+            var tryUrl = url;
+            try { prompt('Copiá este enlace:', url); } catch (err) {}
+
+            async function copyFallback(u) {
+                try {
+                    await navigator.clipboard.writeText(u);
+                    rpToast('Enlace copiado al portapapeles');
+                } catch (e) {
+                    rpToast('No se pudo copiar el enlace');
+                }
+            }
+            copyFallback(tryUrl);
         });
     }
+}
+
+function rpToast(mensaje) {
+    var t = document.getElementById("rp-toast");
+    if (!t) {
+        t = document.createElement("div");
+        t.id = "rp-toast";
+        t.className = "toast";
+        t.setAttribute("role", "status");
+        document.body.appendChild(t);
+    }
+    t.textContent = mensaje;
+    t.classList.add("visible");
+    clearTimeout(t._tm);
+    t._tm = setTimeout(function() { t.classList.remove("visible"); }, 2200);
+}
+
+function confirmEliminar(mensaje) {
+    mensaje = mensaje || '¿Eliminar este elemento? Esta acción no se puede deshacer.';
+    return window.confirm(mensaje);
 }
 
 async function compartirInstagram(imagenUrl, titulo, enlace) {
@@ -308,7 +371,7 @@ async function compartirInstagram(imagenUrl, titulo, enlace) {
     compartir(enlace, titulo);
 }
 
-window.addEventListener("load", rpRestore);
+window.addEventListener("load", function() { rpRestore(); rpInitFormularios(); });
 
 window.addEventListener("beforeunload", rpGuardar);
 window.addEventListener("pagehide", rpGuardar);
@@ -323,10 +386,12 @@ document.addEventListener("pointerdown", rpReintentarPlay, true);
 document.addEventListener("keydown", rpReintentarPlay, true);
 
 var rpMain = document.querySelector("main");
+rpMain.setAttribute("tabindex", "-1");
 
 var rpExcluirAdmin = { login: true, logout: true, nuevo: true, editar: true, eliminar: true };
 
 function rpCargar(url, push) {
+    document.body.classList.add("cargando");
     fetch(url)
         .then(function(resp) {
             if (!resp.ok) throw new Error();
@@ -339,14 +404,118 @@ function rpCargar(url, push) {
             var nuevoMain = doc.querySelector("main");
             if (!nuevoMain) throw new Error();
             rpMain.innerHTML = nuevoMain.innerHTML;
+            rpActualizarActivos();
+            rpInitFormularios();
             var titulo = doc.querySelector("title");
             if (titulo) document.title = titulo.textContent;
             if (push !== false) history.pushState({}, "", datos.finalUrl);
+            document.body.classList.remove("cargando");
             window.scrollTo(0, 0);
+            rpMain.focus({ preventScroll: true });
         })
         .catch(function() {
+            document.body.classList.remove("cargando");
             window.location.href = url;
         });
+}
+
+function rpBuscarDiscos(valor) {
+    valor = (valor || "").trim();
+    var url = "/discos/";
+    if (valor) url += "?q=" + encodeURIComponent(valor);
+    rpCargar(url, true);
+}
+
+var rpDebounceTimers = new WeakMap();
+
+function rpLiveSearch(input) {
+    clearTimeout(rpDebounceTimers.get(input));
+    rpDebounceTimers.set(input, setTimeout(function() {
+        if (input.value !== document.activeElement.value) return;
+        rpBuscarDiscos(input.value);
+    }, 300));
+}
+
+function rpSubirCloudinary(sig, file, onProgress) {
+    return new Promise(function(resolve, reject) {
+        var fd = new FormData();
+        fd.append("file", file);
+        fd.append("api_key", sig.api_key);
+        fd.append("timestamp", sig.timestamp);
+        fd.append("signature", sig.signature);
+        fd.append("folder", sig.folder);
+        fd.append("resource_type", "video");
+
+        var xhr = new XMLHttpRequest();
+        xhr.open("POST", sig.upload_url);
+        xhr.upload.onprogress = function(e) {
+            if (e.lengthComputable && onProgress) onProgress(e.loaded / e.total * 100);
+        };
+        xhr.onload = function() {
+            var data;
+            try { data = JSON.parse(xhr.responseText); } catch (err) { return reject(new Error("Respuesta inválida del servidor")); }
+            if (data.error) return reject(new Error(data.error.message));
+            resolve(data.secure_url);
+        };
+        xhr.onerror = function() { reject(new Error("Error de red al subir el archivo")); };
+        xhr.send(fd);
+    });
+}
+
+function rpObtenerFirma(url) {
+    return fetch(url).then(function(r) {
+        if (!r.ok) throw new Error("Error obteniendo firma");
+        return r.json();
+    });
+}
+
+function rpSubirLocal(file, folder, onProgress) {
+    return new Promise(function(resolve, reject) {
+        var fd = new FormData();
+        fd.append("file", file);
+        fd.append("folder", folder);
+        var xhr = new XMLHttpRequest();
+        xhr.open("POST", "/musica/upload-local");
+        xhr.upload.onprogress = function(e) {
+            if (e.lengthComputable && onProgress) onProgress(e.loaded / e.total * 100);
+        };
+        xhr.onload = function() {
+            var data;
+            try { data = JSON.parse(xhr.responseText); } catch (err) { return reject(new Error("Respuesta inválida del servidor")); }
+            if (data.error) return reject(new Error(data.error));
+            if (!data.url) return reject(new Error("No se recibió la URL de la portada"));
+            resolve(data.url);
+        };
+        xhr.onerror = function() { reject(new Error("Error de red al subir la portada")); };
+        xhr.send(fd);
+    });
+}
+
+function rpPreviewPortada(inputId, imgId) {
+    var input = document.getElementById(inputId);
+    if (!input) return;
+    input.addEventListener("change", function() {
+        var img = document.getElementById(imgId);
+        if (input.files && input.files[0]) {
+            if (img) {
+                img.src = URL.createObjectURL(input.files[0]);
+                img.style.display = "block";
+            }
+        }
+    });
+}
+
+function rpInitFormularios() {
+    var pares = [
+        ["input-portada", "vista-previa-portada"]
+    ];
+    pares.forEach(function(p) {
+        var input = document.getElementById(p[0]);
+        if (input && !input._rpPreview) {
+            input._rpPreview = true;
+            rpPreviewPortada(p[0], p[1]);
+        }
+    });
 }
 
 document.addEventListener("click", function(e) {
@@ -355,6 +524,7 @@ document.addEventListener("click", function(e) {
     var objetivo = e.target;
     var enlace = objetivo && objetivo.closest ? objetivo.closest("a") : null;
     if (!enlace) return;
+    if (objetivo && objetivo.closest && objetivo.closest("[data-play]")) return;
     if (enlace.target === "_blank") return;
     if (enlace.hasAttribute("download")) return;
     var href = enlace.getAttribute("href");
@@ -376,10 +546,54 @@ document.addEventListener("submit", function(e) {
     if (!form || form.id !== "form-buscar") return;
     var campo = form.querySelector('input[name="q"]');
     var valor = (campo && campo.value ? campo.value : "").trim();
-    var url = "/discos/";
-    if (valor) url += "?q=" + encodeURIComponent(valor);
     e.preventDefault();
-    rpCargar(url, true);
+    rpBuscarDiscos(valor);
+});
+
+document.addEventListener("input", function(e) {
+    var target = e.target;
+    if (!target || target.id !== "buscar-discos") return;
+    rpLiveSearch(target);
+});
+
+document.addEventListener("keydown", function(e) {
+    if (!rpAudio.src) return;
+    var tag = (e.target && e.target.tagName) || "";
+    var esCampo = tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT" || e.target && e.target.isContentEditable;
+    if (esCampo) return;
+
+    switch (e.key) {
+        case " ":
+        case "k":
+        case "K":
+            e.preventDefault();
+            rpToggle();
+            break;
+        case "ArrowUp":
+            e.preventDefault();
+            rpAudio.volume = Math.min(1, (rpAudio.volume || 0) + 0.05);
+            rpVolumenSlider.value = Math.round(rpAudio.volume * 100);
+            rpGuardar();
+            break;
+        case "ArrowDown":
+            e.preventDefault();
+            rpAudio.volume = Math.max(0, (rpAudio.volume || 0) - 0.05);
+            rpVolumenSlider.value = Math.round(rpAudio.volume * 100);
+            rpGuardar();
+            break;
+        case "ArrowLeft":
+            e.preventDefault();
+            rpAudio.currentTime = Math.max(0, (rpAudio.currentTime || 0) - 5);
+            rpBarraActualizar();
+            break;
+        case "ArrowRight":
+            e.preventDefault();
+            if (rpAudio.duration) {
+                rpAudio.currentTime = Math.min(rpAudio.duration, (rpAudio.currentTime || 0) + 5);
+                rpBarraActualizar();
+            }
+            break;
+    }
 });
 </script>
 

@@ -4,8 +4,11 @@
 
 <h2>Nuevo Programa</h2>
 
-<div id="upload-status" style="display:none; color:blue; margin:10px 0;"></div>
-<div id="upload-error" style="display:none; color:red; margin:10px 0;"></div>
+<div id="upload-status" class="upload-status" role="status"></div>
+<div id="upload-error" class="upload-error" role="alert"></div>
+<div class="upload-progreso" id="upload-progreso">
+    <div class="upload-progreso-fill"></div>
+</div>
 
 <form
     action="/programas/nuevo"
@@ -96,39 +99,32 @@ document.getElementById("form-programa").addEventListener("submit", async functi
     var audioUrl = document.getElementById("audio_url").value;
     var status = document.getElementById("upload-status");
     var error = document.getElementById("upload-error");
+    var progreso = document.getElementById("upload-progreso");
+    var fill = progreso.querySelector(".upload-progreso-fill");
     var btn = document.getElementById("btn-submit");
 
     if (!fileInput.files.length || audioUrl) return;
 
     e.preventDefault();
     error.style.display = "none";
-    status.style.display = "block";
-    status.textContent = "Subiendo audio...";
+    status.textContent = "Subiendo audio…";
+    progreso.classList.add("visible");
     btn.disabled = true;
 
     try {
-        var sigRes = await fetch("/programas/upload-url?folder=programas");
-        if (!sigRes.ok) throw new Error("Error obteniendo firma");
-        var sig = await sigRes.json();
-
-        var fd = new FormData();
-        fd.append("file", fileInput.files[0]);
-        fd.append("api_key", sig.api_key);
-        fd.append("timestamp", sig.timestamp);
-        fd.append("signature", sig.signature);
-        fd.append("folder", sig.folder);
-        fd.append("resource_type", "video");
-
-        var res = await fetch(sig.upload_url, { method: "POST", body: fd });
-        var data = await res.json();
-        if (data.error) throw new Error(data.error.message);
-
-        document.getElementById("audio_url").value = data.secure_url;
-        status.textContent = "Audio subido. Guardando programa...";
+        var sig = await rpObtenerFirma("/programas/upload-url?folder=programas");
+        var url = await rpSubirCloudinary(sig, fileInput.files[0], function(pct) {
+            fill.style.width = pct + "%";
+            status.textContent = "Subiendo audio… " + Math.round(pct) + "%";
+        });
+        document.getElementById("audio_url").value = url;
+        fill.style.width = "100%";
+        status.textContent = "Audio subido. Guardando programa…";
         fileInput.value = "";
         this.submit();
     } catch (err) {
-        status.style.display = "none";
+        progreso.classList.remove("visible");
+        fill.style.width = "0%";
         error.style.display = "block";
         error.textContent = "Error al subir audio: " + err.message;
         btn.disabled = false;

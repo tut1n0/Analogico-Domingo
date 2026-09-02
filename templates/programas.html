@@ -50,7 +50,9 @@
 
                     <button
                         class="boton-play"
-                        onclick="reproducirMusica('{{ programa.audio }}', 'Programa #{{ programa.numero }}')">
+                        data-play="{{ programa.audio }}"
+                        data-titulo="Programa #{{ programa.numero }}"
+                        aria-label="Reproducir programa {{ programa.numero }}">
                         ▶ Play
                     </button>
 
@@ -73,7 +75,7 @@
 
                 <a
                     href="/programas/eliminar/{{ programa.id_programa }}"
-                    onclick="return confirm('¿Eliminar programa?')">
+                    onclick="return confirmEliminar('¿Eliminar este programa?')">
 
                     Eliminar
 

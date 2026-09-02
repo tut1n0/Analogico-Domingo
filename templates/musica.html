@@ -59,7 +59,9 @@
                 {% if item.audio %}
                     <button
                         class="boton-play"
-                        onclick="reproducirMusica('{{ item.audio }}', '{{ item.artista }} - {{ item.titulo }}')">
+                        data-play="{{ item.audio }}"
+                        data-titulo="{{ item.artista }} - {{ item.titulo }}"
+                        aria-label="Escuchar {{ item.titulo }}">
                         ▶ Play
                     </button>
                 {% else %}
@@ -75,7 +77,7 @@
             <td>
                 <a href="/musica/editar/{{ item.id_musica }}">Editar</a>
                 |
-                <a href="/musica/eliminar/{{ item.id_musica }}" onclick="return confirm('¿Eliminar?')">Eliminar</a>
+                <a href="/musica/eliminar/{{ item.id_musica }}" onclick="return confirmEliminar('¿Eliminar este tema?')">Eliminar</a>
             </td>
             {% endif %}
         </tr>

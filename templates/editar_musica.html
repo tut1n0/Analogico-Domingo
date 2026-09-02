@@ -4,8 +4,11 @@
 
 <h2>Editar Música</h2>
 
-<div id="upload-status" style="display:none; color:blue; margin:10px 0;"></div>
-<div id="upload-error" style="display:none; color:red; margin:10px 0;"></div>
+<div id="upload-status" class="upload-status" role="status"></div>
+<div id="upload-error" class="upload-error" role="alert"></div>
+<div class="upload-progreso" id="upload-progreso">
+    <div class="upload-progreso-fill"></div>
+</div>
 
 <form
     action="/musica/editar/{{ musica.id_musica }}"
@@ -32,6 +35,7 @@
 
     <label>Nueva portada (opcional)</label>
     <input type="file" accept="image/*" id="input-portada">
+    <img id="vista-previa-portada" class="preview-portada" alt="Vista previa de la nueva portada" hidden>
     <input type="hidden" name="portada_url" id="portada_url" value="">
 
     <label>Audio actual</label>
@@ -50,42 +54,15 @@
 </form>
 
 <script>
-async function uploadToServer(file, folder, statusEl) {
-    var fd = new FormData();
-    fd.append("file", file);
-    fd.append("folder", folder);
-    var res = await fetch("/musica/upload-local", { method: "POST", body: fd });
-    if (!res.ok) throw new Error("Error del servidor: " + res.status);
-    var data = await res.json();
-    if (data.error) throw new Error(data.error);
-    return data.url;
-}
-
-async function uploadAudioToCloudinary(file, folder, statusEl) {
-    var sigRes = await fetch("/musica/upload-url?folder=" + folder);
-    if (!sigRes.ok) throw new Error("Error obteniendo firma");
-    var sig = await sigRes.json();
-
-    var fd = new FormData();
-    fd.append("file", file);
-    fd.append("api_key", sig.api_key);
-    fd.append("timestamp", sig.timestamp);
-    fd.append("signature", sig.signature);
-    fd.append("folder", sig.folder);
-    fd.append("resource_type", "video");
-
-    statusEl.textContent = "Subiendo audio...";
-    var res = await fetch(sig.upload_url, { method: "POST", body: fd });
-    var data = await res.json();
-    if (data.error) throw new Error(data.error.message);
-    return data.secure_url;
-}
+rpPreviewPortada("input-portada", "vista-previa-portada");
 
 document.getElementById("form-musica").addEventListener("submit", async function(e) {
     var portadaInput = document.getElementById("input-portada");
     var audioInput = document.getElementById("input-audio");
     var status = document.getElementById("upload-status");
     var error = document.getElementById("upload-error");
+    var progreso = document.getElementById("upload-progreso");
+    var fill = progreso.querySelector(".upload-progreso-fill");
     var btn = document.getElementById("btn-submit");
 
     var hasPortada = portadaInput.files.length && !document.getElementById("portada_url").value;
@@ -95,27 +72,37 @@ document.getElementById("form-musica").addEventListener("submit", async function
 
     e.preventDefault();
     error.style.display = "none";
-    status.style.display = "block";
+    progreso.classList.add("visible");
     btn.disabled = true;
 
     try {
         if (hasPortada) {
-            status.textContent = "Subiendo portada...";
-            var url = await uploadToServer(portadaInput.files[0], "musica", status);
+            status.textContent = "Subiendo portada…";
+            var url = await rpSubirLocal(portadaInput.files[0], "musica", function(pct) {
+                fill.style.width = pct + "%";
+                status.textContent = "Subiendo portada… " + Math.round(pct) + "%";
+            });
             document.getElementById("portada_url").value = url;
+            fill.style.width = "100%";
         }
 
         if (hasAudio) {
-            status.textContent = "Subiendo audio (puede tardar)...";
-            var url = await uploadAudioToCloudinary(audioInput.files[0], "musica", status);
+            status.textContent = "Subiendo audio (puede tardar)…";
+            var sig = await rpObtenerFirma("/musica/upload-url?folder=musica");
+            var url = await rpSubirCloudinary(sig, audioInput.files[0], function(pct) {
+                fill.style.width = pct + "%";
+                status.textContent = "Subiendo audio… " + Math.round(pct) + "%";
+            });
             document.getElementById("audio_url").value = url;
+            fill.style.width = "100%";
         }
 
-        status.textContent = "Archivos subidos. Guardando...";
+        status.textContent = "Archivos subidos. Guardando…";
         this.submit();
     } catch (err) {
         console.error("[UPLOAD ERROR]", err);
-        status.style.display = "none";
+        progreso.classList.remove("visible");
+        fill.style.width = "0%";
         error.style.display = "block";
         error.textContent = "Error al subir: " + err.message;
         btn.disabled = false;

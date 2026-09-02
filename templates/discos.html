@@ -18,10 +18,12 @@
 
 <form class="buscador" action="/discos/" method="get" id="form-buscar">
     <input
+        id="buscar-discos"
         type="search"
         name="q"
         value="{{ q }}"
         placeholder="Buscar por título, artista, género, sello o productor..."
+        autocomplete="off"
         aria-label="Buscar discos">
     <button type="submit" class="boton">Buscar</button>
 </form>
@@ -61,6 +63,10 @@
 
     </a>
 
+    {% if disco.musica_audio %}
+    <button class="play-overlay" data-play="{{ disco.musica_audio }}" data-titulo="{{ disco.artista }} - {{ disco.titulo }}" aria-label="Escuchar {{ disco.titulo }}">▶</button>
+    {% endif %}
+
     </div>
 
     <h3>
@@ -79,9 +85,9 @@
 
     {% if disco.musica_audio %}
     <div class="acciones-play">
-        <a class="boton-play" href="/musica/{{ disco.id_musica }}">
+        <button class="boton-play" data-play="{{ disco.musica_audio }}" data-titulo="{{ disco.artista }} - {{ disco.titulo }}" aria-label="Escuchar {{ disco.titulo }}">
             ▶ Escuchar
-        </a>
+        </button>
     </div>
     {% endif %}
 

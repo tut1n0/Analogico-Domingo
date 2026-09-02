@@ -52,14 +52,16 @@
             {% if musica.audio %}
             <button
                 class="boton"
-                onclick="reproducirMusica('{{ musica.audio }}', '{{ musica.artista }} - {{ musica.titulo }}')">
+                data-play="{{ musica.audio }}"
+                data-titulo="{{ musica.artista }} - {{ musica.titulo }}"
+                aria-label="Escuchar {{ musica.titulo }}">
                 ▶ Escuchar
             </button>
             {% endif %}
 
             {% if session.usuario %}
             <a href="/musica/editar/{{ musica.id_musica }}" class="boton boton-editar">Editar</a>
-            <a href="/musica/eliminar/{{ musica.id_musica }}" class="boton boton-eliminar" onclick="return confirm('¿Eliminar?')">Eliminar</a>
+            <a href="/musica/eliminar/{{ musica.id_musica }}" class="boton boton-eliminar" onclick="return confirmEliminar('¿Eliminar este tema?')">Eliminar</a>
             {% endif %}
 
             {% if musica.portada %}

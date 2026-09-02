@@ -116,7 +116,10 @@
             <input
                 type="file"
                 name="portada"
+                id="input-portada"
                 accept=".jpg,.jpeg,.png,.webp">
+
+            <img id="vista-previa-portada" class="preview-portada" alt="Vista previa de la nueva portada" hidden>
 
             <label>Tema de Música vinculado</label>
             <select name="id_musica">
@@ -173,11 +176,13 @@
         <div class="acciones-disco">
 
             {% if disco.musica_audio %}
-            <a
+            <button
                 class="boton"
-                href="/musica/{{ disco.id_musica }}">
+                data-play="{{ disco.musica_audio }}"
+                data-titulo="{{ disco.artista }} - {{ disco.titulo }}"
+                aria-label="Escuchar {{ disco.titulo }}">
                 ▶ Escuchar
-            </a>
+            </button>
             {% endif %}
 
             {% if disco.portada %}
@@ -206,7 +211,7 @@
             <a
                 href="/discos/eliminar/{{ disco.id_disco }}"
                 class="boton boton-eliminar"
-                onclick="return confirm('¿Eliminar este disco?');">
+                onclick="return confirmEliminar('¿Eliminar este disco?');">
                 🗑 Eliminar disco
             </a>
 
