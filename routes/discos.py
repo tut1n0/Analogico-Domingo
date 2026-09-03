@@ -16,7 +16,8 @@ from models import (
     agregar_disco,
     actualizar_disco,
     eliminar_disco,
-    obtener_musica
+    obtener_musica,
+    vincular_discos_automatico
 )
 
 router = APIRouter(
@@ -36,7 +37,8 @@ POR_PAGINA = 24
 def listar_discos(
     request: Request,
     page: int = Query(1, ge=1),
-    q: str = Query("", max_length=200)
+    q: str = Query("", max_length=200),
+    vinculados: int = Query(None)
 ):
 
     texto = q.strip() if q else ""
@@ -53,7 +55,8 @@ def listar_discos(
             "pagina": page,
             "total_paginas": total_paginas,
             "total": total,
-            "q": texto
+            "q": texto,
+            "vinculados": vinculados
         }
     )
 
@@ -249,6 +252,26 @@ def eliminar(request: Request, id_disco: int):
         url="/discos/",
         status_code=303
     )
+
+# ======================================================
+# VINCULAR AUTOMÁTICAMENTE
+# ======================================================
+
+@router.post("/vincular-automatico")
+def vincular_automatico(request: Request):
+
+    respuesta = verificar_login(request)
+
+    if respuesta:
+        return respuesta
+
+    cantidad = vincular_discos_automatico()
+
+    return RedirectResponse(
+        url=f"/discos/?vinculados={cantidad}",
+        status_code=303
+    )
+
 
 # ======================================================
 # VER DISCO
