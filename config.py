@@ -1,0 +1,1 @@
+POR_PAGINA = 20

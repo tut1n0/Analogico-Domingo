@@ -5,6 +5,7 @@ from fastapi.responses import RedirectResponse, HTMLResponse, JSONResponse
 from utils.render import render
 from utils.auth import verificar_login
 from utils.storage import delete_file, get_upload_signature
+from config import POR_PAGINA
 
 from models import (
     obtener_musica,
@@ -24,8 +25,6 @@ router = APIRouter(
     prefix="/musica",
     tags=["Musica"]
 )
-
-POR_PAGINA = 20
 
 
 @router.get("/")

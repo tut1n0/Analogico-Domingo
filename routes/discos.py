@@ -7,6 +7,7 @@ from fastapi.responses import RedirectResponse
 from utils.render import render
 from utils.auth import verificar_login
 from utils.storage import upload_file, delete_file
+from config import POR_PAGINA
 
 from models import (
     obtener_discos,
@@ -23,8 +24,6 @@ router = APIRouter(
     prefix="/discos",
     tags=["Discos"]
 )
-
-POR_PAGINA = 24
 
 
 

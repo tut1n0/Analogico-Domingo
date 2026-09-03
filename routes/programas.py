@@ -6,6 +6,7 @@ from fastapi.responses import RedirectResponse, JSONResponse, HTMLResponse
 from utils.render import render
 from utils.auth import verificar_login
 from utils.storage import upload_file, delete_file, get_upload_signature
+from config import POR_PAGINA
 
 from models import (
     obtener_programas,
@@ -27,8 +28,6 @@ router = APIRouter(
     prefix="/programas",
     tags=["Programas"]
 )
-
-POR_PAGINA = 20
 
 
 
