@@ -14,6 +14,10 @@ from models import (
     agregar_musica,
     actualizar_musica,
     eliminar_musica,
+    obtener_discos,
+    obtener_disco_vinculado_a_musica,
+    vincular_disco_a_musica,
+    desvincular_disco_de_musica,
 )
 
 router = APIRouter(
@@ -121,7 +125,14 @@ def editar(request: Request, id_musica: int):
         return respuesta
 
     item = obtener_musica_por_id(id_musica)
-    return render(request, "editar_musica.html", {"musica": item})
+    disco_vinculado = obtener_disco_vinculado_a_musica(id_musica)
+    discos_list = obtener_discos()
+
+    return render(request, "editar_musica.html", {
+        "musica": item,
+        "disco_vinculado": disco_vinculado,
+        "discos_list": discos_list,
+    })
 
 
 @router.post("/editar/{id_musica}")
@@ -134,6 +145,7 @@ def actualizar(
     descripcion: str = Form(""),
     portada_url: str = Form(""),
     audio_url: str = Form(""),
+    id_disco: str = Form(""),
 ):
     respuesta = verificar_login(request)
     if respuesta:
@@ -162,6 +174,19 @@ def actualizar(
         }
 
         actualizar_musica(id_musica, datos)
+
+        disco_actual = obtener_disco_vinculado_a_musica(id_musica)
+
+        if id_disco:
+            nuevo_id_disco = int(id_disco)
+
+            if disco_actual and disco_actual["id_disco"] != nuevo_id_disco:
+                desvincular_disco_de_musica(disco_actual["id_disco"])
+
+            vincular_disco_a_musica(nuevo_id_disco, id_musica)
+
+        elif disco_actual:
+            desvincular_disco_de_musica(disco_actual["id_disco"])
 
         return RedirectResponse(url="/musica/", status_code=303)
 

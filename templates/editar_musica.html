@@ -49,6 +49,14 @@
     <input type="file" accept=".mp3,audio/*" id="input-audio">
     <input type="hidden" name="audio_url" id="audio_url" value="">
 
+    <label>Vincular a disco del catálogo</label>
+    <select name="id_disco">
+        <option value="">--- Sin vínculo ---</option>
+        {% for d in discos_list %}
+            <option value="{{ d.id_disco }}" {% if disco_vinculado and disco_vinculado.id_disco == d.id_disco %}selected{% endif %}>{{ d.artista }} - {{ d.titulo }}</option>
+        {% endfor %}
+    </select>
+
     <button type="submit" class="boton" id="btn-submit">Guardar Cambios</button>
 
 </form>

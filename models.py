@@ -627,71 +627,44 @@ def marcar_disco_escuchado(id_disco):
         conexion.close()
 
 
-def _normalizar(texto):
-    if not texto:
-        return ""
-    import re
-    return re.sub(r"\s+", " ", texto.strip().lower())
-
-
-def vincular_discos_automatico():
+def obtener_disco_vinculado_a_musica(id_musica):
     conexion = get_connection()
-    vinculados = 0
-
     try:
         with conexion.cursor() as cursor:
-
             cursor.execute("""
-                SELECT id_disco, titulo, artista
-                FROM discos
-                WHERE id_musica IS NULL
-            """)
-            discos_sin_vinculo = cursor.fetchall()
+                SELECT * FROM discos WHERE id_musica = ?
+            """, (id_musica,))
+            return cursor.fetchone()
+    finally:
+        conexion.close()
 
-            if not discos_sin_vinculo:
-                return 0
 
+def vincular_disco_a_musica(id_disco, id_musica):
+    conexion = get_connection()
+    try:
+        with conexion.cursor() as cursor:
             cursor.execute("""
-                SELECT id_musica, titulo, artista, audio
-                FROM musica
-            """)
-            todas_musica = cursor.fetchall()
-
-            if not todas_musica:
-                return 0
-
-            indices = {}
-            for m in todas_musica:
-                clave = (_normalizar(m["artista"]), _normalizar(m["titulo"]))
-                if clave not in indices:
-                    indices[clave] = []
-                indices[clave].append(m)
-
-            for disco in discos_sin_vinculo:
-                clave_disco = (_normalizar(disco["artista"]), _normalizar(disco["titulo"]))
-                opciones = indices.get(clave_disco)
-
-                if not opciones:
-                    continue
-
-                elegida = next((m for m in opciones if m["audio"]), opciones[0])
-
-                cursor.execute("""
-                    UPDATE discos
-                    SET id_musica = ?
-                    WHERE id_disco = ?
-                """, (elegida["id_musica"], disco["id_disco"]))
-
-                vinculados += 1
-
+                UPDATE discos SET id_musica = ? WHERE id_disco = ?
+            """, (id_musica, id_disco))
             conexion.commit()
-
-            return vinculados
-
     except Exception:
         conexion.rollback()
         raise
+    finally:
+        conexion.close()
 
+
+def desvincular_disco_de_musica(id_disco):
+    conexion = get_connection()
+    try:
+        with conexion.cursor() as cursor:
+            cursor.execute("""
+                UPDATE discos SET id_musica = NULL WHERE id_disco = ?
+            """, (id_disco,))
+            conexion.commit()
+    except Exception:
+        conexion.rollback()
+        raise
     finally:
         conexion.close()
 # ==========================================
