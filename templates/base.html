@@ -71,6 +71,90 @@
 
 </header>
 
+<script>
+function rpSubirCloudinary(sig, file, onProgress) {
+    return new Promise(function(resolve, reject) {
+        var fd = new FormData();
+        fd.append("file", file);
+        fd.append("api_key", sig.api_key);
+        fd.append("timestamp", sig.timestamp);
+        fd.append("signature", sig.signature);
+        fd.append("folder", sig.folder);
+        fd.append("resource_type", "auto");
+
+        var xhr = new XMLHttpRequest();
+        xhr.open("POST", sig.upload_url);
+        xhr.upload.onprogress = function(e) {
+            if (e.lengthComputable && onProgress) onProgress(e.loaded / e.total * 100);
+        };
+        xhr.onload = function() {
+            var data;
+            try { data = JSON.parse(xhr.responseText); } catch (err) { return reject(new Error("Respuesta inválida del servidor")); }
+            if (data.error) return reject(new Error(data.error.message || "Error de Cloudinary"));
+            resolve(data.secure_url);
+        };
+        xhr.onerror = function() { reject(new Error("Error de red al subir el archivo")); };
+        xhr.send(fd);
+    });
+}
+
+function rpObtenerFirma(url) {
+    return fetch(url).then(function(r) {
+        if (!r.ok) throw new Error("Error obteniendo firma");
+        return r.json();
+    });
+}
+
+function rpSubirLocal(file, folder, onProgress) {
+    return new Promise(function(resolve, reject) {
+        var fd = new FormData();
+        fd.append("file", file);
+        fd.append("folder", folder);
+        var xhr = new XMLHttpRequest();
+        xhr.open("POST", "/musica/upload-local");
+        xhr.upload.onprogress = function(e) {
+            if (e.lengthComputable && onProgress) onProgress(e.loaded / e.total * 100);
+        };
+        xhr.onload = function() {
+            var data;
+            try { data = JSON.parse(xhr.responseText); } catch (err) { return reject(new Error("Respuesta inválida del servidor")); }
+            if (data.error) return reject(new Error(data.error));
+            if (!data.url) return reject(new Error("No se recibió la URL de la portada"));
+            resolve(data.url);
+        };
+        xhr.onerror = function() { reject(new Error("Error de red al subir la portada")); };
+        xhr.send(fd);
+    });
+}
+
+function rpPreviewPortada(inputId, imgId) {
+    var input = document.getElementById(inputId);
+    if (!input) return;
+    input.addEventListener("change", function() {
+        var img = document.getElementById(imgId);
+        if (input.files && input.files[0]) {
+            if (img) {
+                img.src = URL.createObjectURL(input.files[0]);
+                img.style.display = "block";
+            }
+        }
+    });
+}
+
+function rpInitFormularios() {
+    var pares = [
+        ["input-portada", "vista-previa-portada"]
+    ];
+    pares.forEach(function(p) {
+        var input = document.getElementById(p[0]);
+        if (input && !input._rpPreview) {
+            input._rpPreview = true;
+            rpPreviewPortada(p[0], p[1]);
+        }
+    });
+}
+</script>
+
 <main style="padding-bottom: 90px;">
 
 {% block contenido %}
@@ -434,61 +518,6 @@ function rpLiveSearch(input) {
         if (input.value !== document.activeElement.value) return;
         rpBuscarDiscos(input.value);
     }, 300));
-}
-
-function rpSubirCloudinary(sig, file, onProgress) {
-    return new Promise(function(resolve, reject) {
-        var fd = new FormData();
-        fd.append("file", file);
-        fd.append("api_key", sig.api_key);
-        fd.append("timestamp", sig.timestamp);
-        fd.append("signature", sig.signature);
-        fd.append("folder", sig.folder);
-        fd.append("resource_type", "auto");
-
-        var xhr = new XMLHttpRequest();
-        xhr.open("POST", sig.upload_url);
-        xhr.upload.onprogress = function(e) {
-            if (e.lengthComputable && onProgress) onProgress(e.loaded / e.total * 100);
-        };
-        xhr.onload = function() {
-            var data;
-            try { data = JSON.parse(xhr.responseText); } catch (err) { return reject(new Error("Respuesta inválida del servidor")); }
-            if (data.error) return reject(new Error(data.error.message));
-            resolve(data.secure_url);
-        };
-        xhr.onerror = function() { reject(new Error("Error de red al subir el archivo")); };
-        xhr.send(fd);
-    });
-}
-
-function rpObtenerFirma(url) {
-    return fetch(url).then(function(r) {
-        if (!r.ok) throw new Error("Error obteniendo firma");
-        return r.json();
-    });
-}
-
-function rpSubirLocal(file, folder, onProgress) {
-    return new Promise(function(resolve, reject) {
-        var fd = new FormData();
-        fd.append("file", file);
-        fd.append("folder", folder);
-        var xhr = new XMLHttpRequest();
-        xhr.open("POST", "/musica/upload-local");
-        xhr.upload.onprogress = function(e) {
-            if (e.lengthComputable && onProgress) onProgress(e.loaded / e.total * 100);
-        };
-        xhr.onload = function() {
-            var data;
-            try { data = JSON.parse(xhr.responseText); } catch (err) { return reject(new Error("Respuesta inválida del servidor")); }
-            if (data.error) return reject(new Error(data.error));
-            if (!data.url) return reject(new Error("No se recibió la URL de la portada"));
-            resolve(data.url);
-        };
-        xhr.onerror = function() { reject(new Error("Error de red al subir la portada")); };
-        xhr.send(fd);
-    });
 }
 
 function rpPreviewPortada(inputId, imgId) {

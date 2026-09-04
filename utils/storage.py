@@ -100,7 +100,7 @@ def get_upload_signature(folder):
         params_to_sign = {
             "folder": folder,
             "timestamp": timestamp,
-            "resource_type": "video",
+            "resource_type": "auto",
         }
         signature = cloudinary.utils.api_sign_request(
             params_to_sign, api_secret

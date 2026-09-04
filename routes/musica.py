@@ -54,7 +54,7 @@ def upload_url(request: Request, folder: str = "musica"):
 
 
 @router.post("/upload-local")
-async def upload_local(request: Request, file: UploadFile = File(...), folder: str = "musica"):
+def upload_local(request: Request, file: UploadFile = File(...), folder: str = "musica"):
     respuesta = verificar_login(request)
     if respuesta:
         return JSONResponse(status_code=401, content={"error": "No autenticado"})
