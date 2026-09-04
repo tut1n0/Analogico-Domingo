@@ -444,7 +444,7 @@ function rpSubirCloudinary(sig, file, onProgress) {
         fd.append("timestamp", sig.timestamp);
         fd.append("signature", sig.signature);
         fd.append("folder", sig.folder);
-        fd.append("resource_type", "video");
+        fd.append("resource_type", "auto");
 
         var xhr = new XMLHttpRequest();
         xhr.open("POST", sig.upload_url);

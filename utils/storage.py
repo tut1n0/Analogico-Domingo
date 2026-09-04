@@ -46,6 +46,7 @@ def delete_file(reference):
 
 def _upload_local(file, folder, filename):
     ruta = os.path.join("uploads", folder, filename)
+    os.makedirs(os.path.dirname(ruta), exist_ok=True)
 
     with open(ruta, "wb") as buffer:
         shutil.copyfileobj(file.file, buffer)
@@ -99,6 +100,7 @@ def get_upload_signature(folder):
         params_to_sign = {
             "folder": folder,
             "timestamp": timestamp,
+            "resource_type": "video",
         }
         signature = cloudinary.utils.api_sign_request(
             params_to_sign, api_secret
