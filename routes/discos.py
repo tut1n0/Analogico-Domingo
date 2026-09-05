@@ -143,29 +143,6 @@ def guardar_disco(
 
 
 # ======================================================
-# FORMULARIO EDITAR
-# ======================================================
-
-@router.get("/editar/{id_disco}")
-def editar_disco(request: Request, id_disco: int):
-
-    respuesta = verificar_login(request)
-
-    if respuesta:
-        return respuesta
-
-    disco = obtener_disco(id_disco)
-
-    return render(
-        request,
-        "editar_disco.html",
-        {
-            "disco": disco
-        }
-    )
-
-
-# ======================================================
 # ACTUALIZAR DISCO
 # ======================================================
 

@@ -100,7 +100,7 @@
     {% if session.usuario %}
     <div class="acciones">
 
-        <a href="/discos/editar/{{ disco.id_disco }}">Editar</a>
+        <a href="/discos/{{ disco.id_disco }}?editar=true">Editar</a>
 
         <a href="/discos/eliminar/{{ disco.id_disco }}">Eliminar</a>
 
