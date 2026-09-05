@@ -579,6 +579,29 @@ document.addEventListener("submit", function(e) {
     rpBuscarDiscos(valor);
 });
 
+document.addEventListener("click", function(e) {
+    var btn = e.target && e.target.closest ? e.target.closest(".toggle-stock") : null;
+    if (!btn) return;
+    e.preventDefault();
+    var id = btn.getAttribute("data-id");
+    var nuevo = btn.classList.contains("badge-stock-no") ? 1 : 0;
+    var fd = new FormData();
+    fd.append("en_stock", nuevo);
+    fetch("/discos/" + id + "/stock", { method: "POST", body: fd, credentials: "same-origin" })
+        .then(function(r) {
+            if (!r.ok) throw new Error();
+            return r.json();
+        })
+        .then(function(d) {
+            btn.classList.toggle("badge-stock-si", d.en_stock === 1);
+            btn.classList.toggle("badge-stock-no", d.en_stock !== 1);
+            btn.textContent = d.en_stock ? "En stock" : "Sin stock";
+        })
+        .catch(function() {
+            rpToast("No se pudo cambiar el stock");
+        });
+});
+
 document.addEventListener("input", function(e) {
     var target = e.target;
     if (!target || target.id !== "buscar-discos") return;

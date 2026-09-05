@@ -242,6 +242,35 @@ def actualizar_disco(id_disco, datos):
         conexion.close()
 
 
+def actualizar_estado_stock(id_disco, valor):
+    conexion = get_connection()
+
+    try:
+
+        with conexion.cursor() as cursor:
+
+            sql = """
+                UPDATE discos
+                SET en_stock=?
+                WHERE id_disco=?
+            """
+
+            cursor.execute(sql, (valor, id_disco))
+
+            conexion.commit()
+
+            return cursor.rowcount
+
+    except Exception:
+
+        conexion.rollback()
+        raise
+
+    finally:
+
+        conexion.close()
+
+
 def eliminar_disco(id_disco):
     conexion = get_connection()
 

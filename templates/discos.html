@@ -45,10 +45,20 @@
 
     <div class="portada">
 
-    {% if disco.en_stock %}
-    <span class="badge-stock badge-stock-si">En stock</span>
+    {% if session.usuario %}
+    <button
+        type="button"
+        class="badge-stock {% if disco.en_stock %}badge-stock-si{% else %}badge-stock-no{% endif %} toggle-stock"
+        data-id="{{ disco.id_disco }}"
+        title="Tildar según si está en stock o no">
+        {% if disco.en_stock %}En stock{% else %}Sin stock{% endif %}
+    </button>
     {% else %}
-    <span class="badge-stock badge-stock-no">Sin stock</span>
+        {% if disco.en_stock %}
+        <span class="badge-stock badge-stock-si">En stock</span>
+        {% else %}
+        <span class="badge-stock badge-stock-no">Sin stock</span>
+        {% endif %}
     {% endif %}
 
     <a href="/discos/{{ disco.id_disco }}">

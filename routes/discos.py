@@ -2,7 +2,7 @@ import math
 
 from fastapi import Query
 from fastapi import APIRouter, Request, Form, UploadFile, File
-from fastapi.responses import RedirectResponse
+from fastapi.responses import RedirectResponse, JSONResponse
 
 from utils.render import render
 from utils.auth import verificar_login
@@ -16,6 +16,7 @@ from models import (
     obtener_disco,
     agregar_disco,
     actualizar_disco,
+    actualizar_estado_stock,
     eliminar_disco,
     obtener_musica
 )
@@ -253,3 +254,29 @@ def ver_disco(
             "musica_list": musica_list
         }
     )
+
+
+# ======================================================
+# CAMBIAR STOCK (toggle rapido desde tarjeta)
+# ======================================================
+
+@router.post("/{id_disco}/stock")
+def cambiar_stock(
+    request: Request,
+    id_disco: int,
+    en_stock: str = Form("0")
+):
+
+    respuesta = verificar_login(request)
+
+    if respuesta:
+        return respuesta
+
+    valor = 1 if en_stock in ("1", "on", "true") else 0
+
+    actualizar_estado_stock(id_disco, valor)
+
+    return JSONResponse({
+        "ok": True,
+        "en_stock": valor
+    })
