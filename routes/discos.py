@@ -36,13 +36,19 @@ router = APIRouter(
 def listar_discos(
     request: Request,
     page: int = Query(1, ge=1),
-    q: str = Query("", max_length=200)
+    q: str = Query("", max_length=200),
+    stock: str = Query("", max_length=10)
 ):
 
     texto = q.strip() if q else ""
 
-    discos = obtener_discos_paginados(page, POR_PAGINA, texto)
-    total = contar_discos(texto)
+    if stock in ("1", "0"):
+        filtro_stock = int(stock)
+    else:
+        filtro_stock = None
+
+    discos = obtener_discos_paginados(page, POR_PAGINA, texto, filtro_stock)
+    total = contar_discos(texto, filtro_stock)
     total_paginas = max(math.ceil(total / POR_PAGINA), 1)
 
     return render(
@@ -53,7 +59,8 @@ def listar_discos(
             "pagina": page,
             "total_paginas": total_paginas,
             "total": total,
-            "q": texto
+            "q": texto,
+            "stock": filtro_stock
         }
     )
 

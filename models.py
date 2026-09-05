@@ -49,11 +49,11 @@ def obtener_disco(id_disco):
 
 def _where_busqueda_discos():
     return """
-        WHERE LOWER(d.titulo) LIKE LOWER(?)
-           OR LOWER(d.artista) LIKE LOWER(?)
-           OR LOWER(d.genero) LIKE LOWER(?)
-           OR LOWER(d.sello) LIKE LOWER(?)
-           OR LOWER(d.productor) LIKE LOWER(?)
+        LOWER(d.titulo) LIKE LOWER(?)
+        OR LOWER(d.artista) LIKE LOWER(?)
+        OR LOWER(d.genero) LIKE LOWER(?)
+        OR LOWER(d.sello) LIKE LOWER(?)
+        OR LOWER(d.productor) LIKE LOWER(?)
     """
 
 
@@ -62,7 +62,26 @@ def _params_busqueda_discos(texto):
     return (busqueda, busqueda, busqueda, busqueda, busqueda)
 
 
-def obtener_discos_paginados(page, por_pagina, texto=None):
+def _where_y_params_discos(texto, stock):
+    clausulas = []
+    params = []
+
+    if texto:
+        clausulas.append("( " + _where_busqueda_discos().strip() + " )")
+        params += list(_params_busqueda_discos(texto))
+
+    if stock in (0, 1):
+        clausulas.append("d.en_stock = ?")
+        params.append(stock)
+
+    if not clausulas:
+        return "", []
+
+    return " WHERE " + " AND ".join(clausulas), params
+
+
+
+def obtener_discos_paginados(page, por_pagina, texto=None, stock=None):
     conexion = get_connection()
 
     try:
@@ -85,13 +104,9 @@ def obtener_discos_paginados(page, por_pagina, texto=None):
                 LEFT JOIN musica m ON d.id_musica = m.id_musica
             """
 
-            params = []
+            where, params = _where_y_params_discos(texto, stock)
 
-            if texto:
-                sql += _where_busqueda_discos()
-                params += _params_busqueda_discos(texto)
-
-            sql += " ORDER BY d.artista ASC, d.titulo ASC LIMIT ? OFFSET ?"
+            sql += where + " ORDER BY d.artista ASC, d.titulo ASC LIMIT ? OFFSET ?"
 
             offset = (page - 1) * por_pagina
 
@@ -105,7 +120,7 @@ def obtener_discos_paginados(page, por_pagina, texto=None):
         conexion.close()
 
 
-def contar_discos(texto=None):
+def contar_discos(texto=None, stock=None):
     conexion = get_connection()
 
     try:
@@ -113,11 +128,9 @@ def contar_discos(texto=None):
 
             sql = "SELECT COUNT(*) AS total FROM discos d"
 
-            params = []
+            where, params = _where_y_params_discos(texto, stock)
 
-            if texto:
-                sql += _where_busqueda_discos()
-                params += _params_busqueda_discos(texto)
+            sql += where
 
             cursor.execute(sql, params)
 

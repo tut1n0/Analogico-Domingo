@@ -506,7 +506,12 @@ function rpCargar(url, push) {
 function rpBuscarDiscos(valor) {
     valor = (valor || "").trim();
     var url = "/discos/";
-    if (valor) url += "?q=" + encodeURIComponent(valor);
+    var params = [];
+    if (valor) params.push("q=" + encodeURIComponent(valor));
+    var select = document.getElementById("filtro-stock");
+    var sval = select ? select.value : "";
+    if (sval === "1" || sval === "0") params.push("stock=" + sval);
+    if (params.length) url += "?" + params.join("&");
     rpCargar(url, true);
 }
 
@@ -606,6 +611,14 @@ document.addEventListener("input", function(e) {
     var target = e.target;
     if (!target || target.id !== "buscar-discos") return;
     rpLiveSearch(target);
+});
+
+document.addEventListener("change", function(e) {
+    var target = e.target;
+    if (!target || target.id !== "filtro-stock") return;
+    var campo = document.getElementById("buscar-discos");
+    var valor = campo && campo.value ? campo.value.trim() : "";
+    rpBuscarDiscos(valor);
 });
 
 document.addEventListener("keydown", function(e) {

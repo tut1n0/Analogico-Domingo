@@ -25,6 +25,15 @@
         placeholder="Buscar por título, artista, género, sello o productor..."
         autocomplete="off"
         aria-label="Buscar discos">
+    <select
+        id="filtro-stock"
+        name="stock"
+        class="filtro-stock"
+        aria-label="Filtrar por stock">
+        <option value="" {% if stock is none %}selected{% endif %}>Todos</option>
+        <option value="1" {% if stock == 1 %}selected{% endif %}>En stock</option>
+        <option value="0" {% if stock == 0 %}selected{% endif %}>Sin stock</option>
+    </select>
     <button type="submit" class="boton">Buscar</button>
 </form>
 
