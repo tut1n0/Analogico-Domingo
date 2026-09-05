@@ -78,6 +78,7 @@ def obtener_discos_paginados(page, por_pagina, texto=None):
                     d.sello,
                     d.portada,
                     d.escuchado,
+                    d.en_stock,
                     d.id_musica,
                     m.audio AS musica_audio
                 FROM discos d
@@ -147,9 +148,10 @@ def agregar_disco(datos):
                     descripcion,
                     portada,
                     id_musica,
-                    escuchado
+                    escuchado,
+                    en_stock
                 )
-                VALUES (?,?,?,?,?,?,?,?,?,?,?)
+                VALUES (?,?,?,?,?,?,?,?,?,?,?,?)
             """
 
             cursor.execute(sql, (
@@ -164,7 +166,8 @@ def agregar_disco(datos):
                 datos["descripcion"],
                 datos["portada"],
                 datos["id_musica"],
-                datos["escuchado"]
+                datos["escuchado"],
+                datos["en_stock"]
 
             ))
 
@@ -202,7 +205,8 @@ def actualizar_disco(id_disco, datos):
                     descripcion=?,
                     portada=?,
                     id_musica=?,
-                    escuchado=?
+                    escuchado=?,
+                    en_stock=?
                 WHERE id_disco=?
             """
 
@@ -219,6 +223,7 @@ def actualizar_disco(id_disco, datos):
                 datos["portada"],
                 datos["id_musica"],
                 datos["escuchado"],
+                datos["en_stock"],
                 id_disco
 
             ))

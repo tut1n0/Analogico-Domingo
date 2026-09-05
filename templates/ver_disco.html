@@ -129,6 +129,10 @@
                 {% endfor %}
             </select>
 
+            <label>En stock</label>
+            <input type="checkbox" name="en_stock" value="1" {% if disco.en_stock %}checked{% endif %}>
+            <span class="nota-formulario">Desmarcar si el disco no está disponible en stock.</span>
+
             <br>
 
             <button
@@ -151,6 +155,12 @@
 
         {% if disco.escuchado %}
         <span class="badge-escuchado badge-detalle">Sonó en el aire</span>
+        {% endif %}
+
+        {% if disco.en_stock %}
+        <span class="badge-stock badge-detalle badge-stock-si">En stock</span>
+        {% else %}
+        <span class="badge-stock badge-detalle badge-stock-no">Sin stock</span>
         {% endif %}
 
         <h3>{{ disco.artista }}</h3>

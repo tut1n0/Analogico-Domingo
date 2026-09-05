@@ -45,6 +45,12 @@
 
     <div class="portada">
 
+    {% if disco.en_stock %}
+    <span class="badge-stock badge-stock-si">En stock</span>
+    {% else %}
+    <span class="badge-stock badge-stock-no">Sin stock</span>
+    {% endif %}
+
     <a href="/discos/{{ disco.id_disco }}">
 
     {% if disco.portada %}
