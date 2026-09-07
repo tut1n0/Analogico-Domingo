@@ -646,6 +646,25 @@ footer{
     text-decoration:underline;
 }
 
+.titulo-pelicula{
+    color:#d39a0c;
+    text-decoration:none;
+    overflow-wrap:break-word;
+}
+
+.titulo-pelicula:hover{
+    text-decoration:underline;
+}
+
+.link-subtitulos{
+    color:#d39a0c;
+    text-decoration:none;
+}
+
+.link-subtitulos:hover{
+    text-decoration:underline;
+}
+
 .detalle-disco{
 
     display:flex;

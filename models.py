@@ -1006,6 +1006,180 @@ def eliminar_video(id_video):
 
 
 # ==========================================
+# PELICULAS
+# ==========================================
+
+def obtener_peliculas_paginados(page, por_pagina):
+    conexion = get_connection()
+
+    try:
+        with conexion.cursor() as cursor:
+
+            sql = """
+                SELECT id_pelicula, titulo, director, genero, portada, url_pelicula, url_subtitulos
+                FROM peliculas
+                ORDER BY titulo ASC, id_pelicula ASC
+                LIMIT ? OFFSET ?
+            """
+
+            offset = (page - 1) * por_pagina
+
+            cursor.execute(sql, (por_pagina, offset))
+
+            return cursor.fetchall()
+
+    finally:
+        conexion.close()
+
+
+def contar_peliculas():
+    conexion = get_connection()
+
+    try:
+        with conexion.cursor() as cursor:
+
+            cursor.execute("SELECT COUNT(*) AS total FROM peliculas")
+
+            fila = cursor.fetchone()
+
+            return fila["total"] if fila else 0
+
+    finally:
+        conexion.close()
+
+
+def obtener_pelicula(id_pelicula):
+    conexion = get_connection()
+
+    try:
+        with conexion.cursor() as cursor:
+
+            sql = """
+                SELECT *
+                FROM peliculas
+                WHERE id_pelicula = ?
+            """
+
+            cursor.execute(sql, (id_pelicula,))
+
+            return cursor.fetchone()
+
+    finally:
+        conexion.close()
+
+
+def agregar_pelicula(datos):
+    conexion = get_connection()
+
+    try:
+        with conexion.cursor() as cursor:
+
+            sql = """
+                INSERT INTO peliculas
+                (
+                    titulo,
+                    director,
+                    genero,
+                    portada,
+                    url_pelicula,
+                    url_subtitulos
+                )
+                VALUES (?, ?, ?, ?, ?, ?)
+            """
+
+            cursor.execute(sql, (
+                datos["titulo"],
+                datos["director"],
+                datos["genero"],
+                datos["portada"],
+                datos["url_pelicula"],
+                datos["url_subtitulos"]
+            ))
+
+            conexion.commit()
+
+            return cursor.lastrowid
+
+    except Exception:
+
+        conexion.rollback()
+        raise
+
+    finally:
+
+        conexion.close()
+
+
+def actualizar_pelicula(id_pelicula, datos):
+    conexion = get_connection()
+
+    try:
+        with conexion.cursor() as cursor:
+
+            sql = """
+                UPDATE peliculas
+                SET
+                    titulo=?,
+                    director=?,
+                    genero=?,
+                    portada=?,
+                    url_pelicula=?,
+                    url_subtitulos=?
+                WHERE id_pelicula=?
+            """
+
+            cursor.execute(sql, (
+                datos["titulo"],
+                datos["director"],
+                datos["genero"],
+                datos["portada"],
+                datos["url_pelicula"],
+                datos["url_subtitulos"],
+                id_pelicula
+            ))
+
+            conexion.commit()
+
+            return cursor.rowcount
+
+    except Exception:
+
+        conexion.rollback()
+        raise
+
+    finally:
+
+        conexion.close()
+
+
+def eliminar_pelicula(id_pelicula):
+    conexion = get_connection()
+
+    try:
+        with conexion.cursor() as cursor:
+
+            sql = """
+                DELETE FROM peliculas
+                WHERE id_pelicula=?
+            """
+
+            cursor.execute(sql, (id_pelicula,))
+
+            conexion.commit()
+
+            return cursor.rowcount
+
+    except Exception:
+
+        conexion.rollback()
+        raise
+
+    finally:
+
+        conexion.close()
+
+
+# ==========================================
 # USUARIOS
 # ==========================================
 def obtener_usuario(usuario):

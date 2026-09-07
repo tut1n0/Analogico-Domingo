@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+
+{% block contenido %}
+
+<h2>Agregar Pelicula</h2>
+
+<form action="/peliculas/nuevo" method="post" enctype="multipart/form-data" class="formulario">
+
+    <label>Título</label>
+    <input type="text" name="titulo" required>
+
+    <label>Director</label>
+    <input type="text" name="director" required>
+
+    <label>Género</label>
+    <input type="text" name="genero">
+
+    <label>Portada</label>
+    <input type="file" name="portada" accept=".jpg,.jpeg,.png,.webp">
+
+    <label>Enlace para descargar la película</label>
+    <input type="url" name="url_pelicula" placeholder="https://...">
+    <span class="nota-formulario">URL externa donde se descarga la película. Se abre en una pestaña nueva.</span>
+
+    <label>Enlace para descargar los subtítulos</label>
+    <input type="url" name="url_subtitulos" placeholder="https://...">
+    <span class="nota-formulario">URL externa donde se descargan los subtítulos (se accede desde el director).</span>
+
+    <button type="submit" class="boton">
+        Guardar Pelicula
+    </button>
+
+    <a href="/peliculas/" class="boton" style="text-align:center;">Cancelar</a>
+
+</form>
+
+{% endblock %}

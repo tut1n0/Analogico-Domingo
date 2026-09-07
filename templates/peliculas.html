@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+
+{% block contenido %}
+
+<div class="barra-superior">
+
+    <h2>Peliculas</h2>
+
+    {% if session.usuario %}
+    <a href="/peliculas/nuevo" class="boton">
+        + Agregar Pelicula
+    </a>
+    {% endif %}
+
+</div>
+
+{% if peliculas %}
+
+<div class="contenedor-discos">
+
+{% for pelicula in peliculas %}
+
+<div class="tarjeta">
+
+    <div class="portada">
+
+    <a href="{{ pelicula.url_pelicula }}" target="_blank" rel="noopener">
+
+    {% if pelicula.portada %}
+
+        <img
+        src="{{ img(pelicula.portada, 600) }}"
+        alt="{{ pelicula.titulo }}"
+        loading="lazy"
+        decoding="async">
+
+    {% else %}
+
+        Sin portada
+
+    {% endif %}
+
+    </a>
+
+    </div>
+
+    <h3>
+        <a class="titulo-pelicula" href="{{ pelicula.url_pelicula }}" target="_blank" rel="noopener">
+            {{ pelicula.titulo }}
+        </a>
+    </h3>
+
+    <p>
+        Director: <a class="link-subtitulos" href="{{ pelicula.url_subtitulos }}" target="_blank" rel="noopener">{{ pelicula.director }}</a>
+    </p>
+
+    <p>{{ pelicula.genero }}</p>
+
+    {% if session.usuario %}
+    <div class="acciones">
+
+        <a href="/peliculas/editar/{{ pelicula.id_pelicula }}">Editar</a>
+
+        <a href="/peliculas/eliminar/{{ pelicula.id_pelicula }}">Eliminar</a>
+
+    </div>
+    {% endif %}
+
+</div>
+
+{% endfor %}
+
+</div>
+
+{% else %}
+
+<p class="sin-resultados">No se encontraron peliculas.</p>
+
+{% endif %}
+
+{% include "_paginacion.html" %}
+
+{% endblock %}

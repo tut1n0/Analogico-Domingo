@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+{% block contenido %}
+
+<h2>Editar Pelicula</h2>
+
+<form action="/peliculas/editar/{{ pelicula.id_pelicula }}" method="post" enctype="multipart/form-data" class="formulario">
+
+    <label>Título</label>
+    <input type="text" name="titulo" value="{{ pelicula.titulo }}" required>
+
+    <label>Director</label>
+    <input type="text" name="director" value="{{ pelicula.director }}" required>
+
+    <label>Género</label>
+    <input type="text" name="genero" value="{{ pelicula.genero }}">
+
+    <label>Portada</label>
+    {% if pelicula.portada %}
+    <img src="{{ img(pelicula.portada, 300) }}" alt="Portada actual" style="max-width:200px; border-radius:8px; margin-bottom:8px;">
+    <p style="color:rgba(255,255,255,0.6); font-size:14px; margin-bottom:8px;">Portada actual. Subí una nueva para reemplazarla.</p>
+    {% endif %}
+    <input type="file" name="portada" accept=".jpg,.jpeg,.png,.webp">
+
+    <label>Enlace para descargar la película</label>
+    <input type="url" name="url_pelicula" value="{{ pelicula.url_pelicula }}" placeholder="https://...">
+
+    <label>Enlace para descargar los subtítulos</label>
+    <input type="url" name="url_subtitulos" value="{{ pelicula.url_subtitulos }}" placeholder="https://...">
+
+    <button type="submit" class="boton">
+        Guardar Cambios
+    </button>
+
+    <a href="/peliculas/" class="boton" style="text-align:center;">Cancelar</a>
+
+</form>
+
+{% endblock %}
