@@ -499,6 +499,20 @@ rpMain.setAttribute("tabindex", "-1");
 
 var rpExcluirAdmin = { login: true, logout: true, nuevo: true, editar: true, eliminar: true };
 
+function rpActualizarNav(url) {
+    var ruta = new URL(url, location.origin).pathname;
+    document.querySelectorAll("nav a").forEach(function(a) {
+        var href = a.getAttribute("href");
+        var activo;
+        if (href === "/") {
+            activo = (ruta === "/");
+        } else {
+            activo = ruta.indexOf(href) === 0;
+        }
+        a.classList.toggle("activo", activo);
+    });
+}
+
 function rpCargar(url, push) {
     document.body.classList.add("cargando");
     fetch(url)
@@ -517,6 +531,7 @@ function rpCargar(url, push) {
             rpInitFormularios();
             var titulo = doc.querySelector("title");
             if (titulo) document.title = titulo.textContent;
+            rpActualizarNav(datos.finalUrl);
             if (push !== false) history.pushState({}, "", datos.finalUrl);
             document.body.classList.remove("cargando");
             window.scrollTo(0, 0);
