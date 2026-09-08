@@ -190,6 +190,7 @@
                 class="boton"
                 data-play="{{ disco.musica_audio }}"
                 data-titulo="{{ disco.artista }} - {{ disco.titulo }}"
+                data-portada="{{ img(disco.portada, 200) if disco.portada else '' }}"
                 aria-label="Escuchar {{ disco.titulo }}">
                 ▶ Escuchar
             </button>

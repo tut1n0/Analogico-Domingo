@@ -89,7 +89,7 @@
     </a>
 
     {% if disco.musica_audio %}
-    <button class="play-overlay" data-play="{{ disco.musica_audio }}" data-titulo="{{ disco.artista }} - {{ disco.titulo }}" aria-label="Escuchar {{ disco.titulo }}">▶</button>
+    <button class="play-overlay" data-play="{{ disco.musica_audio }}" data-titulo="{{ disco.artista }} - {{ disco.titulo }}" data-portada="{{ img(disco.portada, 200) if disco.portada else '' }}" aria-label="Escuchar {{ disco.titulo }}">▶</button>
     {% endif %}
 
     </div>
@@ -110,7 +110,7 @@
 
     {% if disco.musica_audio %}
     <div class="acciones-play">
-        <button class="boton-play" data-play="{{ disco.musica_audio }}" data-titulo="{{ disco.artista }} - {{ disco.titulo }}" aria-label="Escuchar {{ disco.titulo }}">
+        <button class="boton-play" data-play="{{ disco.musica_audio }}" data-titulo="{{ disco.artista }} - {{ disco.titulo }}" data-portada="{{ img(disco.portada, 200) if disco.portada else '' }}" aria-label="Escuchar {{ disco.titulo }}">
             ▶ Escuchar
         </button>
     </div>

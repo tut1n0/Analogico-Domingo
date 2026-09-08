@@ -36,7 +36,9 @@ header::before {
     content: '';
     position: absolute;
     inset: 0;
-    background: #2f3136;
+    background:
+        linear-gradient(to bottom, rgba(0,0,0,0.72), rgba(0,0,0,0.35) 45%, rgba(0,0,0,0.82));
+    backdrop-filter: blur(1.5px);
 }
 
 header > * {
@@ -47,33 +49,63 @@ header > * {
 .logo h1{
 
     font-size:34px;
-    color:#d39a0c;
+    color:#f2c14e;
     overflow-wrap:break-word;
     font-family:"Caacupe One", "Alumni Sans", sans-serif;
+    text-shadow:0 2px 12px rgba(0,0,0,0.85);
 
 }
 
 .logo p{
 
-    color:#ccc;
+    color:#eee;
+    text-shadow:0 1px 6px rgba(0,0,0,0.8);
 
+}
+
+nav{
+    flex-wrap:wrap;
+    justify-content:flex-end;
+    gap:8px;
+    row-gap:12px;
 }
 
 nav a{
 
-    color:#d39a0c;
+    color:#f2c14e;
     font-family:"Caacupe One", "Alumni Sans", sans-serif;
     text-decoration:none;
     font-size:22px;
 
     margin-left:20px;
+    padding:4px 10px;
+    border-radius:20px;
+    border:1px solid transparent;
+    text-shadow:0 1px 8px rgba(0,0,0,0.85);
+    transition:color 0.2s ease, background 0.2s ease, border-color 0.2s ease;
 
 }
 
 nav a:hover{
 
-    color:#e6c229;
+    color:#ffe9a8;
+    background:rgba(255,255,255,0.08);
+    border-color:rgba(242,193,78,0.35);
 
+}
+
+nav a.activo{
+    color:#111;
+    background:linear-gradient(135deg,#f2c14e,#e6b13a);
+    border-color:rgba(242,193,78,0.6);
+    text-shadow:none;
+    box-shadow:0 2px 10px rgba(0,0,0,0.4);
+}
+
+@media (max-width:768px){
+    nav a{
+        margin-left:0;
+    }
 }
 
 main{
@@ -223,6 +255,54 @@ footer{
     background:rgba(58,157,93,0.08);
     box-shadow:0 0 12px rgba(58,157,93,0.25);
 
+}
+
+/* =====================================
+   TARJETAS DE PROGRAMA
+===================================== */
+
+.contenedor-programas{
+    display:grid;
+    grid-template-columns:repeat(auto-fill,minmax(250px,1fr));
+    gap:25px;
+    margin-top:30px;
+}
+
+.tarjeta-programa{
+    display:flex;
+    flex-direction:column;
+    gap:12px;
+    border-color:rgba(242,193,78,0.85);
+    background:linear-gradient(180deg,#16130a,#0a0906);
+}
+
+.programa-cabecera{
+    display:flex;
+    justify-content:space-between;
+    align-items:baseline;
+    gap:10px;
+    flex-wrap:wrap;
+}
+
+.programa-numero{
+    font-family:"Caacupe One","Alumni Sans",sans-serif;
+    font-size:34px;
+    color:#f2c14e;
+    line-height:1;
+}
+
+.programa-fecha{
+    color:rgba(255,255,255,0.6);
+    font-size:15px;
+}
+
+.programa-observaciones{
+    color:rgba(255,255,255,0.85);
+    line-height:1.6;
+}
+
+.programa-sin-audio{
+    color:rgba(255,255,255,0.5);
 }
 
 .portada{
@@ -661,6 +741,25 @@ footer{
     text-decoration:none;
 }
 
+.pelicula-subtitulos{
+    margin-top:4px;
+}
+
+.pelicula-subtitulos .link-subtitulos{
+    display:inline-block;
+    background:rgba(242,193,78,0.12);
+    border:1px solid rgba(242,193,78,0.4);
+    padding:4px 10px;
+    border-radius:6px;
+    font-size:14px;
+    transition:background 0.2s ease, color 0.2s ease;
+}
+
+.pelicula-subtitulos .link-subtitulos:hover{
+    background:rgba(242,193,78,0.25);
+    color:#ffe9a8;
+}
+
 .link-subtitulos:hover{
     text-decoration:underline;
 }
@@ -887,6 +986,33 @@ footer{
     overflow: hidden;
 }
 
+.rp-portada{
+    width:48px;
+    height:48px;
+    flex-shrink:0;
+    border-radius:8px;
+    border:2px solid #d4a000;
+    background:#1f1f1f center/cover no-repeat;
+    color:#d4a000;
+    font-size:18px;
+    cursor:pointer;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+}
+
+.rp-portada.tiene-portada{
+    border-color:rgba(255,255,255,0.25);
+}
+
+.rp-portada.tiene-portada:hover{
+    border-color:#d4a000;
+}
+
+.rp-portada:not(.tiene-portada)::before{
+    content:'▶';
+}
+
 .reproductor-info span {
     color: #d4a000;
     font-weight: bold;
@@ -1052,6 +1178,11 @@ footer{
         gap: 15px;
     }
 
+    .contenedor-programas {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 15px;
+    }
+
     .tarjeta {
         overflow: visible;
     }
@@ -1157,6 +1288,11 @@ footer{
         max-width: 150px;
     }
 
+    .rp-portada{
+        width:40px;
+        height:40px;
+    }
+
     .reproductor-volumen {
         display: none;
     }
@@ -1191,6 +1327,11 @@ footer{
     }
 
     .contenedor-discos {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+
+    .contenedor-programas {
         grid-template-columns: 1fr;
         gap: 20px;
     }
@@ -1480,6 +1621,51 @@ footer{
     position: relative;
 }
 
+.portada-enlace{
+    display:block;
+    width:100%;
+    height:100%;
+    position:relative;
+}
+
+.pelicula-overlay{
+    position:absolute;
+    top:50%;
+    left:50%;
+    transform:translate(-50%,-50%);
+    display:flex;
+    align-items:center;
+    gap:8px;
+    background:rgba(0,0,0,0.68);
+    border:2px solid #d4a000;
+    color:#d4a000;
+    font-weight:bold;
+    padding:10px 18px;
+    border-radius:30px;
+    font-size:15px;
+    opacity:0;
+    transition:opacity 0.2s ease, background 0.2s ease, color 0.2s ease;
+    pointer-events:none;
+}
+
+.pelicula-overlay-ico{
+    color:inherit;
+}
+
+.portada-enlace:hover .pelicula-overlay{
+    opacity:1;
+    background:#d4a000;
+    color:#111;
+}
+
+@media (hover:none){
+    .pelicula-overlay{
+        opacity:1;
+        background:#d4a000;
+        color:#111;
+    }
+}
+
 .play-overlay {
     position: absolute;
     top: 50%;
@@ -1632,4 +1818,64 @@ body.cargando::after {
 .play-overlay,
 .reproductor-controles button {
     outline-offset: 2px;
+}
+
+/* =====================================
+   PULIDO GENERAL
+===================================== */
+
+/* Scrollbar oscura para el tema */
+::-webkit-scrollbar {
+    width: 11px;
+    height: 11px;
+}
+
+::-webkit-scrollbar-track {
+    background: #111;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #3a3a3a;
+    border-radius: 6px;
+    border: 2px solid #111;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #d4a000;
+}
+
+html {
+    scrollbar-color: #3a3a3a #111;
+}
+
+/* Sombra suave en las tarjetas por defecto */
+.tarjeta {
+    box-shadow: 0 4px 16px rgba(0,0,0,0.35);
+}
+
+/* Altura mínima pareja en las portadas de la grilla */
+.portada img {
+    display: block;
+}
+
+/* Estado de pista activa también en el reproductor */
+.reproductor-controles button.activa {
+    background: #3a9d5d;
+    color: #fff;
+}
+
+/* Respetar la preferencia de movimiento reducido */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.001ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.001ms !important;
+        scroll-behavior: auto !important;
+    }
+
+    body.cargando::after {
+        display: none;
+    }
 }

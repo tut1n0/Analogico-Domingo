@@ -54,6 +54,7 @@
                 class="boton"
                 data-play="{{ musica.audio }}"
                 data-titulo="{{ musica.artista }} - {{ musica.titulo }}"
+                data-portada="{{ img(musica.portada, 200) if musica.portada else '' }}"
                 aria-label="Escuchar {{ musica.titulo }}">
                 ▶ Escuchar
             </button>

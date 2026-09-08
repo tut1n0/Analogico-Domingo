@@ -9,7 +9,7 @@
 
     <title>Analógico Domingo</title>
 
-    <link rel="stylesheet" href="/static/css/style.css?v=11">
+    <link rel="stylesheet" href="/static/css/style.css?v=12">
     <link rel="icon" type="image/svg+xml" href="/static/favicon.svg">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -49,14 +49,15 @@
 
     </div>
 
+{% set ruta = request.url.path %}
 <nav>
 
-    <a href="/">Inicio</a>
-    <a href="/discos/">Discos</a>
-    <a href="/programas/">Programas</a>
-    <a href="/videos/">Videos</a>
-    <a href="/peliculas/">Peliculas</a>
-    <a href="/musica/">Música</a>
+    <a href="/" {% if ruta == '/' %}class="activo"{% endif %}>Inicio</a>
+    <a href="/discos/" {% if ruta.startswith('/discos') %}class="activo"{% endif %}>Discos</a>
+    <a href="/programas/" {% if ruta.startswith('/programas') %}class="activo"{% endif %}>Programas</a>
+    <a href="/videos/" {% if ruta.startswith('/videos') %}class="activo"{% endif %}>Videos</a>
+    <a href="/peliculas/" {% if ruta.startswith('/peliculas') %}class="activo"{% endif %}>Peliculas</a>
+    <a href="/musica/" {% if ruta.startswith('/musica') %}class="activo"{% endif %}>Música</a>
 
     {% if session.usuario %}
 
@@ -170,6 +171,7 @@ function rpInitFormularios() {
 </footer>
 
 <div class="reproductor-persistente" id="reproductor" style="display:none;">
+    <button class="rp-portada" id="rp-portada" onclick="rpToggle()" aria-label="Reproducir / Pausar"></button>
     <div class="reproductor-info">
         <span id="rp-titulo">---</span>
     </div>
@@ -204,6 +206,8 @@ var rpBarraFill = document.getElementById("rp-barra-fill");
 var rpBarraThumb = document.getElementById("rp-barra-thumb");
 var rpDragging = false;
 var rpPendienteReanudar = false;
+var rpPortadaEl = document.getElementById("rp-portada");
+var rpPortadaUrl = "";
 
 rpAudio.volume = 0.8;
 
@@ -264,10 +268,26 @@ function rpGuardar() {
     localStorage.setItem("rp_state", JSON.stringify({
         src: rpAudio.src,
         titulo: rpTitulo.textContent,
+        portada: rpPortadaUrl,
         currentTime: rpAudio.currentTime,
         playing: !rpAudio.paused,
         volume: rpAudio.volume
     }));
+}
+
+function rpSetPortada(url) {
+    rpPortadaUrl = url || "";
+    if (rpPortadaEl) {
+        if (rpPortadaUrl) {
+            rpPortadaEl.style.backgroundImage = "url('" + rpPortadaUrl + "')";
+            rpPortadaEl.classList.add("tiene-portada");
+            rpPortadaEl.textContent = "";
+        } else {
+            rpPortadaEl.style.backgroundImage = "";
+            rpPortadaEl.classList.remove("tiene-portada");
+            rpPortadaEl.textContent = "▶";
+        }
+    }
 }
 
 function rpRestore() {
@@ -276,6 +296,7 @@ function rpRestore() {
         if (!state || !state.src) return;
         if (!sessionStorage.getItem("rp_active")) return;
         rpTitulo.textContent = state.titulo || "---";
+        rpSetPortada(state.portada);
         rpAudio.src = state.src;
         rpAudio.volume = state.volume !== undefined ? state.volume : 0.8;
         rpVolumenSlider.value = Math.round(rpAudio.volume * 100);
@@ -346,17 +367,19 @@ function rpCerrar() {
     rpBarraFill.style.width = "0%";
     rpBarraThumb.style.left = "0%";
     rpBar.style.display = "none";
+    rpSetPortada("");
     localStorage.removeItem("rp_state");
     sessionStorage.removeItem("rp_active");
 }
 
-function reproducirMusica(url, titulo) {
+function reproducirMusica(url, titulo, portada) {
     var mismaCancion = rpAudio.src === url || rpAudio.src === location.origin + url;
     if (mismaCancion) {
         rpToggle();
         return;
     }
     rpTitulo.textContent = titulo;
+    rpSetPortada(portada);
     rpAudio.src = url;
     rpBar.style.display = "flex";
     sessionStorage.setItem("rp_active", "1");
@@ -388,7 +411,8 @@ document.addEventListener("click", function(e) {
     e.preventDefault();
     var src = btn.getAttribute("data-play");
     var titulo = btn.getAttribute("data-titulo") || "Reproducción";
-    reproducirMusica(src, titulo);
+    var portada = btn.getAttribute("data-portada") || "";
+    reproducirMusica(src, titulo, portada);
 });
 
 function compartir(url, titulo) {

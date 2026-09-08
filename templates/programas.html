@@ -14,83 +14,57 @@
 
 </div>
 
-<table class="tabla">
+{% if programas %}
 
-    <thead>
+<div class="contenedor-programas">
 
-        <tr>
+{% for programa in programas %}
 
-            <th>Número</th>
-            <th>Fecha</th>
-            <th>Observaciones</th>
-            <th>Audio</th>
-            {% if session.usuario %}
-            <th>Acciones</th>
-            {% endif %}
+<div class="tarjeta tarjeta-programa">
 
-        </tr>
+    <div class="programa-cabecera">
+        <span class="programa-numero">#{{ programa.numero }}</span>
+        {% if programa.fecha %}
+        <span class="programa-fecha">{{ programa.fecha }}</span>
+        {% endif %}
+    </div>
 
-    </thead>
+    {% if programa.observaciones %}
+    <p class="programa-observaciones">{{ programa.observaciones }}</p>
+    {% endif %}
 
-    <tbody>
+    {% if programa.audio %}
+    <div class="acciones-play">
+        <button
+            class="boton-play"
+            data-play="{{ programa.audio }}"
+            data-titulo="Programa #{{ programa.numero }}"
+            aria-label="Reproducir programa {{ programa.numero }}">
+            ▶ Escuchar programa
+        </button>
+    </div>
+    {% else %}
+    <p class="programa-sin-audio">Sin audio</p>
+    {% endif %}
 
-    {% for programa in programas %}
+    {% if session.usuario %}
+    <div class="acciones">
+        <a href="/programas/editar/{{ programa.id_programa }}">Editar</a>
+        <a href="/programas/eliminar/{{ programa.id_programa }}" onclick="return confirmEliminar('¿Eliminar este programa?')">Eliminar</a>
+    </div>
+    {% endif %}
 
-        <tr>
+</div>
 
-            <td>{{ programa.numero }}</td>
+{% endfor %}
 
-            <td>{{ programa.fecha }}</td>
+</div>
 
-            <td>{{ programa.observaciones }}</td>
+{% else %}
 
-            <td>
+<p class="sin-resultados">No hay programas cargados.</p>
 
-                {% if programa.audio %}
-
-                    <button
-                        class="boton-play"
-                        data-play="{{ programa.audio }}"
-                        data-titulo="Programa #{{ programa.numero }}"
-                        aria-label="Reproducir programa {{ programa.numero }}">
-                        ▶ Play
-                    </button>
-
-                {% else %}
-
-                    Sin audio
-
-                {% endif %}
-
-            </td>
-
-            {% if session.usuario %}
-            <td>
-
-                <a href="/programas/editar/{{ programa.id_programa }}">
-                    Editar
-                </a>
-
-                |
-
-                <a
-                    href="/programas/eliminar/{{ programa.id_programa }}"
-                    onclick="return confirmEliminar('¿Eliminar este programa?')">
-
-                    Eliminar
-
-                </a>
-
-            </td>
-            {% endif %}
-
-        </tr>
-
-    {% endfor %}
-
-    </tbody>
-
-</table>
+{% endif %}
 
 {% include "_paginacion.html" %}
 

@@ -14,79 +14,88 @@
 
 </div>
 
-<table class="tabla">
+{% if musica %}
 
-    <thead>
-        <tr>
-            <th>Portada</th>
-            <th>Título</th>
-            <th>Artista</th>
-            <th>Año</th>
-            <th>Audio</th>
-            <th></th>
-            {% if session.usuario %}
-            <th>Acciones</th>
-            {% endif %}
-        </tr>
-    </thead>
+<div class="contenedor-discos">
 
-    <tbody>
+{% for item in musica %}
 
-    {% for item in musica %}
+<div class="tarjeta">
 
-        <tr>
-            <td>
-                {% if item.portada %}
-                <a href="/musica/{{ item.id_musica }}">
-                    <img src="{{ img(item.portada, 150) }}" alt="" style="height:60px; border-radius:4px; object-fit:cover;" loading="lazy" decoding="async">
-                </a>
-                {% else %}
-                Sin portada
-                {% endif %}
-            </td>
+    <div class="portada">
 
-            <td>
-                <a href="/musica/{{ item.id_musica }}" class="titulo-disco">
-                    {{ item.titulo }}
-                </a>
-            </td>
+        <a href="/musica/{{ item.id_musica }}">
 
-            <td>{{ item.artista }}</td>
+        {% if item.portada %}
 
-            <td>{{ item.anio }}</td>
+            <img
+            src="{{ img(item.portada, 600) }}"
+            alt="{{ item.titulo }}"
+            loading="lazy"
+            decoding="async">
 
-            <td>
-                {% if item.audio %}
-                    <button
-                        class="boton-play"
-                        data-play="{{ item.audio }}"
-                        data-titulo="{{ item.artista }} - {{ item.titulo }}"
-                        aria-label="Escuchar {{ item.titulo }}">
-                        ▶ Play
-                    </button>
-                {% else %}
-                    Sin audio
-                {% endif %}
-            </td>
+        {% else %}
 
-            <td>
-                <a href="/musica/{{ item.id_musica }}" class="boton-compartir">🔗</a>
-            </td>
+            Sin portada
 
-            {% if session.usuario %}
-            <td>
-                <a href="/musica/editar/{{ item.id_musica }}">Editar</a>
-                |
-                <a href="/musica/eliminar/{{ item.id_musica }}" onclick="return confirmEliminar('¿Eliminar este tema?')">Eliminar</a>
-            </td>
-            {% endif %}
-        </tr>
+        {% endif %}
 
-    {% endfor %}
+        </a>
 
-    </tbody>
+        {% if item.audio %}
+        <button
+            class="play-overlay"
+            data-play="{{ item.audio }}"
+            data-titulo="{{ item.artista }} - {{ item.titulo }}"
+            data-portada="{{ img(item.portada, 200) if item.portada else '' }}"
+            aria-label="Escuchar {{ item.titulo }}">▶</button>
+        {% endif %}
 
-</table>
+    </div>
+
+    <h3>
+        <a class="titulo-disco" href="/musica/{{ item.id_musica }}">
+            {{ item.titulo }}
+        </a>
+    </h3>
+
+    <p><strong>{{ item.artista }}</strong></p>
+
+    {% if item.anio %}
+    <p>{{ item.anio }}</p>
+    {% endif %}
+
+    {% if item.audio %}
+    <div class="acciones-play">
+        <button
+            class="boton-play"
+            data-play="{{ item.audio }}"
+            data-titulo="{{ item.artista }} - {{ item.titulo }}"
+            data-portada="{{ img(item.portada, 200) if item.portada else '' }}"
+            aria-label="Escuchar {{ item.titulo }}">
+            ▶ Escuchar
+        </button>
+    </div>
+    {% endif %}
+
+    {% if session.usuario %}
+    <div class="acciones">
+        <a href="/musica/editar/{{ item.id_musica }}">Editar</a>
+        <a href="/musica/eliminar/{{ item.id_musica }}" onclick="return confirmEliminar('¿Eliminar este tema?')">Eliminar</a>
+    </div>
+    {% endif %}
+
+</div>
+
+{% endfor %}
+
+</div>
+
+{% else %}
+
+<p class="sin-resultados">No hay música cargada.</p>
+
+{% endif %}
 
 {% include "_paginacion.html" %}
 

@@ -24,7 +24,7 @@
 
     <div class="portada">
 
-    <a href="{{ pelicula.url_pelicula }}" target="_blank" rel="noopener">
+    <a href="{{ pelicula.url_pelicula }}" target="_blank" rel="noopener" class="portada-enlace">
 
     {% if pelicula.portada %}
 
@@ -40,6 +40,10 @@
 
     {% endif %}
 
+        <span class="pelicula-overlay">
+            <span class="pelicula-overlay-ico">▶</span> Ver
+        </span>
+
     </a>
 
     </div>
@@ -51,10 +55,16 @@
     </h3>
 
     <p>
-        Director: <a class="link-subtitulos" href="{{ pelicula.url_subtitulos }}" target="_blank" rel="noopener">{{ pelicula.director }}</a>
+        Director: <strong>{{ pelicula.director }}</strong>
     </p>
 
     <p>{{ pelicula.genero }}</p>
+
+    {% if pelicula.url_subtitulos %}
+    <p class="pelicula-subtitulos">
+        <a class="link-subtitulos" href="{{ pelicula.url_subtitulos }}" target="_blank" rel="noopener">📄 Descargar subtítulos</a>
+    </p>
+    {% endif %}
 
     {% if session.usuario %}
     <div class="acciones">
