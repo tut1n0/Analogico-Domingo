@@ -9,7 +9,7 @@
 
     <title>Analógico Domingo</title>
 
-    <link rel="stylesheet" href="/static/css/style.css?v=12">
+    <link rel="stylesheet" href="/static/css/style.css?v=13">
     <link rel="icon" type="image/svg+xml" href="/static/favicon.svg">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -551,6 +551,9 @@ function rpBuscarDiscos(valor) {
     var select = document.getElementById("filtro-stock");
     var sval = select ? select.value : "";
     if (sval === "1" || sval === "0") params.push("stock=" + sval);
+    var gselect = document.getElementById("filtro-genero");
+    var gval = gselect ? gselect.value : "";
+    if (gval) params.push("genero=" + encodeURIComponent(gval));
     if (params.length) url += "?" + params.join("&");
     rpCargar(url, true);
 }
@@ -655,7 +658,16 @@ document.addEventListener("input", function(e) {
 
 document.addEventListener("change", function(e) {
     var target = e.target;
-    if (!target || target.id !== "filtro-stock") return;
+    if (!target) return;
+
+    if (target.id === "filtro-genero-peliculas") {
+        var url = "/peliculas/";
+        if (target.value) url += "?genero=" + encodeURIComponent(target.value);
+        rpCargar(url, true);
+        return;
+    }
+
+    if (target.id !== "filtro-stock" && target.id !== "filtro-genero") return;
     var campo = document.getElementById("buscar-discos");
     var valor = campo && campo.value ? campo.value.trim() : "";
     rpBuscarDiscos(valor);

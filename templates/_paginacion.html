@@ -1,6 +1,7 @@
 {% if total_paginas > 1 %}
 {% set qs = ('&q=' ~ q|urlencode) if q else '' %}
 {% if stock is not none %}{% set qs = qs ~ '&stock=' ~ stock %}{% endif %}
+{% if genero %}{% set qs = qs ~ '&genero=' ~ genero|urlencode %}{% endif %}
 <div class="paginacion">
     <span class="paginacion-info">Página {{ pagina }} de {{ total_paginas }} ({{ total }} en total)</span>
     <div class="paginacion-botones">

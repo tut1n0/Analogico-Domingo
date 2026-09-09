@@ -47,6 +47,28 @@ def obtener_disco(id_disco):
         conexion.close()
 
 
+def obtener_generos_discos():
+    conexion = get_connection()
+
+    try:
+        with conexion.cursor() as cursor:
+
+            sql = """
+                SELECT DISTINCT genero
+                FROM discos
+                WHERE genero IS NOT NULL
+                  AND TRIM(genero) <> ''
+                ORDER BY genero ASC
+            """
+
+            cursor.execute(sql)
+
+            return [fila["genero"] for fila in cursor.fetchall()]
+
+    finally:
+        conexion.close()
+
+
 def _where_busqueda_discos():
     return """
         LOWER(d.titulo) LIKE LOWER(?)
@@ -62,7 +84,7 @@ def _params_busqueda_discos(texto):
     return (busqueda, busqueda, busqueda, busqueda, busqueda)
 
 
-def _where_y_params_discos(texto, stock):
+def _where_y_params_discos(texto, stock, genero=None):
     clausulas = []
     params = []
 
@@ -74,6 +96,10 @@ def _where_y_params_discos(texto, stock):
         clausulas.append("d.en_stock = ?")
         params.append(stock)
 
+    if genero:
+        clausulas.append("d.genero = ?")
+        params.append(genero)
+
     if not clausulas:
         return "", []
 
@@ -81,7 +107,7 @@ def _where_y_params_discos(texto, stock):
 
 
 
-def obtener_discos_paginados(page, por_pagina, texto=None, stock=None):
+def obtener_discos_paginados(page, por_pagina, texto=None, stock=None, genero=None):
     conexion = get_connection()
 
     try:
@@ -104,7 +130,7 @@ def obtener_discos_paginados(page, por_pagina, texto=None, stock=None):
                 LEFT JOIN musica m ON d.id_musica = m.id_musica
             """
 
-            where, params = _where_y_params_discos(texto, stock)
+            where, params = _where_y_params_discos(texto, stock, genero)
 
             sql += where + " ORDER BY d.artista ASC, d.titulo ASC LIMIT ? OFFSET ?"
 
@@ -120,7 +146,7 @@ def obtener_discos_paginados(page, por_pagina, texto=None, stock=None):
         conexion.close()
 
 
-def contar_discos(texto=None, stock=None):
+def contar_discos(texto=None, stock=None, genero=None):
     conexion = get_connection()
 
     try:
@@ -128,7 +154,7 @@ def contar_discos(texto=None, stock=None):
 
             sql = "SELECT COUNT(*) AS total FROM discos d"
 
-            where, params = _where_y_params_discos(texto, stock)
+            where, params = _where_y_params_discos(texto, stock, genero)
 
             sql += where
 
@@ -1009,7 +1035,29 @@ def eliminar_video(id_video):
 # PELICULAS
 # ==========================================
 
-def obtener_peliculas_paginados(page, por_pagina):
+def obtener_generos_peliculas():
+    conexion = get_connection()
+
+    try:
+        with conexion.cursor() as cursor:
+
+            sql = """
+                SELECT DISTINCT genero
+                FROM peliculas
+                WHERE genero IS NOT NULL
+                  AND TRIM(genero) <> ''
+                ORDER BY genero ASC
+            """
+
+            cursor.execute(sql)
+
+            return [fila["genero"] for fila in cursor.fetchall()]
+
+    finally:
+        conexion.close()
+
+
+def obtener_peliculas_paginados(page, por_pagina, genero=None):
     conexion = get_connection()
 
     try:
@@ -1018,13 +1066,19 @@ def obtener_peliculas_paginados(page, por_pagina):
             sql = """
                 SELECT id_pelicula, titulo, director, genero, portada, url_pelicula, url_subtitulos
                 FROM peliculas
-                ORDER BY titulo ASC, id_pelicula ASC
-                LIMIT ? OFFSET ?
             """
+
+            params = []
+
+            if genero:
+                sql += " WHERE genero = ?"
+                params.append(genero)
+
+            sql += " ORDER BY titulo ASC, id_pelicula ASC LIMIT ? OFFSET ?"
 
             offset = (page - 1) * por_pagina
 
-            cursor.execute(sql, (por_pagina, offset))
+            cursor.execute(sql, params + [por_pagina, offset])
 
             return cursor.fetchall()
 
@@ -1032,13 +1086,21 @@ def obtener_peliculas_paginados(page, por_pagina):
         conexion.close()
 
 
-def contar_peliculas():
+def contar_peliculas(genero=None):
     conexion = get_connection()
 
     try:
         with conexion.cursor() as cursor:
 
-            cursor.execute("SELECT COUNT(*) AS total FROM peliculas")
+            sql = "SELECT COUNT(*) AS total FROM peliculas"
+
+            params = []
+
+            if genero:
+                sql += " WHERE genero = ?"
+                params.append(genero)
+
+            cursor.execute(sql, params)
 
             fila = cursor.fetchone()
 

@@ -18,7 +18,8 @@ from models import (
     actualizar_disco,
     actualizar_estado_stock,
     eliminar_disco,
-    obtener_musica
+    obtener_musica,
+    obtener_generos_discos,
 )
 
 router = APIRouter(
@@ -37,7 +38,8 @@ def listar_discos(
     request: Request,
     page: int = Query(1, ge=1),
     q: str = Query("", max_length=200),
-    stock: str = Query("", max_length=10)
+    stock: str = Query("", max_length=10),
+    genero: str = Query("", max_length=100)
 ):
 
     texto = q.strip() if q else ""
@@ -47,8 +49,10 @@ def listar_discos(
     else:
         filtro_stock = None
 
-    discos = obtener_discos_paginados(page, POR_PAGINA, texto, filtro_stock)
-    total = contar_discos(texto, filtro_stock)
+    filtro_genero = genero.strip() if genero else None
+
+    discos = obtener_discos_paginados(page, POR_PAGINA, texto, filtro_stock, filtro_genero)
+    total = contar_discos(texto, filtro_stock, filtro_genero)
     total_paginas = max(math.ceil(total / POR_PAGINA), 1)
 
     return render(
@@ -60,7 +64,9 @@ def listar_discos(
             "total_paginas": total_paginas,
             "total": total,
             "q": texto,
-            "stock": filtro_stock
+            "stock": filtro_stock,
+            "genero": filtro_genero,
+            "generos": obtener_generos_discos()
         }
     )
 

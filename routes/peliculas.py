@@ -16,6 +16,7 @@ from models import (
     agregar_pelicula,
     actualizar_pelicula,
     eliminar_pelicula,
+    obtener_generos_peliculas,
 )
 
 router = APIRouter(
@@ -31,11 +32,14 @@ router = APIRouter(
 @router.get("/")
 def listar_peliculas(
     request: Request,
-    page: int = Query(1, ge=1)
+    page: int = Query(1, ge=1),
+    genero: str = Query("", max_length=100)
 ):
 
-    peliculas = obtener_peliculas_paginados(page, POR_PAGINA)
-    total = contar_peliculas()
+    filtro_genero = genero.strip() if genero else None
+
+    peliculas = obtener_peliculas_paginados(page, POR_PAGINA, filtro_genero)
+    total = contar_peliculas(filtro_genero)
     total_paginas = max(math.ceil(total / POR_PAGINA), 1)
 
     return render(
@@ -45,7 +49,9 @@ def listar_peliculas(
             "peliculas": peliculas,
             "pagina": page,
             "total_paginas": total_paginas,
-            "total": total
+            "total": total,
+            "genero": filtro_genero,
+            "generos": obtener_generos_peliculas()
         }
     )
 

@@ -14,6 +14,27 @@
 
 </div>
 
+<form class="buscador" action="/peliculas/" method="get" id="form-filtrar-peliculas">
+    <select
+        id="filtro-genero-peliculas"
+        name="genero"
+        class="filtro-stock"
+        aria-label="Filtrar películas por género">
+        <option value="" {% if not genero %}selected{% endif %}>Todos los géneros</option>
+        {% for genero_opcion in generos %}
+        <option value="{{ genero_opcion }}" {% if genero == genero_opcion %}selected{% endif %}>{{ genero_opcion }}</option>
+        {% endfor %}
+    </select>
+    <button type="submit" class="boton">Filtrar</button>
+</form>
+
+{% if genero %}
+<p class="resultados-busqueda">
+    {{ total }} película(s) del género <strong>{{ genero }}</strong>
+    {% if total %}<a href="/peliculas/" class="limpiar-busqueda">✕ Limpiar</a>{% endif %}
+</p>
+{% endif %}
+
 {% if peliculas %}
 
 <div class="contenedor-discos">
@@ -84,7 +105,7 @@
 
 {% else %}
 
-<p class="sin-resultados">No se encontraron peliculas.</p>
+<p class="sin-resultados">No se encontraron peliculas{% if genero %} del género <strong>{{ genero }}</strong>{% endif %}.</p>
 
 {% endif %}
 

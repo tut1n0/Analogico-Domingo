@@ -469,7 +469,7 @@ footer{
     border-color:#d4a000;
 }
 
-.buscador .filtro-stock{
+.buscador select{
     padding:10px 12px;
     background:#222;
     color:white;

@@ -34,12 +34,24 @@
         <option value="1" {% if stock == 1 %}selected{% endif %}>En stock</option>
         <option value="0" {% if stock == 0 %}selected{% endif %}>Sin stock</option>
     </select>
+    <select
+        id="filtro-genero"
+        name="genero"
+        class="filtro-stock"
+        aria-label="Filtrar por género">
+        <option value="">Todos los géneros</option>
+        {% for genero_opcion in generos %}
+        <option value="{{ genero_opcion }}" {% if genero == genero_opcion %}selected{% endif %}>{{ genero_opcion }}</option>
+        {% endfor %}
+    </select>
     <button type="submit" class="boton">Buscar</button>
 </form>
 
-{% if q %}
+{% if q or (stock is not none) or genero %}
 <p class="resultados-busqueda">
-    {{ total }} resultado(s) para <strong>"{{ q }}"</strong>
+    {{ total }} resultado(s)
+    {% if q %}para <strong>"{{ q }}"</strong>{% endif %}
+    {% if genero %}en <strong>{{ genero }}</strong>{% endif %}
     {% if total %}<a href="/discos/" class="limpiar-busqueda">✕ Limpiar</a>{% endif %}
 </p>
 {% endif %}
