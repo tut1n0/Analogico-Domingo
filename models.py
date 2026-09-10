@@ -744,6 +744,28 @@ def desvincular_disco_de_musica(id_disco):
 # MUSICA
 # ==========================================
 
+def obtener_generos_musica():
+    conexion = get_connection()
+
+    try:
+        with conexion.cursor() as cursor:
+
+            sql = """
+                SELECT DISTINCT genero
+                FROM musica
+                WHERE genero IS NOT NULL
+                  AND TRIM(genero) <> ''
+                ORDER BY genero ASC
+            """
+
+            cursor.execute(sql)
+
+            return [fila["genero"] for fila in cursor.fetchall()]
+
+    finally:
+        conexion.close()
+
+
 def obtener_musica():
     conexion = get_connection()
     try:
@@ -755,28 +777,48 @@ def obtener_musica():
         conexion.close()
 
 
-def obtener_musica_paginados(page, por_pagina):
+def obtener_musica_paginados(page, por_pagina, genero=None):
     conexion = get_connection()
     try:
         with conexion.cursor() as cursor:
+
             sql = """
-                SELECT id_musica, titulo, artista, anio, portada, audio
+                SELECT id_musica, titulo, artista, anio, genero, portada, audio
                 FROM musica
-                ORDER BY artista ASC, titulo ASC
-                LIMIT ? OFFSET ?
             """
+
+            params = []
+
+            if genero:
+                sql += " WHERE genero = ?"
+                params.append(genero)
+
+            sql += " ORDER BY artista ASC, titulo ASC LIMIT ? OFFSET ?"
+
             offset = (page - 1) * por_pagina
-            cursor.execute(sql, (por_pagina, offset))
+
+            cursor.execute(sql, params + [por_pagina, offset])
+
             return cursor.fetchall()
     finally:
         conexion.close()
 
 
-def contar_musica():
+def contar_musica(genero=None):
     conexion = get_connection()
     try:
         with conexion.cursor() as cursor:
-            cursor.execute("SELECT COUNT(*) AS total FROM musica")
+
+            sql = "SELECT COUNT(*) AS total FROM musica"
+
+            params = []
+
+            if genero:
+                sql += " WHERE genero = ?"
+                params.append(genero)
+
+            cursor.execute(sql, params)
+
             fila = cursor.fetchone()
             return fila["total"] if fila else 0
     finally:
@@ -799,8 +841,8 @@ def agregar_musica(datos):
     try:
         with conexion.cursor() as cursor:
             sql = """
-                INSERT INTO musica (titulo, artista, anio, descripcion, portada, audio)
-                VALUES (?, ?, ?, ?, ?, ?)
+                INSERT INTO musica (titulo, artista, anio, descripcion, portada, audio, genero)
+                VALUES (?, ?, ?, ?, ?, ?, ?)
             """
             cursor.execute(sql, (
                 datos["titulo"],
@@ -809,6 +851,7 @@ def agregar_musica(datos):
                 datos["descripcion"],
                 datos["portada"],
                 datos["audio"],
+                datos.get("genero"),
             ))
             conexion.commit()
             return cursor.lastrowid
@@ -825,7 +868,7 @@ def actualizar_musica(id_musica, datos):
         with conexion.cursor() as cursor:
             sql = """
                 UPDATE musica
-                SET titulo=?, artista=?, anio=?, descripcion=?, portada=?, audio=?
+                SET titulo=?, artista=?, anio=?, descripcion=?, portada=?, audio=?, genero=?
                 WHERE id_musica=?
             """
             cursor.execute(sql, (
@@ -835,6 +878,7 @@ def actualizar_musica(id_musica, datos):
                 datos["descripcion"],
                 datos["portada"],
                 datos["audio"],
+                datos.get("genero"),
                 id_musica,
             ))
             conexion.commit()
@@ -1263,4 +1307,178 @@ def obtener_usuario(usuario):
 
     finally:
 
+        conexion.close()
+
+
+def actualizar_password(id_usuario, nuevo_hash):
+    conexion = get_connection()
+
+    try:
+
+        with conexion.cursor() as cursor:
+
+            sql = "UPDATE usuarios SET password = ? WHERE id_usuario = ?"
+
+            cursor.execute(sql, (nuevo_hash, id_usuario))
+
+            conexion.commit()
+
+            return cursor.rowcount
+
+    except Exception:
+
+        conexion.rollback()
+        raise
+
+    finally:
+
+        conexion.close()
+
+
+# ==========================================
+# MIGRACIONES LIGERAS
+# ==========================================
+
+def _tabla_tiene_columna(conexion, tabla, columna):
+    from database import DB_DRIVER
+
+    with conexion.cursor() as cursor:
+        if DB_DRIVER == "postgresql":
+            cursor.execute("""
+                SELECT COUNT(*)
+                FROM information_schema.columns
+                WHERE table_name = %s AND column_name = %s
+            """, (tabla, columna))
+        else:
+            cursor.execute(f"PRAGMA table_info({tabla})")
+            filas = cursor.fetchall()
+
+            for fila in filas:
+                if (fila["name"] if "name" in fila.keys() else fila[1]) == columna:
+                    return True
+
+            return False
+
+        fila = cursor.fetchone()
+        return bool(fila and fila["count"] > 0)
+
+
+def _existe_tabla(conexion, tabla):
+    from database import DB_DRIVER
+
+    with conexion.cursor() as cursor:
+        if DB_DRIVER == "postgresql":
+            cursor.execute(
+                "SELECT EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = %s)",
+                (tabla,)
+            )
+        else:
+            cursor.execute(
+                "SELECT 1 FROM sqlite_master WHERE type='table' AND name=?",
+                (tabla,)
+            )
+        return bool(cursor.fetchone())
+
+
+def asegurar_columnas():
+    """Agrega columnas faltantes y renombra tablas antiguas (sqlite y postgres)."""
+
+    conexion = get_connection()
+
+    try:
+        if not _tabla_tiene_columna(conexion, "musica", "genero"):
+            with conexion.cursor() as cursor:
+                cursor.execute("ALTER TABLE musica ADD COLUMN genero TEXT")
+            conexion.commit()
+
+        if _existe_tabla(conexion, "entrevistas") and not _existe_tabla(conexion, "videos"):
+            with conexion.cursor() as cursor:
+                cursor.execute("ALTER TABLE entrevistas RENAME TO videos")
+            conexion.commit()
+
+        if _existe_tabla(conexion, "videos") and not _tabla_tiene_columna(conexion, "videos", "id_video"):
+            with conexion.cursor() as cursor:
+                cursor.execute("ALTER TABLE videos RENAME COLUMN id_entrevista TO id_video")
+            conexion.commit()
+    finally:
+        conexion.close()
+
+
+# ==========================================
+# BUSQUEDA GLOBAL
+# ==========================================
+
+def buscar_global(texto):
+    from database import DB_DRIVER
+
+    conexion = get_connection()
+    busqueda = f"%{texto}%"
+    limite = 6
+
+    try:
+        resultados = {
+            "discos": [],
+            "musica": [],
+            "peliculas": [],
+            "programas": [],
+            "videos": [],
+        }
+
+        with conexion.cursor() as cursor:
+
+            cursor.execute(f"""
+                SELECT d.id_disco, d.titulo, d.artista, d.genero, d.portada
+                FROM discos d
+                WHERE LOWER(d.titulo) LIKE LOWER(?)
+                   OR LOWER(d.artista) LIKE LOWER(?)
+                   OR LOWER(d.genero) LIKE LOWER(?)
+                ORDER BY d.artista ASC, d.titulo ASC
+                LIMIT ?
+            """, (busqueda, busqueda, busqueda, limite))
+            resultados["discos"] = cursor.fetchall()
+
+            cursor.execute(f"""
+                SELECT m.id_musica, m.titulo, m.artista, m.genero, m.portada
+                FROM musica m
+                WHERE LOWER(m.titulo) LIKE LOWER(?)
+                   OR LOWER(m.artista) LIKE LOWER(?)
+                   OR LOWER(m.genero) LIKE LOWER(?)
+                ORDER BY m.artista ASC, m.titulo ASC
+                LIMIT ?
+            """, (busqueda, busqueda, busqueda, limite))
+            resultados["musica"] = cursor.fetchall()
+
+            cursor.execute(f"""
+                SELECT p.id_pelicula, p.titulo, p.director, p.genero, p.portada
+                FROM peliculas p
+                WHERE LOWER(p.titulo) LIKE LOWER(?)
+                   OR LOWER(p.director) LIKE LOWER(?)
+                   OR LOWER(p.genero) LIKE LOWER(?)
+                ORDER BY p.titulo ASC
+                LIMIT ?
+            """, (busqueda, busqueda, busqueda, limite))
+            resultados["peliculas"] = cursor.fetchall()
+
+            cursor.execute(f"""
+                SELECT pr.id_programa, pr.numero, pr.fecha, pr.observaciones, pr.audio
+                FROM programas pr
+                WHERE CAST(pr.numero AS TEXT) LIKE ?
+                   OR LOWER(pr.observaciones) LIKE LOWER(?)
+                ORDER BY pr.fecha DESC
+                LIMIT ?
+            """, (busqueda, busqueda, limite))
+            resultados["programas"] = cursor.fetchall()
+
+            cursor.execute(f"""
+                SELECT v.id_video, v.titulo, v.fecha, v.archivo_url, v.tipo_archivo
+                FROM videos v
+                WHERE LOWER(v.titulo) LIKE LOWER(?)
+                ORDER BY v.fecha DESC, v.id_video DESC
+                LIMIT ?
+            """, (busqueda, limite))
+            resultados["videos"] = cursor.fetchall()
+
+        return resultados
+
+    finally:
         conexion.close()
