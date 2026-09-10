@@ -57,30 +57,6 @@ def listar_programas(request: Request, page: int = Query(1, ge=1)):
         }
     )
 
-# =====================================================
-# VER PROGRAMA
-# =====================================================
-
-@router.get("/{id_programa}")
-def ver_programa(request: Request, id_programa: int):
-
-    programa = obtener_programa(id_programa)
-
-    if not programa:
-        flash(request, ["Programa no encontrado."])
-        return RedirectResponse(url="/programas/", status_code=303)
-
-    discos_programa = obtener_discos_programa(id_programa)
-
-    return render(
-        request,
-        "ver_programa.html",
-        {
-            "programa": programa,
-            "discos_programa": discos_programa,
-        }
-    )
-
 
 # =====================================================
 # UPLOAD SIGNATURE (para subir archivos grandes directo a Cloudinary)
@@ -224,6 +200,31 @@ def editar(request: Request, id_programa: int):
             "programa": programa,
             "discos": discos,
             "seleccionados": seleccionados
+        }
+    )
+
+
+# =====================================================
+# VER PROGRAMA
+# =====================================================
+
+@router.get("/{id_programa}")
+def ver_programa(request: Request, id_programa: int):
+
+    programa = obtener_programa(id_programa)
+
+    if not programa:
+        flash(request, ["Programa no encontrado."])
+        return RedirectResponse(url="/programas/", status_code=303)
+
+    discos_programa = obtener_discos_programa(id_programa)
+
+    return render(
+        request,
+        "ver_programa.html",
+        {
+            "programa": programa,
+            "discos_programa": discos_programa,
         }
     )
 
