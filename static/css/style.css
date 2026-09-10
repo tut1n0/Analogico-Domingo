@@ -147,7 +147,7 @@ main h3{
 
     font-size:38px;
     font-family:"Caacupe One", "Alumni Sans", sans-serif;
-    margin-bottom:20px;
+    margin-bottom:12px;
     overflow-wrap:break-word;
 
 }
@@ -160,16 +160,54 @@ main h3{
 
 }
 
+.buscador-global {
+    display: flex;
+    gap: 10px;
+    margin: 20px auto 0;
+    max-width: 600px;
+    width: 100%;
+}
+
+.buscador-global input {
+    flex: 1;
+    padding: 12px 16px;
+    background: #222;
+    color: white;
+    border: 1px solid #444;
+    border-radius: 6px;
+    font-size: 16px;
+}
+
+.buscador-global input:focus {
+    outline: none;
+    border-color: #d4a000;
+}
+
 .acciones-hero{
-
-    margin-top:50px;
-
+    margin-top:20px;
     display:flex;
-
     justify-content:center;
+    gap:12px;
+    flex-wrap:wrap;
+}
 
-    gap:20px;
+.boton-outline{
+    background:transparent;
+    color:#d4a000;
+    padding:10px 22px;
+    text-decoration:none;
+    border-radius:5px;
+    font-weight:bold;
+    font-family:inherit;
+    font-size:15px;
+    border:1px solid #d4a000;
+    cursor:pointer;
+    transition: background 0.2s, color 0.2s;
+}
 
+.boton-outline:hover{
+    background:#d4a000;
+    color:#111;
 }
 
 .boton{
@@ -203,8 +241,8 @@ main h3{
 
 }
 
-.acciones-hero a.boton {
-    color:#111;
+.acciones-hero .boton-outline {
+    color:#d4a000;
 }
 
 footer{
@@ -1969,31 +2007,6 @@ html {
 
 .acciones-admin .form-eliminar {
     display: inline-block;
-}
-
-/* ============================================
-   Buscador global (home y resultados)
-   ============================================ */
-.buscador-global {
-    display: flex;
-    gap: 10px;
-    margin-top: 24px;
-    max-width: 640px;
-}
-
-.buscador-global input {
-    flex: 1;
-    padding: 12px 16px;
-    background: #222;
-    color: white;
-    border: 1px solid #444;
-    border-radius: 6px;
-    font-size: 16px;
-}
-
-.buscador-global input:focus {
-    outline: none;
-    border-color: #d4a000;
 }
 
 .sr-only {
