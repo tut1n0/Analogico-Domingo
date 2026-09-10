@@ -47,7 +47,7 @@
         {% if editar %}
 
         <form
-            action="/discos/editar/{{ disco.id_disco }}"
+            action="/discos/editar/{{ disco.id_disco }}?csrf_token={{ csrf_token }}"
             method="post"
             enctype="multipart/form-data">
 
@@ -128,6 +128,9 @@
                     <option value="{{ m.id_musica }}" {% if disco.id_musica == m.id_musica %}selected{% endif %}>{{ m.artista }} - {{ m.titulo }}{% if m.audio %} (con audio){% endif %}</option>
                 {% endfor %}
             </select>
+
+            <label>Sonó en el aire</label>
+            <input type="checkbox" name="escuchado" value="true" {% if disco.escuchado %}checked{% endif %}>
 
             <label>En stock</label>
             <input type="checkbox" name="en_stock" value="1" {% if disco.en_stock %}checked{% endif %}>
@@ -219,12 +222,13 @@
                 ✏️ Editar información
             </a>
 
-            <a
-                href="/discos/eliminar/{{ disco.id_disco }}"
-                class="boton boton-eliminar"
-                onclick="return confirmEliminar('¿Eliminar este disco?');">
-                🗑 Eliminar disco
-            </a>
+            <form
+                method="post"
+                action="/discos/eliminar/{{ disco.id_disco }}?csrf_token={{ csrf_token }}"
+                class="form-eliminar"
+                onsubmit="return confirmEliminar('¿Eliminar este disco?');">
+                <button type="submit" class="boton boton-eliminar">🗑 Eliminar disco</button>
+            </form>
 
             {% endif %}
 

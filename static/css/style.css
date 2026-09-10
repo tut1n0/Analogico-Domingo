@@ -1916,3 +1916,167 @@ html {
         display: none;
     }
 }
+
+/* ============================================
+   Flash (mensajes de éxito / error)
+   ============================================ */
+.flash {
+    max-width: 900px;
+    margin: 0 auto 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.flash-item {
+    padding: 12px 16px;
+    border-radius: 6px;
+    background: #1c2f23;
+    border: 1px solid #3a9d5d;
+    color: #d9f7e3;
+    font-size: 15px;
+}
+
+/* ============================================
+   Botones de eliminar (formularios POST)
+   ============================================ */
+.form-eliminar {
+    display: inline;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    background: transparent;
+}
+
+.link-eliminar {
+    background: none;
+    border: none;
+    padding: 0;
+    font: inherit;
+    color: white;
+    cursor: pointer;
+    text-decoration: underline;
+    color: #ff8080;
+}
+
+.acciones .form-eliminar .link-eliminar {
+    color: #ff8080;
+}
+
+.item-link-admin .link-eliminar {
+    font-size: inherit;
+}
+
+.acciones-admin .form-eliminar {
+    display: inline-block;
+}
+
+/* ============================================
+   Buscador global (home y resultados)
+   ============================================ */
+.buscador-global {
+    display: flex;
+    gap: 10px;
+    margin-top: 24px;
+    max-width: 640px;
+}
+
+.buscador-global input {
+    flex: 1;
+    padding: 12px 16px;
+    background: #222;
+    color: white;
+    border: 1px solid #444;
+    border-radius: 6px;
+    font-size: 16px;
+}
+
+.buscador-global input:focus {
+    outline: none;
+    border-color: #d4a000;
+}
+
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+/* ============================================
+   Resultados de búsqueda global
+   ============================================ */
+.resultados-seccion {
+    margin-bottom: 28px;
+}
+
+.resultados-seccion h3 {
+    font-family: "Caacupe One", "Alumni Sans", sans-serif;
+    color: #d4a000;
+    margin-bottom: 12px;
+}
+
+.lista-resultados {
+    list-style: none;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.lista-resultados li {
+    background: #1a1a1a;
+    border: 1px solid #2c2c2c;
+    border-radius: 6px;
+    padding: 12px 14px;
+}
+
+.lista-resultados a {
+    color: #fff;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.lista-resultados a:hover {
+    color: #d4a000;
+}
+
+.lista-resultados .desc {
+    display: block;
+    color: #aaa;
+    font-size: 14px;
+    margin-top: 2px;
+}
+
+.tarjeta-info .badge {
+    display: inline-block;
+    margin-top: 6px;
+    padding: 2px 8px;
+    background: #2a2a16;
+    border: 1px solid #6b5a00;
+    color: #e6c766;
+    border-radius: 999px;
+    font-size: 12px;
+}
+
+/* ============================================
+   Botón siguiente del reproductor
+   ============================================ */
+#rp-next {
+    background: #1c1c1c;
+    color: #fff;
+    border: 1px solid #3a3a3a;
+    border-radius: 6px;
+    padding: 6px 10px;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+#rp-next:hover {
+    border-color: #d4a000;
+}

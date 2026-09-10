@@ -1,12 +1,15 @@
 import math
+import logging
 
-from fastapi import Query
+from fastapi import Query, HTTPException
 from fastapi import APIRouter, Request, Form, UploadFile, File
 from fastapi.responses import RedirectResponse, JSONResponse
 
 from utils.render import render
 from utils.auth import verificar_login
 from utils.storage import upload_file, delete_file
+from utils.mensajes import flash
+from utils.normalizacion import normalizar_genero
 from config import POR_PAGINA
 
 from models import (
@@ -26,6 +29,8 @@ router = APIRouter(
     prefix="/discos",
     tags=["Discos"]
 )
+
+logger = logging.getLogger("analogico_domingo.discos")
 
 
 
@@ -112,7 +117,7 @@ def guardar_disco(
     duracion: str = Form(None),
     descripcion: str = Form(None),
 
-    id_musica_raw: str = Form(""),
+    id_musica: str = Form(""),
     en_stock: str = Form("0"),
 
     portada: UploadFile = File(None)
@@ -124,31 +129,41 @@ def guardar_disco(
     if respuesta:
         return respuesta
 
-    portada_url = ""
+    try:
+        portada_url = ""
 
-    if portada and portada.filename:
-        portada_url = upload_file(portada, "portadas")
+        if portada and portada.filename:
+            portada_url = upload_file(portada, "portadas")
 
-    id_musica = int(id_musica_raw) if id_musica_raw else None
+        id_musica = int(id_musica) if id_musica else None
 
-    datos = {
+        datos = {
 
-        "titulo": titulo,
-        "artista": artista,
-        "anio": anio,
-        "genero": genero,
-        "sello": sello,
-        "productor": productor,
-        "duracion": duracion,
-        "descripcion": descripcion,
-        "portada": portada_url,
-        "id_musica": id_musica,
-        "escuchado": 0,
-        "en_stock": 1 if en_stock in ("1", "on", "true") else 0
+            "titulo": titulo,
+            "artista": artista,
+            "anio": anio,
+            "genero": normalizar_genero(genero),
+            "sello": sello,
+            "productor": productor,
+            "duracion": duracion,
+            "descripcion": descripcion,
+            "portada": portada_url,
+            "id_musica": id_musica,
+            "escuchado": 0,
+            "en_stock": 1 if en_stock in ("1", "on", "true") else 0
 
-    }
+        }
 
-    agregar_disco(datos)
+        agregar_disco(datos)
+    except Exception as e:
+        logger.exception("Error al guardar disco")
+        flash(request, [f"No se pudo guardar el disco: {e}"])
+        return RedirectResponse(
+            url="/discos/nuevo",
+            status_code=303
+        )
+
+    flash(request, ["Disco guardado."])
 
     return RedirectResponse(
         url="/discos/",
@@ -173,8 +188,8 @@ def actualizar(
     productor: str = Form(None),
     duracion: str = Form(None),
     descripcion: str = Form(None),
-    id_musica_raw: str = Form(""),
-    escuchado: bool = Form(False),
+    id_musica: str = Form(""),
+    escuchado: str = Form(""),
     en_stock: str = Form("0"),
 
     portada: UploadFile = File(None)
@@ -184,35 +199,49 @@ def actualizar(
     if respuesta:
         return respuesta
 
-    disco_actual = obtener_disco(id_disco)
+    try:
+        disco_actual = obtener_disco(id_disco)
 
-    portada_url = disco_actual["portada"]
+        if not disco_actual:
+            flash(request, ["Disco no encontrado."])
+            return RedirectResponse(url="/discos/", status_code=303)
 
-    if portada and portada.filename:
-        if portada_url:
-            delete_file(portada_url)
-        portada_url = upload_file(portada, "portadas")
+        portada_url = disco_actual["portada"]
 
-    id_musica = int(id_musica_raw) if id_musica_raw else None
+        if portada and portada.filename:
+            if portada_url:
+                delete_file(portada_url)
+            portada_url = upload_file(portada, "portadas")
 
-    datos = {
+        id_musica = int(id_musica) if id_musica else None
 
-        "titulo": titulo,
-        "artista": artista,
-        "anio": anio,
-        "genero": genero,
-        "sello": sello,
-        "productor": productor,
-        "duracion": duracion,
-        "descripcion": descripcion,
-        "portada": portada_url,
-        "id_musica": id_musica,
-        "escuchado": int(escuchado),
-        "en_stock": 1 if en_stock in ("1", "on", "true") else 0
+        datos = {
 
-    }
+            "titulo": titulo,
+            "artista": artista,
+            "anio": anio,
+            "genero": normalizar_genero(genero),
+            "sello": sello,
+            "productor": productor,
+            "duracion": duracion,
+            "descripcion": descripcion,
+            "portada": portada_url,
+            "id_musica": id_musica,
+            "escuchado": 1 if escuchado in ("1", "on", "true") else 0,
+            "en_stock": 1 if en_stock in ("1", "on", "true") else 0
 
-    actualizar_disco(id_disco, datos)
+        }
+
+        actualizar_disco(id_disco, datos)
+    except Exception as e:
+        logger.exception("Error al actualizar disco")
+        flash(request, [f"No se pudo actualizar el disco: {e}"])
+        return RedirectResponse(
+            url=f"/discos/{id_disco}?editar=1",
+            status_code=303
+        )
+
+    flash(request, ["Disco actualizado."])
 
     return RedirectResponse(
         url=f"/discos/{id_disco}",
@@ -224,7 +253,7 @@ def actualizar(
 # ELIMINAR
 # ======================================================
 
-@router.get("/eliminar/{id_disco}")
+@router.post("/eliminar/{id_disco}")
 def eliminar(request: Request, id_disco: int):
 
     respuesta = verificar_login(request)
@@ -232,12 +261,18 @@ def eliminar(request: Request, id_disco: int):
     if respuesta:
         return respuesta
 
-    disco = obtener_disco(id_disco)
+    try:
+        disco = obtener_disco(id_disco)
 
-    if disco and disco["portada"]:
-        delete_file(disco["portada"])
+        if disco and disco["portada"]:
+            delete_file(disco["portada"])
 
-    eliminar_disco(id_disco)
+        eliminar_disco(id_disco)
+
+        flash(request, ["Disco eliminado."])
+    except Exception as e:
+        logger.exception("Error al eliminar disco")
+        flash(request, [f"No se pudo eliminar el disco: {e}"])
 
     return RedirectResponse(
         url="/discos/",
@@ -256,6 +291,11 @@ def ver_disco(
 ):
 
     disco = obtener_disco(id_disco)
+
+    if not disco:
+        flash(request, ["Disco no encontrado."])
+        return RedirectResponse(url="/discos/", status_code=303)
+
     musica_list = obtener_musica()
 
     return render(

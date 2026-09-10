@@ -2,7 +2,8 @@ from fastapi import APIRouter, Request, Form
 from fastapi.responses import RedirectResponse
 
 from utils.render import render
-from models import obtener_usuario
+from utils.passwords import verificar_password, hash_password
+from models import obtener_usuario, actualizar_password
 
 router = APIRouter(
     tags=["Autenticación"]
@@ -51,7 +52,11 @@ def validar_login(
             }
         )
 
-    if datos_usuario["password"] != password:
+    ok, requiere_rehash = verificar_password(
+        password, datos_usuario["password"]
+    )
+
+    if not ok:
 
         return render(
             request,
@@ -59,6 +64,12 @@ def validar_login(
             {
                 "error": "Usuario o contraseña incorrectos."
             }
+        )
+
+    if requiere_rehash:
+        actualizar_password(
+            datos_usuario["id_usuario"],
+            hash_password(password)
         )
 
     request.session["usuario"] = datos_usuario["usuario"]

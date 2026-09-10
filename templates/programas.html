@@ -50,7 +50,10 @@
     {% if session.usuario %}
     <div class="acciones">
         <a href="/programas/editar/{{ programa.id_programa }}">Editar</a>
-        <a href="/programas/eliminar/{{ programa.id_programa }}" onclick="return confirmEliminar('¿Eliminar este programa?')">Eliminar</a>
+        <form method="post" action="/programas/eliminar/{{ programa.id_programa }}?csrf_token={{ csrf_token }}" class="form-eliminar"
+              onsubmit="return confirmEliminar('¿Eliminar este programa?')">
+            <button type="submit" class="link-eliminar">Eliminar</button>
+        </form>
     </div>
     {% endif %}
 

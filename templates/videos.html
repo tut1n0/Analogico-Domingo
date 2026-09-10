@@ -54,7 +54,10 @@
             {% endif %}
             {% if session.usuario %}
             <a href="/videos/editar/{{ vid.id_video }}" class="item-link-admin">Editar</a>
-            <a href="/videos/eliminar/{{ vid.id_video }}" class="item-link-admin item-link-eliminar" onclick="return confirmEliminar('¿Eliminar este video?')">Eliminar</a>
+            <form method="post" action="/videos/eliminar/{{ vid.id_video }}?csrf_token={{ csrf_token }}" class="form-eliminar item-link-admin"
+                  onsubmit="return confirmEliminar('¿Eliminar este video?')">
+                <button type="submit" class="link-eliminar">Eliminar</button>
+            </form>
             {% endif %}
         </div>
 

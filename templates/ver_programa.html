@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+
+{% block head %}
+<meta property="og:site_name" content="Analógico Domingo">
+<meta property="og:title" content="Programa #{{ programa.numero }} - Analógico Domingo">
+<meta property="og:description" content="Programa #{{ programa.numero }} de Analógico Domingo{% if programa.fecha %} - {{ programa.fecha }}{% endif %}">
+<meta property="og:type" content="music.radio_station">
+<meta property="og:url" content="{{ request.url }}">
+<meta property="og:image" content="{{ request.base_url }}static/header.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="{{ request.base_url }}static/header.jpg">
+{% endblock %}
+
+{% block contenido %}
+
+<div class="detalle-video">
+
+    <div class="cabecera-disco">
+        <h2>Programa #{{ programa.numero }}</h2>
+        {% if programa.fecha %}
+        <p class="programa-fecha-detalle"><strong>Fecha:</strong> {{ programa.fecha }}</p>
+        {% endif %}
+    </div>
+
+    {% if programa.observaciones %}
+    <p class="programa-observaciones-detalle">{{ programa.observaciones }}</p>
+    {% endif %}
+
+    {% if programa.audio %}
+    <div class="acciones-play">
+        <button
+            class="boton-play"
+            data-play="{{ programa.audio }}"
+            data-titulo="Programa #{{ programa.numero }}"
+            aria-label="Reproducir programa {{ programa.numero }}">
+            ▶ Escuchar programa
+        </button>
+    </div>
+    {% endif %}
+
+    {% if discos_programa %}
+    <div class="discos-asociados">
+        <h3>Discos del programa</h3>
+        <ul>
+            {% for disco in discos_programa %}
+            <li>{{ disco.artista }} — {{ disco.titulo }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+    {% endif %}
+
+    <div class="acciones-admin">
+
+        {% if session.usuario %}
+        <a href="/programas/editar/{{ programa.id_programa }}" class="boton">
+            Editar
+        </a>
+        <form
+            method="post"
+            action="/programas/eliminar/{{ programa.id_programa }}?csrf_token={{ csrf_token }}"
+            class="form-eliminar"
+            onsubmit="return confirmEliminar('¿Eliminar este programa?')">
+            <button type="submit" class="boton boton-eliminar">Eliminar</button>
+        </form>
+        {% endif %}
+
+        <a href="/programas/" class="boton volver">
+            Volver
+        </a>
+
+    </div>
+
+</div>
+
+{% endblock %}

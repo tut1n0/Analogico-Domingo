@@ -92,7 +92,10 @@
 
         <a href="/peliculas/editar/{{ pelicula.id_pelicula }}">Editar</a>
 
-        <a href="/peliculas/eliminar/{{ pelicula.id_pelicula }}">Eliminar</a>
+        <form method="post" action="/peliculas/eliminar/{{ pelicula.id_pelicula }}?csrf_token={{ csrf_token }}" class="form-eliminar"
+              onsubmit="return confirmEliminar('¿Eliminar esta pelicula?')">
+            <button type="submit" class="link-eliminar">Eliminar</button>
+        </form>
 
     </div>
     {% endif %}

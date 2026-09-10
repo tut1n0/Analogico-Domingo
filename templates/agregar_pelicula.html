@@ -4,7 +4,7 @@
 
 <h2>Agregar Pelicula</h2>
 
-<form action="/peliculas/nuevo" method="post" enctype="multipart/form-data" class="formulario">
+<form action="/peliculas/nuevo?csrf_token={{ csrf_token }}" method="post" enctype="multipart/form-data" class="formulario">
 
     <label>Título</label>
     <input type="text" name="titulo" required>

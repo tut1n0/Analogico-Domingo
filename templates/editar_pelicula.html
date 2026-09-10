@@ -4,7 +4,7 @@
 
 <h2>Editar Pelicula</h2>
 
-<form action="/peliculas/editar/{{ pelicula.id_pelicula }}" method="post" enctype="multipart/form-data" class="formulario">
+<form action="/peliculas/editar/{{ pelicula.id_pelicula }}?csrf_token={{ csrf_token }}" method="post" enctype="multipart/form-data" class="formulario">
 
     <label>Título</label>
     <input type="text" name="titulo" value="{{ pelicula.titulo }}" required>

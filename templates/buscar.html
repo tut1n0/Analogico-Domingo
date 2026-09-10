@@ -1,0 +1,121 @@
+{% extends "base.html" %}
+
+{% block contenido %}
+
+<div class="filtros" style="margin-bottom: 16px;">
+    <form class="buscador-global" id="form-buscar-global" action="/buscar/" method="get" role="search">
+        <label class="sr-only" for="q-global">Buscar en el archivo</label>
+        <input type="search" id="q-global" name="q" value="{{ q }}" placeholder="Buscar discos, música, películas, videos…" maxlength="200" autocomplete="off">
+        <button type="submit" class="boton">Buscar</button>
+    </form>
+</div>
+
+{% if resultados %}
+
+    {% if resultados.discos %}
+    <section class="resultados-seccion">
+        <h3>Discos</h3>
+        <div class="tarjetas">
+            {% for disco in resultados.discos %}
+            <a class="tarjeta" href="/discos/{{ disco.id_disco }}">
+                {% if disco.portada %}
+                <img src="{{ img(disco.portada, 300) }}" alt="Portada de {{ disco.titulo }}" loading="lazy">
+                {% else %}
+                <img src="/static/caratula.jpg" alt="" loading="lazy">
+                {% endif %}
+                <div class="tarjeta-info">
+                    <strong>{{ disco.titulo }}</strong>
+                    <span>{{ disco.artista }}</span>
+                    {% if disco.genero %}<span class="badge">{{ disco.genero }}</span>{% endif %}
+                </div>
+            </a>
+            {% endfor %}
+        </div>
+    </section>
+    {% endif %}
+
+    {% if resultados.musica %}
+    <section class="resultados-seccion">
+        <h3>Música</h3>
+        <div class="tarjetas">
+            {% for item in resultados.musica %}
+            <a class="tarjeta" href="/musica/{{ item.id_musica }}">
+                {% if item.portada %}
+                <img src="{{ img(item.portada, 300) }}" alt="Portada de {{ item.titulo }}" loading="lazy">
+                {% else %}
+                <img src="/static/caratula.jpg" alt="" loading="lazy">
+                {% endif %}
+                <div class="tarjeta-info">
+                    <strong>{{ item.titulo }}</strong>
+                    <span>{{ item.artista }}</span>
+                    {% if item.genero %}<span class="badge">{{ item.genero }}</span>{% endif %}
+                </div>
+            </a>
+            {% endfor %}
+        </div>
+    </section>
+    {% endif %}
+
+    {% if resultados.peliculas %}
+    <section class="resultados-seccion">
+        <h3>Películas</h3>
+        <div class="tarjetas">
+            {% for pelicula in resultados.peliculas %}
+            <a class="tarjeta" href="{{ pelicula.url_pelicula }}" target="_blank" rel="noopener">
+                {% if pelicula.portada %}
+                <img src="{{ img(pelicula.portada, 300) }}" alt="Portada de {{ pelicula.titulo }}" loading="lazy">
+                {% else %}
+                <img src="/static/caratula.jpg" alt="" loading="lazy">
+                {% endif %}
+                <div class="tarjeta-info">
+                    <strong>{{ pelicula.titulo }}</strong>
+                    <span>{{ pelicula.director }}</span>
+                    {% if pelicula.genero %}<span class="badge">{{ pelicula.genero }}</span>{% endif %}
+                </div>
+            </a>
+            {% endfor %}
+        </div>
+    </section>
+    {% endif %}
+
+    {% if resultados.programas %}
+    <section class="resultados-seccion">
+        <h3>Programas</h3>
+        <ul class="lista-resultados">
+            {% for programa in resultados.programas %}
+            <li>
+                <a href="/programas/{{ programa.id_programa }}">
+                    Programa {{ programa.numero }}{% if programa.fecha %} · {{ programa.fecha }}{% endif %}
+                </a>
+                {% if programa.observaciones %}<span class="desc">{{ programa.observaciones }}</span>{% endif %}
+            </li>
+            {% endfor %}
+        </ul>
+    </section>
+    {% endif %}
+
+    {% if resultados.videos %}
+    <section class="resultados-seccion">
+        <h3>Videos</h3>
+        <ul class="lista-resultados">
+            {% for video in resultados.videos %}
+            <li>
+                <a href="/videos/{{ video.id_video }}">{{ video.titulo }}</a>
+                {% if video.fecha %}<span class="desc">{{ video.fecha }}</span>{% endif %}
+            </li>
+            {% endfor %}
+        </ul>
+    </section>
+    {% endif %}
+
+    {% if not resultados.discos and not resultados.musica and not resultados.peliculas and not resultados.programas and not resultados.videos %}
+    <p class="sin-resultados">No se encontraron resultados para “{{ q }}”.</p>
+    {% endif %}
+
+{% elif q %}
+    <p class="sin-resultados">No se encontraron resultados para “{{ q }}”.</p>
+{% else %}
+    <p class="sin-resultados">Escribí un término para buscar en todo el archivo.</p>
+{% endif %}
+
+{% endblock %}

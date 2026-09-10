@@ -44,6 +44,10 @@
         <p><strong>Año:</strong> {{ musica.anio }}</p>
         {% endif %}
 
+        {% if musica.genero %}
+        <p><strong>Género:</strong> {{ musica.genero }}</p>
+        {% endif %}
+
         {% if musica.descripcion %}
         <p class="descripcion">{{ musica.descripcion }}</p>
         {% endif %}
@@ -62,7 +66,10 @@
 
             {% if session.usuario %}
             <a href="/musica/editar/{{ musica.id_musica }}" class="boton boton-editar">Editar</a>
-            <a href="/musica/eliminar/{{ musica.id_musica }}" class="boton boton-eliminar" onclick="return confirmEliminar('¿Eliminar este tema?')">Eliminar</a>
+            <form method="post" action="/musica/eliminar/{{ musica.id_musica }}?csrf_token={{ csrf_token }}" class="form-eliminar"
+                  onsubmit="return confirmEliminar('¿Eliminar este tema?')">
+                <button type="submit" class="boton boton-eliminar">Eliminar</button>
+            </form>
             {% endif %}
 
             {% if musica.portada %}

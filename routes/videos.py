@@ -1,9 +1,11 @@
 import math
+import logging
 
-from fastapi import APIRouter, Request, Form, UploadFile, File, Query
-from fastapi.responses import RedirectResponse, JSONResponse, HTMLResponse
+from fastapi import APIRouter, Request, Form, UploadFile, File, Query, HTTPException
+from fastapi.responses import RedirectResponse, JSONResponse
 from utils.render import render
 from utils.auth import verificar_login
+from utils.mensajes import flash
 from utils.storage import upload_file, delete_file, get_upload_signature
 from config import POR_PAGINA
 
@@ -20,6 +22,8 @@ router = APIRouter(
     prefix="/videos",
     tags=["Videos"]
 )
+
+logger = logging.getLogger("analogico_domingo.videos")
 
 
 # =====================================================
@@ -124,16 +128,19 @@ def guardar_video(
 
         agregar_video(datos)
 
+        flash(request, ["Video guardado."])
+
         return RedirectResponse(
             url="/videos/",
             status_code=303
         )
 
     except Exception as e:
-        print(f"[ERROR GUARDAR VIDEO] {e}")
-        return HTMLResponse(
-            content=f"Error al guardar video: {e}",
-            status_code=500
+        logger.exception("Error al guardar video")
+        flash(request, [f"No se pudo guardar el video: {e}"])
+        return RedirectResponse(
+            url="/videos/nuevo",
+            status_code=303
         )
 
 
@@ -150,6 +157,10 @@ def editar(request: Request, id_video: int):
         return respuesta
 
     video = obtener_video(id_video)
+
+    if not video:
+        flash(request, ["Video no encontrado."])
+        return RedirectResponse(url="/videos/", status_code=303)
 
     return render(
         request,
@@ -186,6 +197,10 @@ def actualizar(
 
         video = obtener_video(id_video)
 
+        if not video:
+            flash(request, ["Video no encontrado."])
+            return RedirectResponse(url="/videos/", status_code=303)
+
         nombre_archivo = video["archivo_url"]
 
         if archivo_url:
@@ -210,16 +225,19 @@ def actualizar(
 
         actualizar_video(id_video, datos)
 
+        flash(request, ["Video actualizado."])
+
         return RedirectResponse(
             url="/videos/",
             status_code=303
         )
 
     except Exception as e:
-        print(f"[ERROR ACTUALIZAR VIDEO] {e}")
-        return HTMLResponse(
-            content=f"Error al actualizar video: {e}",
-            status_code=500
+        logger.exception("Error al actualizar video")
+        flash(request, [f"No se pudo actualizar el video: {e}"])
+        return RedirectResponse(
+            url=f"/videos/editar/{id_video}",
+            status_code=303
         )
 
 
@@ -227,7 +245,7 @@ def actualizar(
 # ELIMINAR
 # =====================================================
 
-@router.get("/eliminar/{id_video}")
+@router.post("/eliminar/{id_video}")
 def eliminar(request: Request, id_video: int):
 
     respuesta = verificar_login(request)
@@ -235,12 +253,22 @@ def eliminar(request: Request, id_video: int):
     if respuesta:
         return respuesta
 
-    video = obtener_video(id_video)
+    try:
+        video = obtener_video(id_video)
 
-    if video["archivo_url"]:
-        delete_file(video["archivo_url"])
+        if not video:
+            flash(request, ["Video no encontrado."])
+            return RedirectResponse(url="/videos/", status_code=303)
 
-    eliminar_video(id_video)
+        if video["archivo_url"]:
+            delete_file(video["archivo_url"])
+
+        eliminar_video(id_video)
+
+        flash(request, ["Video eliminado."])
+    except Exception as e:
+        logger.exception("Error al eliminar video")
+        flash(request, [f"No se pudo eliminar el video: {e}"])
 
     return RedirectResponse(
         url="/videos/",
@@ -256,6 +284,9 @@ def eliminar(request: Request, id_video: int):
 def ver_video(request: Request, id_video: int):
 
     video = obtener_video(id_video)
+
+    if not video:
+        raise HTTPException(status_code=404, detail="Video no encontrado")
 
     return render(
         request,

@@ -11,7 +11,7 @@
 </div>
 
 <form
-    action="/musica/nuevo"
+    action="/musica/nuevo?csrf_token={{ csrf_token }}"
     method="post"
     class="formulario"
     id="form-musica">
@@ -24,6 +24,9 @@
 
     <label>Año</label>
     <input type="text" name="anio">
+
+    <label>Género</label>
+    <input type="text" name="genero" placeholder="Ej: Indie Rock">
 
     <label>Descripción</label>
     <textarea name="descripcion" rows="6"></textarea>

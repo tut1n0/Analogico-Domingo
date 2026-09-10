@@ -1,9 +1,12 @@
 import math
+import logging
 
-from fastapi import APIRouter, Request, Form, UploadFile, File, Query
-from fastapi.responses import RedirectResponse, HTMLResponse, JSONResponse
+from fastapi import APIRouter, Request, Form, UploadFile, File, Query, HTTPException
+from fastapi.responses import RedirectResponse, JSONResponse
 from utils.render import render
 from utils.auth import verificar_login
+from utils.mensajes import flash
+from utils.normalizacion import normalizar_genero
 from utils.storage import delete_file, get_upload_signature
 from config import POR_PAGINA
 
@@ -11,6 +14,7 @@ from models import (
     obtener_musica,
     obtener_musica_paginados,
     contar_musica,
+    obtener_generos_musica,
     obtener_musica_por_id,
     agregar_musica,
     actualizar_musica,
@@ -26,11 +30,18 @@ router = APIRouter(
     tags=["Musica"]
 )
 
+logger = logging.getLogger("analogico_domingo.musica")
+
 
 @router.get("/")
-def listar_musica(request: Request, page: int = Query(1, ge=1)):
-    musica = obtener_musica_paginados(page, POR_PAGINA)
-    total = contar_musica()
+def listar_musica(
+    request: Request,
+    page: int = Query(1, ge=1),
+    genero: str = Query("", max_length=100)
+):
+    filtro_genero = genero.strip() if genero else None
+    musica = obtener_musica_paginados(page, POR_PAGINA, filtro_genero)
+    total = contar_musica(filtro_genero)
     total_paginas = max(math.ceil(total / POR_PAGINA), 1)
     return render(
         request,
@@ -39,7 +50,9 @@ def listar_musica(request: Request, page: int = Query(1, ge=1)):
             "musica": musica,
             "pagina": page,
             "total_paginas": total_paginas,
-            "total": total
+            "total": total,
+            "genero": filtro_genero,
+            "generos": obtener_generos_musica()
         }
     )
 
@@ -91,6 +104,7 @@ def guardar(
     artista: str = Form(...),
     anio: str = Form(""),
     descripcion: str = Form(""),
+    genero: str = Form(""),
     portada_url: str = Form(""),
     audio_url: str = Form(""),
 ):
@@ -104,17 +118,21 @@ def guardar(
             "artista": artista,
             "anio": anio,
             "descripcion": descripcion,
+            "genero": normalizar_genero(genero),
             "portada": portada_url,
             "audio": audio_url,
         }
 
         agregar_musica(datos)
 
+        flash(request, ["Canción guardada."])
+
         return RedirectResponse(url="/musica/", status_code=303)
 
     except Exception as e:
-        print(f"[ERROR GUARDAR MUSICA] {e}")
-        return HTMLResponse(content=f"Error al guardar: {e}", status_code=500)
+        logger.exception("Error al guardar musica")
+        flash(request, [f"No se pudo guardar la canción: {e}"])
+        return RedirectResponse(url="/musica/nuevo", status_code=303)
 
 
 @router.get("/editar/{id_musica}")
@@ -124,6 +142,11 @@ def editar(request: Request, id_musica: int):
         return respuesta
 
     item = obtener_musica_por_id(id_musica)
+
+    if not item:
+        flash(request, ["Canción no encontrada."])
+        return RedirectResponse(url="/musica/", status_code=303)
+
     disco_vinculado = obtener_disco_vinculado_a_musica(id_musica)
     discos_list = obtener_discos()
 
@@ -142,6 +165,7 @@ def actualizar(
     artista: str = Form(...),
     anio: str = Form(""),
     descripcion: str = Form(""),
+    genero: str = Form(""),
     portada_url: str = Form(""),
     audio_url: str = Form(""),
     id_disco: str = Form(""),
@@ -152,6 +176,10 @@ def actualizar(
 
     try:
         item = obtener_musica_por_id(id_musica)
+
+        if not item:
+            flash(request, ["Canción no encontrada."])
+            return RedirectResponse(url="/musica/", status_code=303)
 
         nombre_portada = item["portada"]
         if portada_url:
@@ -168,6 +196,7 @@ def actualizar(
             "artista": artista,
             "anio": anio,
             "descripcion": descripcion,
+            "genero": normalizar_genero(genero),
             "portada": nombre_portada,
             "audio": nombre_audio,
         }
@@ -187,27 +216,43 @@ def actualizar(
         elif disco_actual:
             desvincular_disco_de_musica(disco_actual["id_disco"])
 
+        flash(request, ["Canción actualizada."])
+
         return RedirectResponse(url="/musica/", status_code=303)
 
     except Exception as e:
-        print(f"[ERROR ACTUALIZAR MUSICA] {e}")
-        return HTMLResponse(content=f"Error al actualizar: {e}", status_code=500)
+        logger.exception("Error al actualizar musica")
+        flash(request, [f"No se pudo actualizar la canción: {e}"])
+        return RedirectResponse(
+            url=f"/musica/editar/{id_musica}",
+            status_code=303
+        )
 
 
-@router.get("/eliminar/{id_musica}")
+@router.post("/eliminar/{id_musica}")
 def eliminar(request: Request, id_musica: int):
     respuesta = verificar_login(request)
     if respuesta:
         return respuesta
 
-    item = obtener_musica_por_id(id_musica)
+    try:
+        item = obtener_musica_por_id(id_musica)
 
-    if item["portada"]:
-        delete_file(item["portada"])
-    if item["audio"]:
-        delete_file(item["audio"])
+        if not item:
+            flash(request, ["Canción no encontrada."])
+            return RedirectResponse(url="/musica/", status_code=303)
 
-    eliminar_musica(id_musica)
+        if item["portada"]:
+            delete_file(item["portada"])
+        if item["audio"]:
+            delete_file(item["audio"])
+
+        eliminar_musica(id_musica)
+
+        flash(request, ["Canción eliminada."])
+    except Exception as e:
+        logger.exception("Error al eliminar musica")
+        flash(request, [f"No se pudo eliminar la canción: {e}"])
 
     return RedirectResponse(url="/musica/", status_code=303)
 
@@ -215,4 +260,8 @@ def eliminar(request: Request, id_musica: int):
 @router.get("/{id_musica}")
 def ver(request: Request, id_musica: int):
     item = obtener_musica_por_id(id_musica)
+
+    if not item:
+        raise HTTPException(status_code=404, detail="Canción no encontrada")
+
     return render(request, "ver_musica.html", {"musica": item})

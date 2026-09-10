@@ -9,7 +9,9 @@
 
     <title>Analógico Domingo</title>
 
-    <link rel="stylesheet" href="/static/css/style.css?v=14">
+    <meta name="csrf-token" content="{{ csrf_token }}">
+
+    <link rel="stylesheet" href="/static/css/style.css?v=15">
     <link rel="icon" type="image/svg+xml" href="/static/favicon.svg">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -114,6 +116,7 @@ function rpSubirLocal(file, folder, onProgress) {
         fd.append("folder", folder);
         var xhr = new XMLHttpRequest();
         xhr.open("POST", "/musica/upload-local");
+        xhr.setRequestHeader("X-CSRF-Token", rpCsrfToken());
         xhr.upload.onprogress = function(e) {
             if (e.lengthComputable && onProgress) onProgress(e.loaded / e.total * 100);
         };
@@ -159,6 +162,14 @@ function rpInitFormularios() {
 
 <main style="padding-bottom: 90px;">
 
+{% if flash %}
+<div class="flash" role="status">
+    {% for m in flash %}
+    <div class="flash-item">{{ m }}</div>
+    {% endfor %}
+</div>
+{% endif %}
+
 {% block contenido %}
 {% endblock %}
 
@@ -179,16 +190,17 @@ function rpInitFormularios() {
         <button class="rp-seek" id="rp-atras10" onclick="rpSaltar(-10)" aria-label="Retroceder 10 segundos" title="Retroceder 10 segundos">−10</button>
         <button id="rp-btn-play" onclick="rpToggle()" aria-label="Reproducir / Pausar" aria-pressed="false">▶</button>
         <button class="rp-seek" id="rp-adelante10" onclick="rpSaltar(10)" aria-label="Avanzar 10 segundos" title="Avanzar 10 segundos">+10</button>
+        <button class="rp-seek" id="rp-next" onclick="rpSiguiente()" aria-label="Siguiente" title="Siguiente">⏭</button>
         <div class="reproductor-progreso">
             <span id="rp-actual">0:00</span>
-            <div class="rp-barra" id="rp-barra">
+            <div class="rp-barra" id="rp-barra" role="slider" aria-label="Progreso de reproducción" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" tabindex="0">
                 <div class="rp-barra-fill" id="rp-barra-fill"></div>
                 <div class="rp-barra-thumb" id="rp-barra-thumb"></div>
             </div>
             <span id="rp-duracion">0:00</span>
         </div>
         <div class="reproductor-volumen">
-            <input type="range" id="rp-volumen" min="0" max="100" value="80" oninput="rpVolumen(this.value)">
+            <input type="range" id="rp-volumen" aria-label="Volumen" min="0" max="100" value="80" oninput="rpVolumen(this.value)">
         </div>
         <button id="rp-btn-close" onclick="rpCerrar()" title="Cerrar">✕</button>
     </div>
@@ -213,6 +225,11 @@ var rpPortadaUrl = "";
 
 rpAudio.volume = 0.8;
 
+function rpCsrfToken() {
+    var meta = document.querySelector('meta[name="csrf-token"]');
+    return meta ? meta.getAttribute("content") : "";
+}
+
 function rpFormato(segundos) {
     var m = Math.floor(segundos / 60);
     var s = Math.floor(segundos % 60);
@@ -234,6 +251,7 @@ function rpBarraActualizar() {
     rpBarraFill.style.width = pct + "%";
     rpBarraThumb.style.left = pct + "%";
     rpActual.textContent = rpFormato(rpAudio.currentTime);
+    rpBarra.setAttribute("aria-valuenow", Math.round(pct));
 }
 
 function rpBarraIr(e) {
@@ -347,6 +365,7 @@ rpAudio.addEventListener("ended", function() {
     localStorage.removeItem("rp_state");
     sessionStorage.removeItem("rp_active");
     rpActualizarActivos();
+    rpSiguiente();
 });
 
 function rpToggle() {
@@ -368,6 +387,30 @@ function rpSaltar(segundos) {
 function rpVolumen(pct) {
     rpAudio.volume = pct / 100;
     rpGuardar();
+}
+
+function rpSiguiente() {
+    var botones = [];
+    rpMain.querySelectorAll("[data-play]").forEach(function(b) {
+        var s = b.getAttribute("data-play");
+        if (s && botones.indexOf(s) === -1) botones.push(s);
+    });
+    if (!botones.length) return false;
+    var actual = rpAudio.src.replace(location.origin, "");
+    var idx = botones.indexOf(actual);
+    var sgte = (idx === -1) ? botones[0] : botones[(idx + 1) % botones.length];
+    if (sgte === actual) return false;
+    var btn = null;
+    rpMain.querySelectorAll("[data-play]").forEach(function(b) {
+        if (!btn && b.getAttribute("data-play") === sgte) btn = b;
+    });
+    if (!btn) return false;
+    reproducirMusica(
+        sgte,
+        btn.getAttribute("data-titulo") || "Reproducción",
+        btn.getAttribute("data-portada") || ""
+    );
+    return true;
 }
 
 function rpCerrar() {
@@ -572,36 +615,9 @@ var rpDebounceTimers = new WeakMap();
 function rpLiveSearch(input) {
     clearTimeout(rpDebounceTimers.get(input));
     rpDebounceTimers.set(input, setTimeout(function() {
-        if (input.value !== document.activeElement.value) return;
+        if (document.activeElement && input.value !== document.activeElement.value) return;
         rpBuscarDiscos(input.value);
     }, 300));
-}
-
-function rpPreviewPortada(inputId, imgId) {
-    var input = document.getElementById(inputId);
-    if (!input) return;
-    input.addEventListener("change", function() {
-        var img = document.getElementById(imgId);
-        if (input.files && input.files[0]) {
-            if (img) {
-                img.src = URL.createObjectURL(input.files[0]);
-                img.style.display = "block";
-            }
-        }
-    });
-}
-
-function rpInitFormularios() {
-    var pares = [
-        ["input-portada", "vista-previa-portada"]
-    ];
-    pares.forEach(function(p) {
-        var input = document.getElementById(p[0]);
-        if (input && !input._rpPreview) {
-            input._rpPreview = true;
-            rpPreviewPortada(p[0], p[1]);
-        }
-    });
 }
 
 document.addEventListener("click", function(e) {
@@ -629,11 +645,22 @@ window.addEventListener("popstate", function() {
 
 document.addEventListener("submit", function(e) {
     var form = e.target;
-    if (!form || form.id !== "form-buscar") return;
-    var campo = form.querySelector('input[name="q"]');
-    var valor = (campo && campo.value ? campo.value : "").trim();
-    e.preventDefault();
-    rpBuscarDiscos(valor);
+    if (!form) return;
+
+    if (form.id === "form-buscar") {
+        var campo = form.querySelector('input[name="q"]');
+        var valor = (campo && campo.value ? campo.value : "").trim();
+        e.preventDefault();
+        rpBuscarDiscos(valor);
+        return;
+    }
+
+    if (form.id === "form-buscar-global") {
+        var gcampo = form.querySelector('input[name="q"]');
+        var gvalor = (gcampo && gcampo.value ? gcampo.value : "").trim();
+        e.preventDefault();
+        rpCargar("/buscar/?q=" + encodeURIComponent(gvalor), true);
+    }
 });
 
 document.addEventListener("click", function(e) {
@@ -644,7 +671,7 @@ document.addEventListener("click", function(e) {
     var nuevo = btn.classList.contains("badge-stock-no") ? 1 : 0;
     var fd = new FormData();
     fd.append("en_stock", nuevo);
-    fetch("/discos/" + id + "/stock", { method: "POST", body: fd, credentials: "same-origin" })
+    fetch("/discos/" + id + "/stock", { method: "POST", body: fd, credentials: "same-origin", headers: { "X-CSRF-Token": rpCsrfToken() } })
         .then(function(r) {
             if (!r.ok) throw new Error();
             return r.json();
@@ -673,6 +700,13 @@ document.addEventListener("change", function(e) {
         var url = "/peliculas/";
         if (target.value) url += "?genero=" + encodeURIComponent(target.value);
         rpCargar(url, true);
+        return;
+    }
+
+    if (target.id === "filtro-genero-musica") {
+        var murl = "/musica/";
+        if (target.value) murl += "?genero=" + encodeURIComponent(target.value);
+        rpCargar(murl, true);
         return;
     }
 
@@ -718,6 +752,21 @@ document.addEventListener("keydown", function(e) {
                 rpAudio.currentTime = Math.min(rpAudio.duration, (rpAudio.currentTime || 0) + 5);
                 rpBarraActualizar();
             }
+            break;
+        case "j":
+        case "J":
+            e.preventDefault();
+            rpSaltar(-10);
+            break;
+        case "l":
+        case "L":
+            e.preventDefault();
+            rpSaltar(10);
+            break;
+        case "n":
+        case "N":
+            e.preventDefault();
+            rpSiguiente();
             break;
     }
 });

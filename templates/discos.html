@@ -133,7 +133,10 @@
 
         <a href="/discos/{{ disco.id_disco }}?editar=true">Editar</a>
 
-        <a href="/discos/eliminar/{{ disco.id_disco }}">Eliminar</a>
+        <form method="post" action="/discos/eliminar/{{ disco.id_disco }}?csrf_token={{ csrf_token }}" class="form-eliminar"
+              onsubmit="return confirmEliminar('¿Eliminar este disco?')">
+            <button type="submit" class="link-eliminar">Eliminar</button>
+        </form>
 
     </div>
     {% endif %}

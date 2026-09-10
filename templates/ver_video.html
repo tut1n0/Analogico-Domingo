@@ -44,12 +44,13 @@
         <a href="/videos/editar/{{ video.id_video }}" class="boton">
             Editar
         </a>
-        <a
-            href="/videos/eliminar/{{ video.id_video }}"
-            class="boton boton-eliminar"
-            onclick="return confirmEliminar('¿Eliminar este video?')">
-            Eliminar
-        </a>
+        <form
+            method="post"
+            action="/videos/eliminar/{{ video.id_video }}?csrf_token={{ csrf_token }}"
+            class="form-eliminar"
+            onsubmit="return confirmEliminar('¿Eliminar este video?')">
+            <button type="submit" class="boton boton-eliminar">Eliminar</button>
+        </form>
         {% endif %}
 
         <a href="/videos/" class="boton volver">

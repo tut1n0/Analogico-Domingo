@@ -17,7 +17,7 @@
     {% endif %}
 
     <form
-        action="/login"
+        action="/login?csrf_token={{ csrf_token }}"
         method="post"
         class="login-form">
 

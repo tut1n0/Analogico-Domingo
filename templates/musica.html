@@ -14,6 +14,27 @@
 
 </div>
 
+<form class="buscador" action="/musica/" method="get" id="form-filtrar-musica">
+    <select
+        id="filtro-genero-musica"
+        name="genero"
+        class="filtro-stock"
+        aria-label="Filtrar música por género">
+        <option value="" {% if not genero %}selected{% endif %}>Todos los géneros</option>
+        {% for genero_opcion in generos %}
+        <option value="{{ genero_opcion }}" {% if genero == genero_opcion %}selected{% endif %}>{{ genero_opcion }}</option>
+        {% endfor %}
+    </select>
+    <button type="submit" class="boton">Filtrar</button>
+</form>
+
+{% if genero %}
+<p class="resultados-busqueda">
+    {{ total }} canción(es) del género <strong>{{ genero }}</strong>
+    {% if total %}<a href="/musica/" class="limpiar-busqueda">✕ Limpiar</a>{% endif %}
+</p>
+{% endif %}
+
 {% if musica %}
 
 <div class="contenedor-discos">
@@ -65,6 +86,10 @@
     <p>{{ item.anio }}</p>
     {% endif %}
 
+    {% if item.genero %}
+    <p>{{ item.genero }}</p>
+    {% endif %}
+
     {% if item.audio %}
     <div class="acciones-play">
         <button
@@ -81,7 +106,10 @@
     {% if session.usuario %}
     <div class="acciones">
         <a href="/musica/editar/{{ item.id_musica }}">Editar</a>
-        <a href="/musica/eliminar/{{ item.id_musica }}" onclick="return confirmEliminar('¿Eliminar este tema?')">Eliminar</a>
+        <form method="post" action="/musica/eliminar/{{ item.id_musica }}?csrf_token={{ csrf_token }}" class="form-eliminar"
+              onsubmit="return confirmEliminar('¿Eliminar este tema?')">
+            <button type="submit" class="link-eliminar">Eliminar</button>
+        </form>
     </div>
     {% endif %}
 

@@ -1,12 +1,15 @@
 import math
+import logging
 
-from fastapi import Query
+from fastapi import Query, HTTPException
 from fastapi import APIRouter, Request, Form, UploadFile, File
 from fastapi.responses import RedirectResponse
 
 from utils.render import render
 from utils.auth import verificar_login
 from utils.storage import upload_file, delete_file
+from utils.mensajes import flash
+from utils.normalizacion import normalizar_genero
 from config import POR_PAGINA
 
 from models import (
@@ -23,6 +26,8 @@ router = APIRouter(
     prefix="/peliculas",
     tags=["Peliculas"]
 )
+
+logger = logging.getLogger("analogico_domingo.peliculas")
 
 
 # ======================================================
@@ -95,21 +100,31 @@ def guardar_pelicula(
     if respuesta:
         return respuesta
 
-    portada_url = ""
+    try:
+        portada_url = ""
 
-    if portada and portada.filename:
-        portada_url = upload_file(portada, "peliculas")
+        if portada and portada.filename:
+            portada_url = upload_file(portada, "peliculas")
 
-    datos = {
-        "titulo": titulo,
-        "director": director,
-        "genero": genero,
-        "portada": portada_url,
-        "url_pelicula": url_pelicula,
-        "url_subtitulos": url_subtitulos
-    }
+        datos = {
+            "titulo": titulo,
+            "director": director,
+            "genero": normalizar_genero(genero),
+            "portada": portada_url,
+            "url_pelicula": url_pelicula,
+            "url_subtitulos": url_subtitulos
+        }
 
-    agregar_pelicula(datos)
+        agregar_pelicula(datos)
+    except Exception as e:
+        logger.exception("Error al guardar pelicula")
+        flash(request, [f"No se pudo guardar la pelicula: {e}"])
+        return RedirectResponse(
+            url="/peliculas/nuevo",
+            status_code=303
+        )
+
+    flash(request, ["Pelicula guardada."])
 
     return RedirectResponse(
         url="/peliculas/",
@@ -130,6 +145,10 @@ def editar_pelicula(request: Request, id_pelicula: int):
         return respuesta
 
     pelicula = obtener_pelicula(id_pelicula)
+
+    if not pelicula:
+        flash(request, ["Película no encontrada."])
+        return RedirectResponse(url="/peliculas/", status_code=303)
 
     return render(
         request,
@@ -162,25 +181,39 @@ def actualizar(
     if respuesta:
         return respuesta
 
-    pelicula_actual = obtener_pelicula(id_pelicula)
+    try:
+        pelicula_actual = obtener_pelicula(id_pelicula)
 
-    portada_url = pelicula_actual["portada"]
+        if not pelicula_actual:
+            flash(request, ["Película no encontrada."])
+            return RedirectResponse(url="/peliculas/", status_code=303)
 
-    if portada and portada.filename:
-        if portada_url:
-            delete_file(portada_url)
-        portada_url = upload_file(portada, "peliculas")
+        portada_url = pelicula_actual["portada"]
 
-    datos = {
-        "titulo": titulo,
-        "director": director,
-        "genero": genero,
-        "portada": portada_url,
-        "url_pelicula": url_pelicula,
-        "url_subtitulos": url_subtitulos
-    }
+        if portada and portada.filename:
+            if portada_url:
+                delete_file(portada_url)
+            portada_url = upload_file(portada, "peliculas")
 
-    actualizar_pelicula(id_pelicula, datos)
+        datos = {
+            "titulo": titulo,
+            "director": director,
+            "genero": normalizar_genero(genero),
+            "portada": portada_url,
+            "url_pelicula": url_pelicula,
+            "url_subtitulos": url_subtitulos
+        }
+
+        actualizar_pelicula(id_pelicula, datos)
+    except Exception as e:
+        logger.exception("Error al actualizar pelicula")
+        flash(request, [f"No se pudo actualizar la pelicula: {e}"])
+        return RedirectResponse(
+            url=f"/peliculas/editar/{id_pelicula}",
+            status_code=303
+        )
+
+    flash(request, ["Pelicula actualizada."])
 
     return RedirectResponse(
         url="/peliculas/",
@@ -192,7 +225,7 @@ def actualizar(
 # ELIMINAR
 # ======================================================
 
-@router.get("/eliminar/{id_pelicula}")
+@router.post("/eliminar/{id_pelicula}")
 def eliminar(request: Request, id_pelicula: int):
 
     respuesta = verificar_login(request)
@@ -200,12 +233,18 @@ def eliminar(request: Request, id_pelicula: int):
     if respuesta:
         return respuesta
 
-    pelicula = obtener_pelicula(id_pelicula)
+    try:
+        pelicula = obtener_pelicula(id_pelicula)
 
-    if pelicula and pelicula["portada"]:
-        delete_file(pelicula["portada"])
+        if pelicula and pelicula["portada"]:
+            delete_file(pelicula["portada"])
 
-    eliminar_pelicula(id_pelicula)
+        eliminar_pelicula(id_pelicula)
+
+        flash(request, ["Pelicula eliminada."])
+    except Exception as e:
+        logger.exception("Error al eliminar pelicula")
+        flash(request, [f"No se pudo eliminar la pelicula: {e}"])
 
     return RedirectResponse(
         url="/peliculas/",

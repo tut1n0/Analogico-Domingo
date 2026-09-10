@@ -4,7 +4,7 @@
 
 <h2>Agregar Disco</h2>
 
-<form action="/discos/nuevo" method="post" enctype="multipart/form-data" class="formulario">
+<form action="/discos/nuevo?csrf_token={{ csrf_token }}" method="post" enctype="multipart/form-data" class="formulario">
 
     <label>Título</label>
     <input type="text" name="titulo" required>
