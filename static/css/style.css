@@ -1048,6 +1048,26 @@ footer{
     background: #e6c229;
 }
 
+.reproductor-controles button.rp-seek {
+    background: transparent;
+    color: #d4a000;
+    border: 1px solid #d4a000;
+    border-radius: 8px;
+    width: auto;
+    min-width: 48px;
+    height: 34px;
+    padding: 0 6px;
+    font-size: 13px;
+    font-weight: bold;
+    cursor: pointer;
+    flex-shrink: 0;
+}
+
+.reproductor-controles button.rp-seek:hover {
+    background: #d4a000;
+    color: #111;
+}
+
 .reproductor-progreso {
     display: flex;
     align-items: center;
@@ -1286,11 +1306,28 @@ footer{
     .reproductor-info {
         min-width: 120px;
         max-width: 150px;
+        flex: 1;
     }
 
     .rp-portada{
         width:40px;
         height:40px;
+    }
+
+    .reproductor-controles {
+        flex: 1 1 100%;
+        flex-wrap: wrap;
+    }
+
+    .reproductor-controles button {
+        width: 40px;
+        height: 40px;
+    }
+
+    .reproductor-controles button.rp-seek {
+        height: 40px;
+        min-width: 52px;
+        font-size: 14px;
     }
 
     .reproductor-volumen {

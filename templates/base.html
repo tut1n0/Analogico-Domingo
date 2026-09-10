@@ -9,7 +9,7 @@
 
     <title>Analógico Domingo</title>
 
-    <link rel="stylesheet" href="/static/css/style.css?v=13">
+    <link rel="stylesheet" href="/static/css/style.css?v=14">
     <link rel="icon" type="image/svg+xml" href="/static/favicon.svg">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -176,7 +176,9 @@ function rpInitFormularios() {
         <span id="rp-titulo">---</span>
     </div>
     <div class="reproductor-controles">
+        <button class="rp-seek" id="rp-atras10" onclick="rpSaltar(-10)" aria-label="Retroceder 10 segundos" title="Retroceder 10 segundos">−10</button>
         <button id="rp-btn-play" onclick="rpToggle()" aria-label="Reproducir / Pausar" aria-pressed="false">▶</button>
+        <button class="rp-seek" id="rp-adelante10" onclick="rpSaltar(10)" aria-label="Avanzar 10 segundos" title="Avanzar 10 segundos">+10</button>
         <div class="reproductor-progreso">
             <span id="rp-actual">0:00</span>
             <div class="rp-barra" id="rp-barra">
@@ -354,6 +356,13 @@ function rpToggle() {
     } else {
         rpAudio.pause();
     }
+}
+
+function rpSaltar(segundos) {
+    if (!rpAudio.src || !rpAudio.duration) return;
+    rpAudio.currentTime = Math.min(Math.max(rpAudio.currentTime + segundos, 0), rpAudio.duration);
+    rpBarraActualizar();
+    rpGuardar();
 }
 
 function rpVolumen(pct) {
