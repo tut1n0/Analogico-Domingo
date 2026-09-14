@@ -132,7 +132,7 @@ def obtener_discos_paginados(page, por_pagina, texto=None, stock=None, genero=No
 
             where, params = _where_y_params_discos(texto, stock, genero)
 
-            sql += where + " ORDER BY d.artista ASC, d.titulo ASC LIMIT ? OFFSET ?"
+            sql += where + " ORDER BY d.id_disco DESC LIMIT ? OFFSET ?"
 
             offset = (page - 1) * por_pagina
 
