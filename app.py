@@ -58,7 +58,8 @@ app.add_middleware(
 
 app.add_middleware(
     SessionMiddleware,
-    secret_key=SECRET_KEY
+    secret_key=SECRET_KEY,
+    max_age=60 * 60 * 24 * 365
 )
 
 
