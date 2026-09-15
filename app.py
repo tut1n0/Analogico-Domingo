@@ -45,6 +45,11 @@ logger = logging.getLogger("analogico_domingo")
 
 SECRET_KEY = os.getenv("SECRET_KEY")
 if not SECRET_KEY:
+    if os.getenv("VERCEL"):
+        raise RuntimeError(
+            "SECRET_KEY no está definida en las variables de entorno de Vercel. "
+            "Agrega SECRET_KEY en Vercel Dashboard → Settings → Environment Variables."
+        )
     SECRET_KEY = secrets.token_hex(32)
     logger.warning(
         "SECRET_KEY no definida: se generó una clave aleatoria "
