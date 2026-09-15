@@ -9,7 +9,9 @@ CREATE TABLE IF NOT EXISTS discos (
     duracion TEXT,
     descripcion TEXT,
     portada TEXT,
-    escuchado INTEGER DEFAULT 0
+    id_musica INTEGER REFERENCES musica(id_musica),
+    escuchado INTEGER DEFAULT 0,
+    en_stock INTEGER DEFAULT 1
 );
 
 CREATE TABLE IF NOT EXISTS programas (
@@ -35,11 +37,30 @@ CREATE TABLE IF NOT EXISTS musica (
     anio TEXT,
     descripcion TEXT,
     portada TEXT,
-    audio TEXT
+    audio TEXT,
+    genero TEXT
 );
 
 CREATE TABLE IF NOT EXISTS usuarios (
     id_usuario INTEGER PRIMARY KEY AUTOINCREMENT,
     usuario TEXT NOT NULL UNIQUE,
     password TEXT NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS videos (
+    id_video INTEGER PRIMARY KEY AUTOINCREMENT,
+    titulo TEXT NOT NULL,
+    fecha TEXT,
+    archivo_url TEXT,
+    tipo_archivo TEXT DEFAULT 'audio'
+);
+
+CREATE TABLE IF NOT EXISTS peliculas (
+    id_pelicula INTEGER PRIMARY KEY AUTOINCREMENT,
+    titulo TEXT NOT NULL,
+    director TEXT NOT NULL,
+    genero TEXT,
+    portada TEXT,
+    url_pelicula TEXT,
+    url_subtitulos TEXT
 );
