@@ -15,7 +15,11 @@ body {
 
 header{
 
-    background: url('/static/header.jpg') center/cover no-repeat;
+    background-color:#000;
+    background-image:url('/static/header-opt.webp'), url('/static/header-opt.jpg');
+    background-size:cover, cover;
+    background-position:center, center;
+    background-repeat:no-repeat, no-repeat;
     position: relative;
     padding:30px;
 
@@ -1788,9 +1792,7 @@ footer{
 
 /* --- Spinner de navegación SPA --- */
 body.cargando main {
-    opacity: 0.55;
     pointer-events: none;
-    transition: opacity 0.15s ease;
 }
 
 body.cargando::after {
@@ -1802,12 +1804,22 @@ body.cargando::after {
     height: 3px;
     background: #d4a000;
     z-index: 2000;
-    animation: rpCargaBarra 1s infinite ease-in-out;
+    animation: rpCargaBarra 0.7s infinite ease-in-out;
 }
 
 @keyframes rpCargaBarra {
     0% { transform: translateX(-100%); }
     100% { transform: translateX(100%); }
+}
+
+/* --- Fade-in del contenido al navegar --- */
+@keyframes rpFadeIn {
+    from { opacity: 0; transform: translateY(6px); }
+    to { opacity: 1; transform: none; }
+}
+
+main.rp-fade-in {
+    animation: rpFadeIn 0.25s ease;
 }
 
 /* --- Toast --- */

@@ -14,8 +14,8 @@
 <meta property="og:image:alt" content="{{ disco.artista }} - {{ disco.titulo }}">
 <meta name="twitter:image" content="{{ og_img }}">
 {% else %}
-<meta property="og:image" content="{{ request.base_url }}static/header.jpg">
-<meta name="twitter:image" content="{{ request.base_url }}static/header.jpg">
+<meta property="og:image" content="{{ request.base_url }}static/header-opt.jpg">
+<meta name="twitter:image" content="{{ request.base_url }}static/header-opt.jpg">
 {% endif %}
 <meta name="twitter:card" content="summary_large_image">
 {% endblock %}
@@ -30,7 +30,8 @@
 
             <img
                 src="{{ img(disco.portada, 1000) }}"
-                alt="{{ disco.titulo }}">
+                alt="{{ disco.titulo }}"
+                fetchpriority="high">
 
         {% else %}
 

@@ -1,9 +1,16 @@
 import os
+import re
+
+from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
+
 from utils.imagenes import optimizar_imagen, imagen_social
 from utils.csrf import obtener_token
 
 templates = Jinja2Templates(directory="templates")
+
+_PATRON_MAIN = re.compile(r"<main[^>]*>(.*?)</main>", re.DOTALL | re.IGNORECASE)
+_PATRON_TITLE = re.compile(r"<title>(.*?)</title>", re.DOTALL | re.IGNORECASE)
 
 
 def video_thumbnail(url):
@@ -24,6 +31,7 @@ def render(request, template, context=None):
     if context is None:
         context = {}
 
+    context["request"] = request
     context["session"] = request.session
     context["img"] = optimizar_imagen
     context["img_social"] = imagen_social
@@ -31,8 +39,19 @@ def render(request, template, context=None):
     context["csrf_token"] = obtener_token(request)
     context["flash"] = request.session.pop("flash", None)
 
-    return templates.TemplateResponse(
-        request=request,
-        name=template,
-        context=context
-    )
+    html = templates.env.get_template(template).render(context)
+
+    if request.headers.get("x-partial") == "1":
+        m = _PATRON_MAIN.search(html)
+        if m:
+            titulo = ""
+            mt = _PATRON_TITLE.search(html)
+            if mt:
+                titulo = mt.group(1)
+            inner = m.group(1)
+            html = (
+                "<html><head><title>" + titulo + "</title>"
+                "</head><body><main>" + inner + "</main></body></html>"
+            )
+
+    return HTMLResponse(content=html)
