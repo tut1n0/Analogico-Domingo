@@ -85,8 +85,11 @@ async def cache_control(request, call_next):
     response = await call_next(request)
 
     path = request.url.path
+    content_type = response.headers.get("content-type", "")
 
-    if path.startswith("/static/"):
+    if "text/html" in content_type:
+        response.headers["Cache-Control"] = "no-cache, must-revalidate"
+    elif path.startswith("/static/"):
         response.headers["Cache-Control"] = "public, max-age=86400"
     elif path.startswith("/uploads/"):
         response.headers["Cache-Control"] = "public, max-age=31536000, immutable"
