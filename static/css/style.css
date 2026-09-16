@@ -1790,20 +1790,20 @@ footer{
     color: #fff;
 }
 
-/* --- Spinner de navegación SPA --- */
+/* --- Barra de progreso de navegación SPA (en el header) --- */
 body.cargando main {
     pointer-events: none;
 }
 
-body.cargando::after {
+body.cargando header::after {
     content: '';
-    position: fixed;
-    top: 0;
+    position: absolute;
+    bottom: 0;
     left: 0;
-    right: 0;
-    height: 3px;
-    background: #d4a000;
-    z-index: 2000;
+    height: 5px;
+    width: 100%;
+    background: linear-gradient(90deg, #b8860b, #f2c14e 40%, #ffe9a8 50%, #f2c14e 60%, #b8860b);
+    z-index: 5;
     animation: rpCargaBarra 0.7s infinite ease-in-out;
 }
 
@@ -1962,7 +1962,7 @@ html {
         scroll-behavior: auto !important;
     }
 
-    body.cargando::after {
+    body.cargando header::after {
         display: none;
     }
 }

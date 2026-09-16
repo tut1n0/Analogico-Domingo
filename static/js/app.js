@@ -4,7 +4,6 @@
 var rpCache = new Map();
 var rpNavCtrl = null;
 var rpNavSeq = 0;
-var rpCargandoTimer = null;
 var rpPrefetchTimers = new WeakMap();
 var rpDebounceTimers = new WeakMap();
 
@@ -480,17 +479,10 @@ function rpActualizarNav(url) {
 }
 
 function rpMostrarCarga() {
-    rpOcultarCarga();
-    rpCargandoTimer = setTimeout(function() {
-        document.body.classList.add("cargando");
-    }, 120);
+    document.body.classList.add("cargando");
 }
 
 function rpOcultarCarga() {
-    if (rpCargandoTimer) {
-        clearTimeout(rpCargandoTimer);
-        rpCargandoTimer = null;
-    }
     document.body.classList.remove("cargando");
 }
 
