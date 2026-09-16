@@ -4,3 +4,7 @@ uploads
 .git
 *.pyc
 .env
+assets-src
+scripts
+static/body-bg.jpg
+static/header.jpg

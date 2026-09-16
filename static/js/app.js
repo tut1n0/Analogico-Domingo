@@ -6,6 +6,9 @@ var rpNavCtrl = null;
 var rpNavSeq = 0;
 var rpPrefetchTimers = new WeakMap();
 var rpDebounceTimers = new WeakMap();
+var rpCargaMin = 300;
+var rpCargaInicio = 0;
+var rpCargaHideTimer = null;
 
 var rpMain = document.querySelector("main");
 if (rpMain) rpMain.setAttribute("tabindex", "-1");
@@ -479,11 +482,25 @@ function rpActualizarNav(url) {
 }
 
 function rpMostrarCarga() {
+    if (rpCargaHideTimer) {
+        clearTimeout(rpCargaHideTimer);
+        rpCargaHideTimer = null;
+    }
+    rpCargaInicio = performance.now();
     document.body.classList.add("cargando");
 }
 
 function rpOcultarCarga() {
-    document.body.classList.remove("cargando");
+    if (rpCargaHideTimer) return;
+    var restante = rpCargaMin - (performance.now() - rpCargaInicio);
+    if (restante <= 0) {
+        document.body.classList.remove("cargando");
+        return;
+    }
+    rpCargaHideTimer = setTimeout(function() {
+        rpCargaHideTimer = null;
+        document.body.classList.remove("cargando");
+    }, restante);
 }
 
 function rpRender(datos, push, finalScroll) {
@@ -519,11 +536,11 @@ function rpCargar(url, push, restaurarScroll) {
     rpNavCtrl = new AbortController();
     var seq = ++rpNavSeq;
     var finalScroll = restaurarScroll || 0;
+    rpMostrarCarga();
 
     var entrada = rpCache.get(url);
     if (entrada) {
         if (typeof entrada.then === "function") {
-            rpMostrarCarga();
             entrada.then(function(datos) {
                 if (seq !== rpNavSeq) return;
                 rpOcultarCarga();
@@ -540,10 +557,10 @@ function rpCargar(url, push, restaurarScroll) {
         } catch (e) {
             window.location.href = url;
         }
+        rpOcultarCarga();
         return;
     }
 
-    rpMostrarCarga();
     fetch(url, {
         credentials: "same-origin",
         redirect: "follow",
