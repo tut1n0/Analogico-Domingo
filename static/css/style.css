@@ -1795,22 +1795,33 @@ body.cargando main {
     pointer-events: none;
 }
 
+body.cargando header {
+    border-bottom-color: #f2c14e;
+}
+
+body.cargando header::before {
+    background:
+        linear-gradient(to bottom, rgba(0,0,0,0.55), rgba(0,0,0,0.20) 45%, rgba(0,0,0,0.65));
+}
+
 body.cargando header::after {
     content: '';
     position: absolute;
     bottom: 0;
     left: 0;
-    height: 9px;
+    height: 12px;
     width: 100%;
-    background: linear-gradient(90deg, #b8860b, #f2c14e 40%, #ffffff 50%, #f2c14e 60%, #b8860b);
-    box-shadow: 0 0 14px rgba(242, 193, 78, 0.95), 0 -2px 10px rgba(242, 193, 78, 0.45);
+    background: linear-gradient(90deg, #b8860b, #f2c14e 30%, #fff3c9 50%, #f2c14e 70%, #b8860b);
+    background-size: 200% 100%;
+    background-position: 0% 0;
+    box-shadow: 0 0 16px rgba(242, 193, 78, 0.9), 0 -2px 12px rgba(242, 193, 78, 0.35);
     z-index: 5;
-    animation: rpCargaBarra 0.6s infinite ease-in-out;
+    animation: rpCargaBarra 0.8s linear infinite;
 }
 
 @keyframes rpCargaBarra {
-    0% { transform: translateX(-100%); }
-    100% { transform: translateX(100%); }
+    from { background-position: 0% 0; }
+    to { background-position: -200% 0; }
 }
 
 /* --- Fade-in del contenido al navegar --- */
@@ -1964,7 +1975,8 @@ html {
     }
 
     body.cargando header::after {
-        display: none;
+        animation: none !important;
+        background-position: 0% 0;
     }
 }
 
