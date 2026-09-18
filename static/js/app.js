@@ -14,6 +14,11 @@ var rpFlashTimer = null;
 var rpMain = document.querySelector("main");
 if (rpMain) rpMain.setAttribute("tabindex", "-1");
 
+var rpHeader = document.querySelector("header");
+var rpBarraCarga = document.createElement("div");
+rpBarraCarga.id = "rp-barra-carga";
+if (rpHeader) rpHeader.appendChild(rpBarraCarga);
+
 /* ============================================================
    UTILIDADES UI
 ============================================================ */
