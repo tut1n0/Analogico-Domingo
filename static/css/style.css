@@ -1800,11 +1800,12 @@ body.cargando header::after {
     position: absolute;
     bottom: 0;
     left: 0;
-    height: 5px;
+    height: 9px;
     width: 100%;
-    background: linear-gradient(90deg, #b8860b, #f2c14e 40%, #ffe9a8 50%, #f2c14e 60%, #b8860b);
+    background: linear-gradient(90deg, #b8860b, #f2c14e 40%, #ffffff 50%, #f2c14e 60%, #b8860b);
+    box-shadow: 0 0 14px rgba(242, 193, 78, 0.95), 0 -2px 10px rgba(242, 193, 78, 0.45);
     z-index: 5;
-    animation: rpCargaBarra 0.7s infinite ease-in-out;
+    animation: rpCargaBarra 0.6s infinite ease-in-out;
 }
 
 @keyframes rpCargaBarra {
@@ -1985,6 +1986,17 @@ html {
     border: 1px solid #3a9d5d;
     color: #d9f7e3;
     font-size: 15px;
+}
+
+.flash {
+    transition: opacity 0.45s ease, transform 0.45s ease;
+    transform: translateY(0);
+}
+
+.flash.flash-ocultando {
+    opacity: 0;
+    transform: translateY(-6px);
+    pointer-events: none;
 }
 
 /* ============================================

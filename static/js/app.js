@@ -9,6 +9,7 @@ var rpDebounceTimers = new WeakMap();
 var rpCargaMin = 300;
 var rpCargaInicio = 0;
 var rpCargaHideTimer = null;
+var rpFlashTimer = null;
 
 var rpMain = document.querySelector("main");
 if (rpMain) rpMain.setAttribute("tabindex", "-1");
@@ -40,6 +41,20 @@ function rpToast(mensaje) {
 function confirmEliminar(mensaje) {
     mensaje = mensaje || '¿Eliminar este elemento? Esta acción no se puede deshacer.';
     return window.confirm(mensaje);
+}
+
+function rpAutoOcultarFlash() {
+    clearTimeout(rpFlashTimer);
+    rpFlashTimer = null;
+    if (!rpMain) return;
+    var flash = rpMain.querySelector(".flash");
+    if (!flash) return;
+    rpFlashTimer = setTimeout(function() {
+        flash.classList.add("flash-ocultando");
+        setTimeout(function() {
+            if (flash.parentNode) flash.parentNode.removeChild(flash);
+        }, 500);
+    }, 3000);
 }
 
 /* ============================================================
@@ -515,6 +530,7 @@ function rpRender(datos, push, finalScroll) {
 
     rpActualizarActivos();
     rpInitFormularios();
+    rpAutoOcultarFlash();
 
     var titulo = doc.querySelector("title");
     if (titulo) document.title = titulo.textContent;
@@ -816,6 +832,7 @@ document.addEventListener("keydown", function(e) {
 function rpInitApp() {
     rpRestore();
     rpInitFormularios();
+    rpAutoOcultarFlash();
 }
 
 if (document.readyState === "loading") {
