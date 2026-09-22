@@ -318,6 +318,13 @@ def eliminar_disco(id_disco):
         with conexion.cursor() as cursor:
 
             sql = """
+                DELETE FROM programa_disco
+                WHERE id_disco=?
+            """
+
+            cursor.execute(sql, (id_disco,))
+
+            sql = """
                 DELETE FROM discos
                 WHERE id_disco=?
             """
@@ -348,11 +355,11 @@ def buscar_discos(texto):
             sql = """
                 SELECT *
                 FROM discos
-                WHERE titulo LIKE ?
-                   OR artista LIKE ?
-                   OR genero LIKE ?
-                   OR sello LIKE ?
-                   OR productor LIKE ?
+                WHERE LOWER(titulo) LIKE LOWER(?)
+                   OR LOWER(artista) LIKE LOWER(?)
+                   OR LOWER(genero) LIKE LOWER(?)
+                   OR LOWER(sello) LIKE LOWER(?)
+                   OR LOWER(productor) LIKE LOWER(?)
                 ORDER BY artista, titulo
             """
 
@@ -548,9 +555,16 @@ def actualizar_programa(id_programa, datos):
 
 def eliminar_programa(id_programa):
     conexion = get_connection()
-
     try:
+
         with conexion.cursor() as cursor:
+
+            sql = """
+                DELETE FROM programa_disco
+                WHERE id_programa=?
+            """
+
+            cursor.execute(sql, (id_programa,))
 
             sql = """
                 DELETE FROM programas
@@ -636,9 +650,10 @@ def obtener_discos_programa(id_programa):
         with conexion.cursor() as cursor:
 
             sql = """
-                SELECT id_disco
-                FROM programa_disco
-                WHERE id_programa=?
+                SELECT pd.id_disco, d.titulo, d.artista, d.portada
+                FROM programa_disco pd
+                JOIN discos d ON d.id_disco = pd.id_disco
+                WHERE pd.id_programa=?
             """
 
             cursor.execute(sql, (id_programa,))
@@ -1400,6 +1415,15 @@ def asegurar_columnas():
             with conexion.cursor() as cursor:
                 cursor.execute("ALTER TABLE videos RENAME COLUMN id_entrevista TO id_video")
             conexion.commit()
+
+        if _existe_tabla(conexion, "programa_disco"):
+            with conexion.cursor() as cursor:
+                cursor.execute("""
+                    DELETE FROM programa_disco
+                    WHERE id_programa NOT IN (SELECT id_programa FROM programas)
+                       OR id_disco NOT IN (SELECT id_disco FROM discos)
+                """)
+            conexion.commit()
     finally:
         conexion.close()
 
@@ -1449,7 +1473,7 @@ def buscar_global(texto):
             resultados["musica"] = cursor.fetchall()
 
             cursor.execute(f"""
-                SELECT p.id_pelicula, p.titulo, p.director, p.genero, p.portada
+                SELECT p.id_pelicula, p.titulo, p.director, p.genero, p.portada, p.url_pelicula
                 FROM peliculas p
                 WHERE LOWER(p.titulo) LIKE LOWER(?)
                    OR LOWER(p.director) LIKE LOWER(?)

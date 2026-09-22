@@ -7,7 +7,7 @@ from utils.render import render
 from utils.auth import verificar_login
 from utils.mensajes import flash
 from utils.normalizacion import normalizar_genero
-from utils.storage import delete_file, get_upload_signature
+from utils.storage import delete_file, get_upload_signature, _validar_archivo
 from config import POR_PAGINA
 
 from models import (
@@ -74,6 +74,8 @@ def upload_local(request: Request, file: UploadFile = File(...), folder: str = "
 
     try:
         import os, uuid
+
+        _validar_archivo(file, folder)
 
         cloud_name = os.getenv("CLOUDINARY_CLOUD_NAME")
         if cloud_name:

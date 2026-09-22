@@ -203,7 +203,10 @@
             {% if disco.portada %}
             <button
                 class="boton"
-                onclick="compartirInstagram('{{ img(disco.portada, 1080) }}', '{{ disco.artista }} - {{ disco.titulo }}', '{{ request.url }}')">
+                data-compartir-instagram
+                data-imagen="{{ img(disco.portada, 1080) }}"
+                data-titulo="{{ disco.artista }} - {{ disco.titulo }}"
+                data-url="{{ request.url }}">
                 📸 Compartir en historias
             </button>
             {% endif %}

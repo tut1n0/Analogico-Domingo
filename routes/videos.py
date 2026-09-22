@@ -116,7 +116,7 @@ def guardar_video(
         tipo = "audio"
         if nombre_archivo:
             ext = nombre_archivo.lower().rsplit(".", 1)[-1] if "." in nombre_archivo else ""
-            if ext in ("mp4", "webm", "ogg", "mov", "avi", "mkv"):
+            if ext in ("mp4", "webm", "mov", "avi", "mkv", "m4v"):
                 tipo = "video"
 
         datos = {
@@ -213,7 +213,7 @@ def actualizar(
         tipo = "audio"
         if nombre_archivo:
             ext = nombre_archivo.lower().rsplit(".", 1)[-1] if "." in nombre_archivo else ""
-            if ext in ("mp4", "webm", "ogg", "mov", "avi", "mkv"):
+            if ext in ("mp4", "webm", "mov", "avi", "mkv", "m4v"):
                 tipo = "video"
 
         datos = {

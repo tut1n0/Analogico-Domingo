@@ -453,6 +453,27 @@ async function compartirInstagram(imagenUrl, titulo, enlace) {
     compartir(enlace, titulo);
 }
 
+document.addEventListener("click", function(e) {
+    var btn = e.target && e.target.closest ? e.target.closest("[data-compartir-instagram]") : null;
+    if (!btn) return;
+    e.preventDefault();
+    compartirInstagram(
+        btn.getAttribute("data-imagen") || "",
+        btn.getAttribute("data-titulo") || "",
+        btn.getAttribute("data-url") || location.href
+    );
+});
+
+document.addEventListener("click", function(e) {
+    var btn = e.target && e.target.closest ? e.target.closest("[data-compartir]") : null;
+    if (!btn) return;
+    e.preventDefault();
+    compartir(
+        btn.getAttribute("data-url") || location.href,
+        btn.getAttribute("data-titulo") || ""
+    );
+});
+
 function rpReintentarPlay() {
     if (!rpPendienteReanudar) return;
     if (!rpAudio.src || !rpAudio.paused) return;

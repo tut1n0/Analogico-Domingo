@@ -75,12 +75,19 @@
             {% if musica.portada %}
             <button
                 class="boton"
-                onclick="compartirInstagram('{{ img(musica.portada, 1080) }}', '{{ musica.artista }} - {{ musica.titulo }}', '{{ request.url }}')">
+                data-compartir-instagram
+                data-imagen="{{ img(musica.portada, 1080) }}"
+                data-titulo="{{ musica.artista }} - {{ musica.titulo }}"
+                data-url="{{ request.url }}">
                 📸 Compartir en historias
             </button>
             {% endif %}
 
-            <button class="boton" onclick="compartir('{{ request.url }}', '{{ musica.artista }} - {{ musica.titulo }}')">Compartir</button>
+            <button
+                class="boton"
+                data-compartir
+                data-titulo="{{ musica.artista }} - {{ musica.titulo }}"
+                data-url="{{ request.url }}">Compartir</button>
 
             <a href="/musica/" class="boton volver" onclick="rpGuardar()">Volver</a>
         </div>
