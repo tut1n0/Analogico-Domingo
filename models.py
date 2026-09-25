@@ -1,4 +1,5 @@
 from database import get_connection
+from config import ANIO_MINIMO
 
 
 # ==========================================
@@ -85,8 +86,10 @@ def _params_busqueda_discos(texto):
 
 
 def _where_y_params_discos(texto, stock, genero=None, decada=None):
-    clausulas = []
-    params = []
+    clausulas = [
+        "(d.anio IS NULL OR TRIM(d.anio) = '' OR CAST(TRIM(d.anio) AS INTEGER) >= ?)"
+    ]
+    params = [ANIO_MINIMO]
 
     if texto:
         clausulas.append("( " + _where_busqueda_discos().strip() + " )")
@@ -952,8 +955,10 @@ def obtener_generos_peliculas():
 
 
 def _where_y_params_peliculas(genero=None, decada=None):
-    clausulas = []
-    params = []
+    clausulas = [
+        "(anio IS NULL OR TRIM(anio) = '' OR CAST(TRIM(anio) AS INTEGER) >= ?)"
+    ]
+    params = [ANIO_MINIMO]
 
     if genero:
         clausulas.append("genero = ?")

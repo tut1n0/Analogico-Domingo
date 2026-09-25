@@ -10,7 +10,7 @@ from utils.auth import verificar_login
 from utils.storage import upload_file, delete_file
 from utils.mensajes import flash
 from utils.normalizacion import normalizar_genero
-from config import DECADAS, POR_PAGINA, obtener_rango_decada
+from config import ANIO_MINIMO, DECADAS, POR_PAGINA, obtener_rango_decada
 
 from models import (
     obtener_discos,
@@ -128,7 +128,7 @@ def guardar_disco(
 
     titulo: str = Form(...),
     artista: str = Form(...),
-    anio: int = Form(None),
+    anio: int = Form(None, ge=ANIO_MINIMO),
     genero: str = Form(None),
     sello: str = Form(None),
     productor: str = Form(None),
@@ -200,7 +200,7 @@ def actualizar(
 
     titulo: str = Form(...),
     artista: str = Form(...),
-    anio: int = Form(None),
+    anio: int = Form(None, ge=ANIO_MINIMO),
     genero: str = Form(None),
     sello: str = Form(None),
     productor: str = Form(None),

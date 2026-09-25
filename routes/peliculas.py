@@ -10,7 +10,7 @@ from utils.auth import verificar_login
 from utils.storage import upload_file, delete_file
 from utils.mensajes import flash
 from utils.normalizacion import normalizar_genero
-from config import DECADAS, POR_PAGINA, obtener_rango_decada
+from config import ANIO_MINIMO, DECADAS, POR_PAGINA, obtener_rango_decada
 
 from models import (
     obtener_peliculas_paginados,
@@ -103,7 +103,7 @@ def guardar_pelicula(
 
     titulo: str = Form(...),
     director: str = Form(...),
-    anio: int = Form(None),
+    anio: int = Form(None, ge=ANIO_MINIMO),
     genero: str = Form(None),
     url_pelicula: str = Form(""),
     url_subtitulos: str = Form(""),
@@ -188,7 +188,7 @@ def actualizar(
 
     titulo: str = Form(...),
     director: str = Form(...),
-    anio: int = Form(None),
+    anio: int = Form(None, ge=ANIO_MINIMO),
     genero: str = Form(None),
     url_pelicula: str = Form(""),
     url_subtitulos: str = Form(""),
