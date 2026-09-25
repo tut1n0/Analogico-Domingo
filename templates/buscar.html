@@ -2,14 +2,14 @@
 
 {% block title %}{% if q %}Resultados de “{{ q }}” | Analógico Domingo{% else %}Buscar | Analógico Domingo{% endif %}{% endblock %}
 
-{% block meta_description %}{% if q %}Resultados para “{{ q }}” en el archivo de Analógico Domingo.{% else %}Buscá discos, música, películas, videos y programas en el archivo de Analógico Domingo.{% endif %}{% endblock %}
+{% block meta_description %}{% if q %}Resultados para “{{ q }}” en el archivo de Analógico Domingo.{% else %}Buscá discos, música, películas y programas en el archivo de Analógico Domingo.{% endif %}{% endblock %}
 
 {% block contenido %}
 
 <div class="filtros" style="margin-bottom: 16px;">
     <form class="buscador-global" id="form-buscar-global" action="/buscar/" method="get" role="search">
         <label class="sr-only" for="q-global">Buscar en el archivo</label>
-        <input type="search" id="q-global" name="q" value="{{ q }}" placeholder="Buscar discos, música, películas, videos…" maxlength="200" autocomplete="off">
+        <input type="search" id="q-global" name="q" value="{{ q }}" placeholder="Buscar discos, música, películas y programas…" maxlength="200" autocomplete="off">
         <button type="submit" class="boton">Buscar</button>
     </form>
 </div>
@@ -117,21 +117,7 @@
     </section>
     {% endif %}
 
-    {% if resultados.videos %}
-    <section class="resultados-seccion" aria-labelledby="resultados-videos">
-        <h3 id="resultados-videos">Videos</h3>
-        <ul class="lista-resultados">
-            {% for video in resultados.videos %}
-            <li>
-                <a href="/videos/{{ video.id_video }}">{{ video.titulo }}</a>
-                {% if video.fecha %}<time class="desc" datetime="{{ video.fecha }}">{{ video.fecha }}</time>{% endif %}
-            </li>
-            {% endfor %}
-        </ul>
-    </section>
-    {% endif %}
-
-    {% if not resultados.discos and not resultados.musica and not resultados.peliculas and not resultados.programas and not resultados.videos %}
+    {% if not resultados.discos and not resultados.musica and not resultados.peliculas and not resultados.programas %}
     <p class="sin-resultados">No se encontraron resultados para “{{ q }}”.</p>
     {% endif %}
 

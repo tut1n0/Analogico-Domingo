@@ -2,15 +2,32 @@
 {% set qs = ('&q=' ~ q|urlencode) if q is defined and q else '' %}
 {% if stock is defined and stock is not none %}{% set qs = qs ~ '&stock=' ~ stock %}{% endif %}
 {% if genero is defined and genero %}{% set qs = qs ~ '&genero=' ~ genero|urlencode %}{% endif %}
+{% set paginas = namespace(items=[], anterior=0) %}
+{% for numero in range(1, total_paginas + 1) %}
+    {% if numero == 1 or numero == total_paginas or (numero >= pagina - 2 and numero <= pagina + 2) %}
+        {% set _ = paginas.items.append(numero) %}
+    {% endif %}
+{% endfor %}
 <div class="paginacion">
     <span class="paginacion-info">Página {{ pagina }} de {{ total_paginas }} ({{ total }} en total)</span>
-    <div class="paginacion-botones">
+    <nav class="paginacion-botones" aria-label="Páginas">
         {% if pagina > 1 %}
-        <a class="boton" href="{{ request.url.path }}?page={{ pagina - 1 }}{{ qs }}">← Anterior</a>
+        <a class="boton" href="{{ request.url.path }}?page={{ pagina - 1 }}{{ qs }}" rel="prev">← Anterior</a>
         {% endif %}
+        {% for numero in paginas.items %}
+            {% if paginas.anterior and numero > paginas.anterior + 1 %}
+            <span class="paginacion-elipsis" aria-hidden="true">…</span>
+            {% endif %}
+            {% if numero == pagina %}
+            <span class="boton paginacion-numero activo" aria-current="page" aria-label="Página {{ numero }}">{{ numero }}</span>
+            {% else %}
+            <a class="boton paginacion-numero" href="{{ request.url.path }}?page={{ numero }}{{ qs }}" aria-label="Página {{ numero }}">{{ numero }}</a>
+            {% endif %}
+            {% set paginas.anterior = numero %}
+        {% endfor %}
         {% if pagina < total_paginas %}
-        <a class="boton" href="{{ request.url.path }}?page={{ pagina + 1 }}{{ qs }}">Siguiente →</a>
+        <a class="boton" href="{{ request.url.path }}?page={{ pagina + 1 }}{{ qs }}" rel="next">Siguiente →</a>
         {% endif %}
-    </div>
+    </nav>
 </div>
 {% endif %}

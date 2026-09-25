@@ -56,9 +56,16 @@ def listar_discos(
 
     filtro_genero = genero.strip() if genero else None
 
-    discos = obtener_discos_paginados(page, POR_PAGINA, texto, filtro_stock, filtro_genero)
     total = contar_discos(texto, filtro_stock, filtro_genero)
     total_paginas = max(math.ceil(total / POR_PAGINA), 1)
+
+    if page > total_paginas:
+        return RedirectResponse(
+            str(request.url.include_query_params(page=total_paginas)),
+            status_code=303,
+        )
+
+    discos = obtener_discos_paginados(page, POR_PAGINA, texto, filtro_stock, filtro_genero)
 
     return render(
         request,

@@ -1,4 +1,3 @@
-import os
 import re
 
 from fastapi.responses import HTMLResponse
@@ -14,19 +13,6 @@ _PATRON_HEAD = re.compile(r"<head[^>]*>(.*?)</head>", re.DOTALL | re.IGNORECASE)
 _PATRON_TITLE = re.compile(r"<title>(.*?)</title>", re.DOTALL | re.IGNORECASE)
 
 
-def video_thumbnail(url):
-    if not url or "cloudinary.com" not in url:
-        return None
-    marker = "/upload/"
-    idx = url.find(marker)
-    if idx == -1:
-        return None
-    base = url[:idx + len(marker)]
-    rest = url[idx + len(marker):]
-    root, _ = os.path.splitext(rest)
-    return f"{base}w_120,h_90,c_fill,so_0/{root}.jpg"
-
-
 def render(request, template, context=None):
 
     if context is None:
@@ -36,7 +22,6 @@ def render(request, template, context=None):
     context["session"] = request.session
     context["img"] = optimizar_imagen
     context["img_social"] = imagen_social
-    context["video_thumb"] = video_thumbnail
     context["csrf_token"] = obtener_token(request)
     context["flash"] = request.session.pop("flash", None)
 

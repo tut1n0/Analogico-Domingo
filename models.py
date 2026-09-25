@@ -922,175 +922,6 @@ def eliminar_musica(id_musica):
 
 
 # ==========================================
-# VIDEOS
-# ==========================================
-
-def obtener_videos_paginados(page, por_pagina):
-    conexion = get_connection()
-
-    try:
-        with conexion.cursor() as cursor:
-
-            sql = """
-                SELECT id_video, titulo, fecha, archivo_url, tipo_archivo
-                FROM videos
-                ORDER BY fecha DESC, id_video DESC
-                LIMIT ? OFFSET ?
-            """
-
-            offset = (page - 1) * por_pagina
-
-            cursor.execute(sql, (por_pagina, offset))
-
-            return cursor.fetchall()
-
-    finally:
-
-        conexion.close()
-
-
-def contar_videos():
-    conexion = get_connection()
-
-    try:
-        with conexion.cursor() as cursor:
-
-            cursor.execute("SELECT COUNT(*) AS total FROM videos")
-
-            fila = cursor.fetchone()
-
-            return fila["total"] if fila else 0
-
-    finally:
-
-        conexion.close()
-
-
-def obtener_video(id_video):
-    conexion = get_connection()
-
-    try:
-        with conexion.cursor() as cursor:
-
-            sql = """
-                SELECT *
-                FROM videos
-                WHERE id_video = ?
-            """
-
-            cursor.execute(sql, (id_video,))
-
-            return cursor.fetchone()
-
-    finally:
-
-        conexion.close()
-
-
-def agregar_video(datos):
-    conexion = get_connection()
-
-    try:
-        with conexion.cursor() as cursor:
-
-            sql = """
-                INSERT INTO videos
-                (
-                    titulo,
-                    fecha,
-                    archivo_url,
-                    tipo_archivo
-                )
-                VALUES (?, ?, ?, ?)
-            """
-
-            cursor.execute(sql, (
-                datos["titulo"],
-                datos["fecha"],
-                datos["archivo_url"],
-                datos["tipo_archivo"]
-            ))
-
-            conexion.commit()
-
-            return cursor.lastrowid
-
-    except Exception:
-
-        conexion.rollback()
-        raise
-
-    finally:
-
-        conexion.close()
-
-
-def actualizar_video(id_video, datos):
-    conexion = get_connection()
-
-    try:
-        with conexion.cursor() as cursor:
-
-            sql = """
-                UPDATE videos
-                SET
-                    titulo=?,
-                    fecha=?,
-                    archivo_url=?,
-                    tipo_archivo=?
-                WHERE id_video=?
-            """
-
-            cursor.execute(sql, (
-                datos["titulo"],
-                datos["fecha"],
-                datos["archivo_url"],
-                datos["tipo_archivo"],
-                id_video
-            ))
-
-            conexion.commit()
-
-            return cursor.rowcount
-
-    except Exception:
-
-        conexion.rollback()
-        raise
-
-    finally:
-
-        conexion.close()
-
-
-def eliminar_video(id_video):
-    conexion = get_connection()
-
-    try:
-        with conexion.cursor() as cursor:
-
-            sql = """
-                DELETE FROM videos
-                WHERE id_video=?
-            """
-
-            cursor.execute(sql, (id_video,))
-
-            conexion.commit()
-
-            return cursor.rowcount
-
-    except Exception:
-
-        conexion.rollback()
-        raise
-
-    finally:
-
-        conexion.close()
-
-
-# ==========================================
 # PELICULAS
 # ==========================================
 
@@ -1406,16 +1237,6 @@ def asegurar_columnas():
                 cursor.execute("ALTER TABLE musica ADD COLUMN genero TEXT")
             conexion.commit()
 
-        if _existe_tabla(conexion, "entrevistas") and not _existe_tabla(conexion, "videos"):
-            with conexion.cursor() as cursor:
-                cursor.execute("ALTER TABLE entrevistas RENAME TO videos")
-            conexion.commit()
-
-        if _existe_tabla(conexion, "videos") and not _tabla_tiene_columna(conexion, "videos", "id_video"):
-            with conexion.cursor() as cursor:
-                cursor.execute("ALTER TABLE videos RENAME COLUMN id_entrevista TO id_video")
-            conexion.commit()
-
         if _existe_tabla(conexion, "programa_disco"):
             with conexion.cursor() as cursor:
                 cursor.execute("""
@@ -1445,7 +1266,6 @@ def buscar_global(texto):
             "musica": [],
             "peliculas": [],
             "programas": [],
-            "videos": [],
         }
 
         with conexion.cursor() as cursor:
@@ -1492,15 +1312,6 @@ def buscar_global(texto):
                 LIMIT ?
             """, (busqueda, busqueda, limite))
             resultados["programas"] = cursor.fetchall()
-
-            cursor.execute(f"""
-                SELECT v.id_video, v.titulo, v.fecha, v.archivo_url, v.tipo_archivo
-                FROM videos v
-                WHERE LOWER(v.titulo) LIKE LOWER(?)
-                ORDER BY v.fecha DESC, v.id_video DESC
-                LIMIT ?
-            """, (busqueda, limite))
-            resultados["videos"] = cursor.fetchall()
 
         return resultados
 

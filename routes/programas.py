@@ -42,9 +42,16 @@ logger = logging.getLogger("analogico_domingo.programas")
 @router.get("/")
 def listar_programas(request: Request, page: int = Query(1, ge=1)):
 
-    programas = obtener_programas_paginados(page, POR_PAGINA)
     total = contar_programas()
     total_paginas = max(math.ceil(total / POR_PAGINA), 1)
+
+    if page > total_paginas:
+        return RedirectResponse(
+            str(request.url.include_query_params(page=total_paginas)),
+            status_code=303,
+        )
+
+    programas = obtener_programas_paginados(page, POR_PAGINA)
 
     return render(
         request,

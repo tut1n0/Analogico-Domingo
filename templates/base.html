@@ -9,14 +9,14 @@
 
     <title>{% block title %}Analógico Domingo{% endblock %}</title>
 
-    <meta name="description" content="{% block meta_description %}Archivo del programa Analógico Domingo: discos, música, programas, videos y películas.{% endblock %}">
+    <meta name="description" content="{% block meta_description %}Archivo del programa Analógico Domingo: discos, música, programas y películas.{% endblock %}">
 
     {% set url_canonica = canonical_url|default(request.url.scheme ~ '://' ~ request.url.netloc ~ request.url.path, true) %}
     <link rel="canonical" href="{{ url_canonica }}">
 
     <meta name="csrf-token" content="{{ csrf_token }}">
 
-    <link rel="stylesheet" href="/static/css/style.css?v=21">
+    <link rel="stylesheet" href="/static/css/style.css?v=22">
     <link rel="icon" type="image/svg+xml" href="/static/favicon.svg">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -76,7 +76,6 @@
     <a href="/" {% if ruta == '/' %}class="activo" aria-current="page"{% endif %}>Inicio</a>
     <a href="/discos/" {% if ruta == '/discos/' or ruta.startswith('/discos/') %}class="activo" aria-current="page"{% endif %}>Discos</a>
     <a href="/programas/" {% if ruta == '/programas/' or ruta.startswith('/programas/') %}class="activo" aria-current="page"{% endif %}>Programas</a>
-    <a href="/videos/" {% if ruta == '/videos/' or ruta.startswith('/videos/') %}class="activo" aria-current="page"{% endif %}>Videos</a>
     <a href="/peliculas/" {% if ruta == '/peliculas/' or ruta.startswith('/peliculas/') %}class="activo" aria-current="page"{% endif %}>Películas</a>
     <a href="/musica/" {% if ruta == '/musica/' or ruta.startswith('/musica/') %}class="activo" aria-current="page"{% endif %}>Música</a>
     <a href="/buscar/" {% if ruta == '/buscar/' or ruta == '/buscar' or ruta.startswith('/buscar/') %}class="activo" aria-current="page"{% endif %}>Buscar</a>

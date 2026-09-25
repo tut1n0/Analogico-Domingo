@@ -40,9 +40,16 @@ def listar_musica(
     genero: str = Query("", max_length=100)
 ):
     filtro_genero = genero.strip() if genero else None
-    musica = obtener_musica_paginados(page, POR_PAGINA, filtro_genero)
     total = contar_musica(filtro_genero)
     total_paginas = max(math.ceil(total / POR_PAGINA), 1)
+
+    if page > total_paginas:
+        return RedirectResponse(
+            str(request.url.include_query_params(page=total_paginas)),
+            status_code=303,
+        )
+
+    musica = obtener_musica_paginados(page, POR_PAGINA, filtro_genero)
     return render(
         request,
         "musica.html",

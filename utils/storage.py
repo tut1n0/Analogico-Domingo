@@ -22,8 +22,7 @@ if DB_DRIVER == "postgresql":
 
 IMAGENES_EXT = {"jpg", "jpeg", "png", "webp", "gif", "avif", "bmp"}
 AUDIO_EXT = {"mp3", "wav", "ogg", "oga", "m4a", "aac", "flac", "opus", "wma"}
-VIDEO_EXT = {"mp4", "webm", "mov", "mkv", "avi", "m4v"}
-MEDIA_EXT = AUDIO_EXT | VIDEO_EXT
+MEDIA_EXT = AUDIO_EXT
 
 LIMITE_IMAGENES = 20 * 1024 * 1024
 LIMITE_MEDIA = 500 * 1024 * 1024
@@ -32,8 +31,6 @@ LIMITE_MEDIA = 500 * 1024 * 1024
 def _extensiones_permitidas(folder):
     if folder in ("portadas", "peliculas"):
         return IMAGENES_EXT
-    if folder == "videos":
-        return VIDEO_EXT | AUDIO_EXT
     if folder == "programas":
         return AUDIO_EXT
     if folder == "musica":

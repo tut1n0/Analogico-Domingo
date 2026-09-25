@@ -14,7 +14,6 @@ from routes.buscar import router as buscar_router
 from routes.discos import router as discos_router
 from routes.programas import router as programas_router
 from routes.musica import router as musica_router
-from routes.videos import router as videos_router
 from routes.peliculas import router as peliculas_router
 from routes.auth import router as auth_router
 
@@ -112,6 +111,5 @@ app.include_router(buscar_router)
 app.include_router(discos_router)
 app.include_router(programas_router)
 app.include_router(musica_router)
-app.include_router(videos_router)
 app.include_router(peliculas_router)
 app.include_router(auth_router)

@@ -43,9 +43,16 @@ def listar_peliculas(
 
     filtro_genero = genero.strip() if genero else None
 
-    peliculas = obtener_peliculas_paginados(page, POR_PAGINA, filtro_genero)
     total = contar_peliculas(filtro_genero)
     total_paginas = max(math.ceil(total / POR_PAGINA), 1)
+
+    if page > total_paginas:
+        return RedirectResponse(
+            str(request.url.include_query_params(page=total_paginas)),
+            status_code=303,
+        )
+
+    peliculas = obtener_peliculas_paginados(page, POR_PAGINA, filtro_genero)
 
     return render(
         request,
