@@ -29,12 +29,22 @@
         <option value="{{ genero_opcion }}" {% if genero == genero_opcion %}selected{% endif %}>{{ genero_opcion }}</option>
         {% endfor %}
     </select>
+    <label class="sr-only" for="filtro-decada-peliculas">Filtrar películas por década</label>
+    <select id="filtro-decada-peliculas" name="decada" class="filtro-decada">
+        <option value="">Todas las décadas</option>
+        {% for rango_decada in decadas %}
+        <option value="{{ rango_decada.etiqueta }}" {% if decada == rango_decada.etiqueta %}selected{% endif %}>{{ rango_decada.etiqueta }}</option>
+        {% endfor %}
+    </select>
     <button type="submit" class="boton">Filtrar</button>
 </form>
 
-{% if genero %}
+{% if genero or decada %}
 <p class="resultados-busqueda">
-    {{ total }} película(s) del género <strong>{{ genero }}</strong>
+    {{ total }} película(s)
+    {% if genero %}del género <strong>{{ genero }}</strong>{% endif %}
+    {% if genero and decada %}y {% endif %}
+    {% if decada %}de la década <strong>{{ decada }}</strong>{% endif %}
     {% if total %}<a href="/peliculas/" class="limpiar-busqueda">✕ Limpiar</a>{% endif %}
 </p>
 {% endif %}
@@ -101,6 +111,10 @@
         Director: <strong>{{ pelicula.director }}</strong>
     </p>
 
+    {% if pelicula.anio %}
+    <p>{{ pelicula.anio }}</p>
+    {% endif %}
+
     <p>{{ pelicula.genero }}</p>
 
     {% if pelicula.url_subtitulos %}
@@ -130,7 +144,7 @@
 
 {% else %}
 
-<p class="sin-resultados">No se encontraron peliculas{% if genero %} del género <strong>{{ genero }}</strong>{% endif %}.</p>
+<p class="sin-resultados">No se encontraron películas{% if genero %} del género <strong>{{ genero }}</strong>{% endif %}{% if decada %} de la década <strong>{{ decada }}</strong>{% endif %}.</p>
 
 {% endif %}
 

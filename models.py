@@ -84,7 +84,7 @@ def _params_busqueda_discos(texto):
     return (busqueda, busqueda, busqueda, busqueda, busqueda)
 
 
-def _where_y_params_discos(texto, stock, genero=None):
+def _where_y_params_discos(texto, stock, genero=None, decada=None):
     clausulas = []
     params = []
 
@@ -100,6 +100,10 @@ def _where_y_params_discos(texto, stock, genero=None):
         clausulas.append("d.genero = ?")
         params.append(genero)
 
+    if decada:
+        clausulas.append("CAST(TRIM(d.anio) AS INTEGER) BETWEEN ? AND ?")
+        params.extend([decada["minimo"], decada["maximo"]])
+
     if not clausulas:
         return "", []
 
@@ -107,7 +111,7 @@ def _where_y_params_discos(texto, stock, genero=None):
 
 
 
-def obtener_discos_paginados(page, por_pagina, texto=None, stock=None, genero=None):
+def obtener_discos_paginados(page, por_pagina, texto=None, stock=None, genero=None, decada=None):
     conexion = get_connection()
 
     try:
@@ -130,7 +134,7 @@ def obtener_discos_paginados(page, por_pagina, texto=None, stock=None, genero=No
                 LEFT JOIN musica m ON d.id_musica = m.id_musica
             """
 
-            where, params = _where_y_params_discos(texto, stock, genero)
+            where, params = _where_y_params_discos(texto, stock, genero, decada)
 
             sql += where + " ORDER BY d.id_disco DESC LIMIT ? OFFSET ?"
 
@@ -146,7 +150,7 @@ def obtener_discos_paginados(page, por_pagina, texto=None, stock=None, genero=No
         conexion.close()
 
 
-def contar_discos(texto=None, stock=None, genero=None):
+def contar_discos(texto=None, stock=None, genero=None, decada=None):
     conexion = get_connection()
 
     try:
@@ -154,7 +158,7 @@ def contar_discos(texto=None, stock=None, genero=None):
 
             sql = "SELECT COUNT(*) AS total FROM discos d"
 
-            where, params = _where_y_params_discos(texto, stock, genero)
+            where, params = _where_y_params_discos(texto, stock, genero, decada)
 
             sql += where
 
@@ -947,24 +951,38 @@ def obtener_generos_peliculas():
         conexion.close()
 
 
-def obtener_peliculas_paginados(page, por_pagina, genero=None):
+def _where_y_params_peliculas(genero=None, decada=None):
+    clausulas = []
+    params = []
+
+    if genero:
+        clausulas.append("genero = ?")
+        params.append(genero)
+
+    if decada:
+        clausulas.append("CAST(TRIM(anio) AS INTEGER) BETWEEN ? AND ?")
+        params.extend([decada["minimo"], decada["maximo"]])
+
+    if not clausulas:
+        return "", []
+
+    return " WHERE " + " AND ".join(clausulas), params
+
+
+def obtener_peliculas_paginados(page, por_pagina, genero=None, decada=None):
     conexion = get_connection()
 
     try:
         with conexion.cursor() as cursor:
 
             sql = """
-                SELECT id_pelicula, titulo, director, genero, portada, url_pelicula, url_subtitulos
+                SELECT id_pelicula, titulo, director, anio, genero, portada, url_pelicula, url_subtitulos
                 FROM peliculas
             """
 
-            params = []
+            where, params = _where_y_params_peliculas(genero, decada)
 
-            if genero:
-                sql += " WHERE genero = ?"
-                params.append(genero)
-
-            sql += " ORDER BY titulo ASC, id_pelicula ASC LIMIT ? OFFSET ?"
+            sql += where + " ORDER BY titulo ASC, id_pelicula ASC LIMIT ? OFFSET ?"
 
             offset = (page - 1) * por_pagina
 
@@ -976,7 +994,7 @@ def obtener_peliculas_paginados(page, por_pagina, genero=None):
         conexion.close()
 
 
-def contar_peliculas(genero=None):
+def contar_peliculas(genero=None, decada=None):
     conexion = get_connection()
 
     try:
@@ -984,11 +1002,9 @@ def contar_peliculas(genero=None):
 
             sql = "SELECT COUNT(*) AS total FROM peliculas"
 
-            params = []
+            where, params = _where_y_params_peliculas(genero, decada)
 
-            if genero:
-                sql += " WHERE genero = ?"
-                params.append(genero)
+            sql += where
 
             cursor.execute(sql, params)
 
@@ -1031,17 +1047,19 @@ def agregar_pelicula(datos):
                 (
                     titulo,
                     director,
+                    anio,
                     genero,
                     portada,
                     url_pelicula,
                     url_subtitulos
                 )
-                VALUES (?, ?, ?, ?, ?, ?)
+                VALUES (?, ?, ?, ?, ?, ?, ?)
             """
 
             cursor.execute(sql, (
                 datos["titulo"],
                 datos["director"],
+                datos["anio"],
                 datos["genero"],
                 datos["portada"],
                 datos["url_pelicula"],
@@ -1073,6 +1091,7 @@ def actualizar_pelicula(id_pelicula, datos):
                 SET
                     titulo=?,
                     director=?,
+                    anio=?,
                     genero=?,
                     portada=?,
                     url_pelicula=?,
@@ -1083,6 +1102,7 @@ def actualizar_pelicula(id_pelicula, datos):
             cursor.execute(sql, (
                 datos["titulo"],
                 datos["director"],
+                datos["anio"],
                 datos["genero"],
                 datos["portada"],
                 datos["url_pelicula"],
@@ -1235,6 +1255,11 @@ def asegurar_columnas():
         if not _tabla_tiene_columna(conexion, "musica", "genero"):
             with conexion.cursor() as cursor:
                 cursor.execute("ALTER TABLE musica ADD COLUMN genero TEXT")
+            conexion.commit()
+
+        if not _tabla_tiene_columna(conexion, "peliculas", "anio"):
+            with conexion.cursor() as cursor:
+                cursor.execute("ALTER TABLE peliculas ADD COLUMN anio TEXT")
             conexion.commit()
 
         if _existe_tabla(conexion, "programa_disco"):

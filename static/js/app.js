@@ -1036,6 +1036,19 @@ function rpPrefetch(url) {
     entrada.peticion.catch(function() {});
 }
 
+function rpUrlFiltrosPeliculas() {
+    var form = document.getElementById("form-filtrar-peliculas");
+    if (!form) return "/peliculas/";
+
+    var params = [];
+    var genero = form.querySelector('[name="genero"]');
+    var decada = form.querySelector('[name="decada"]');
+    if (genero && genero.value) params.push("genero=" + encodeURIComponent(genero.value));
+    if (decada && decada.value) params.push("decada=" + encodeURIComponent(decada.value));
+
+    return "/peliculas/" + (params.length ? "?" + params.join("&") : "");
+}
+
 function rpBuscarDiscos(valor, input) {
     var texto = valor || "";
     valor = texto.trim();
@@ -1048,6 +1061,9 @@ function rpBuscarDiscos(valor, input) {
     var gselect = document.getElementById("filtro-genero");
     var gval = gselect ? gselect.value : "";
     if (gval) params.push("genero=" + encodeURIComponent(gval));
+    var dselect = document.getElementById("filtro-decada");
+    var dval = dselect ? dselect.value : "";
+    if (dval) params.push("decada=" + encodeURIComponent(dval));
     if (params.length) url += "?" + params.join("&");
     var opciones = {
         historial: "replace",
@@ -1099,6 +1115,12 @@ rpEscuchar(document, "submit", "nav:submit", function(e) {
         var valor = (campo && campo.value ? campo.value : "").trim();
         e.preventDefault();
         rpBuscarDiscos(campo ? campo.value : valor, campo);
+        return;
+    }
+
+    if (form.id === "form-filtrar-peliculas") {
+        e.preventDefault();
+        rpCargar(rpUrlFiltrosPeliculas(), true);
         return;
     }
 
@@ -1154,10 +1176,8 @@ rpEscuchar(document, "change", "discos:change", function(e) {
     var target = e.target;
     if (!target) return;
 
-    if (target.id === "filtro-genero-peliculas") {
-        var url = "/peliculas/";
-        if (target.value) url += "?genero=" + encodeURIComponent(target.value);
-        rpCargar(url, true);
+    if (target.id === "filtro-genero-peliculas" || target.id === "filtro-decada-peliculas") {
+        rpCargar(rpUrlFiltrosPeliculas(), true);
         return;
     }
 
@@ -1168,7 +1188,7 @@ rpEscuchar(document, "change", "discos:change", function(e) {
         return;
     }
 
-    if (target.id !== "filtro-stock" && target.id !== "filtro-genero") return;
+    if (target.id !== "filtro-stock" && target.id !== "filtro-genero" && target.id !== "filtro-decada") return;
     var campo = document.getElementById("buscar-discos");
     var valor = campo && campo.value ? campo.value : "";
     rpBuscarDiscos(valor, campo);

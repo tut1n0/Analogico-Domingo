@@ -10,7 +10,7 @@ from utils.auth import verificar_login
 from utils.storage import upload_file, delete_file
 from utils.mensajes import flash
 from utils.normalizacion import normalizar_genero
-from config import POR_PAGINA
+from config import DECADAS, POR_PAGINA, obtener_rango_decada
 
 from models import (
     obtener_discos,
@@ -44,7 +44,8 @@ def listar_discos(
     page: int = Query(1, ge=1),
     q: str = Query("", max_length=200),
     stock: str = Query("", max_length=10),
-    genero: str = Query("", max_length=100)
+    genero: str = Query("", max_length=100),
+    decada: str = Query("", max_length=10)
 ):
 
     texto = q.strip() if q else ""
@@ -55,8 +56,9 @@ def listar_discos(
         filtro_stock = None
 
     filtro_genero = genero.strip() if genero else None
+    rango_decada = obtener_rango_decada(decada.strip() if decada else "")
 
-    total = contar_discos(texto, filtro_stock, filtro_genero)
+    total = contar_discos(texto, filtro_stock, filtro_genero, rango_decada)
     total_paginas = max(math.ceil(total / POR_PAGINA), 1)
 
     if page > total_paginas:
@@ -65,7 +67,14 @@ def listar_discos(
             status_code=303,
         )
 
-    discos = obtener_discos_paginados(page, POR_PAGINA, texto, filtro_stock, filtro_genero)
+    discos = obtener_discos_paginados(
+        page,
+        POR_PAGINA,
+        texto,
+        filtro_stock,
+        filtro_genero,
+        rango_decada,
+    )
 
     return render(
         request,
@@ -78,6 +87,8 @@ def listar_discos(
             "q": texto,
             "stock": filtro_stock,
             "genero": filtro_genero,
+            "decada": rango_decada["etiqueta"] if rango_decada else "",
+            "decadas": DECADAS,
             "generos": obtener_generos_discos()
         }
     )

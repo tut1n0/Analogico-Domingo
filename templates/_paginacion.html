@@ -2,6 +2,7 @@
 {% set qs = ('&q=' ~ q|urlencode) if q is defined and q else '' %}
 {% if stock is defined and stock is not none %}{% set qs = qs ~ '&stock=' ~ stock %}{% endif %}
 {% if genero is defined and genero %}{% set qs = qs ~ '&genero=' ~ genero|urlencode %}{% endif %}
+{% if decada is defined and decada %}{% set qs = qs ~ '&decada=' ~ decada|urlencode %}{% endif %}
 {% set paginas = namespace(items=[], anterior=0) %}
 {% for numero in range(1, total_paginas + 1) %}
     {% if numero == 1 or numero == total_paginas or (numero >= pagina - 2 and numero <= pagina + 2) %}

@@ -10,7 +10,7 @@ from utils.auth import verificar_login
 from utils.storage import upload_file, delete_file
 from utils.mensajes import flash
 from utils.normalizacion import normalizar_genero
-from config import POR_PAGINA
+from config import DECADAS, POR_PAGINA, obtener_rango_decada
 
 from models import (
     obtener_peliculas_paginados,
@@ -38,12 +38,14 @@ logger = logging.getLogger("analogico_domingo.peliculas")
 def listar_peliculas(
     request: Request,
     page: int = Query(1, ge=1),
-    genero: str = Query("", max_length=100)
+    genero: str = Query("", max_length=100),
+    decada: str = Query("", max_length=10)
 ):
 
     filtro_genero = genero.strip() if genero else None
+    rango_decada = obtener_rango_decada(decada.strip() if decada else "")
 
-    total = contar_peliculas(filtro_genero)
+    total = contar_peliculas(filtro_genero, rango_decada)
     total_paginas = max(math.ceil(total / POR_PAGINA), 1)
 
     if page > total_paginas:
@@ -52,7 +54,12 @@ def listar_peliculas(
             status_code=303,
         )
 
-    peliculas = obtener_peliculas_paginados(page, POR_PAGINA, filtro_genero)
+    peliculas = obtener_peliculas_paginados(
+        page,
+        POR_PAGINA,
+        filtro_genero,
+        rango_decada,
+    )
 
     return render(
         request,
@@ -63,6 +70,8 @@ def listar_peliculas(
             "total_paginas": total_paginas,
             "total": total,
             "genero": filtro_genero,
+            "decada": rango_decada["etiqueta"] if rango_decada else "",
+            "decadas": DECADAS,
             "generos": obtener_generos_peliculas()
         }
     )
@@ -94,6 +103,7 @@ def guardar_pelicula(
 
     titulo: str = Form(...),
     director: str = Form(...),
+    anio: int = Form(None),
     genero: str = Form(None),
     url_pelicula: str = Form(""),
     url_subtitulos: str = Form(""),
@@ -116,6 +126,7 @@ def guardar_pelicula(
         datos = {
             "titulo": titulo,
             "director": director,
+            "anio": anio,
             "genero": normalizar_genero(genero),
             "portada": portada_url,
             "url_pelicula": url_pelicula,
@@ -177,6 +188,7 @@ def actualizar(
 
     titulo: str = Form(...),
     director: str = Form(...),
+    anio: int = Form(None),
     genero: str = Form(None),
     url_pelicula: str = Form(""),
     url_subtitulos: str = Form(""),
@@ -205,6 +217,7 @@ def actualizar(
         datos = {
             "titulo": titulo,
             "director": director,
+            "anio": anio,
             "genero": normalizar_genero(genero),
             "portada": portada_url,
             "url_pelicula": url_pelicula,

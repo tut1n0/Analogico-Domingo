@@ -48,14 +48,22 @@
         <option value="{{ genero_opcion }}" {% if genero == genero_opcion %}selected{% endif %}>{{ genero_opcion }}</option>
         {% endfor %}
     </select>
+    <label class="sr-only" for="filtro-decada">Filtrar discos por década</label>
+    <select id="filtro-decada" name="decada" class="filtro-decada">
+        <option value="">Todas las décadas</option>
+        {% for rango_decada in decadas %}
+        <option value="{{ rango_decada.etiqueta }}" {% if decada == rango_decada.etiqueta %}selected{% endif %}>{{ rango_decada.etiqueta }}</option>
+        {% endfor %}
+    </select>
     <button type="submit" class="boton">Buscar</button>
 </form>
 
-{% if q or (stock is not none) or genero %}
+{% if q or (stock is not none) or genero or decada %}
 <p class="resultados-busqueda">
     {{ total }} resultado(s)
     {% if q %}para <strong>"{{ q }}"</strong>{% endif %}
     {% if genero %}en <strong>{{ genero }}</strong>{% endif %}
+    {% if decada %}en la década <strong>{{ decada }}</strong>{% endif %}
     {% if total %}<a href="/discos/" class="limpiar-busqueda">✕ Limpiar</a>{% endif %}
 </p>
 {% endif %}
@@ -156,7 +164,7 @@
 
 {% else %}
 
-<p class="sin-resultados">No se encontraron discos{% if q %} para <strong>"{{ q }}"</strong>{% endif %}.</p>
+<p class="sin-resultados">No se encontraron discos{% if q %} para <strong>"{{ q }}"</strong>{% endif %}{% if decada %} en la década <strong>{{ decada }}</strong>{% endif %}.</p>
 
 {% endif %}
 
