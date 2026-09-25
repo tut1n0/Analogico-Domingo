@@ -1,5 +1,9 @@
 {% extends "base.html" %}
 
+{% block title %}Música | Analógico Domingo{% endblock %}
+
+{% block meta_description %}Catálogo de música de Analógico Domingo, organizado por género.{% endblock %}
+
 {% block contenido %}
 
 <div class="barra-superior">
@@ -15,11 +19,11 @@
 </div>
 
 <form class="buscador" action="/musica/" method="get" id="form-filtrar-musica">
+    <label class="sr-only" for="filtro-genero-musica">Filtrar música por género</label>
     <select
         id="filtro-genero-musica"
         name="genero"
-        class="filtro-stock"
-        aria-label="Filtrar música por género">
+        class="filtro-stock">
         <option value="" {% if not genero %}selected{% endif %}>Todos los géneros</option>
         {% for genero_opcion in generos %}
         <option value="{{ genero_opcion }}" {% if genero == genero_opcion %}selected{% endif %}>{{ genero_opcion }}</option>
@@ -65,11 +69,13 @@
 
         {% if item.audio %}
         <button
+            type="button"
             class="play-overlay"
             data-play="{{ item.audio }}"
             data-titulo="{{ item.artista }} - {{ item.titulo }}"
             data-portada="{{ img(item.portada, 200) if item.portada else '' }}"
-            aria-label="Escuchar {{ item.titulo }}">▶</button>
+            aria-label="Escuchar {{ item.titulo }}"
+            aria-pressed="false">▶</button>
         {% endif %}
 
     </div>
@@ -93,11 +99,13 @@
     {% if item.audio %}
     <div class="acciones-play">
         <button
+            type="button"
             class="boton-play"
             data-play="{{ item.audio }}"
             data-titulo="{{ item.artista }} - {{ item.titulo }}"
             data-portada="{{ img(item.portada, 200) if item.portada else '' }}"
-            aria-label="Escuchar {{ item.titulo }}">
+            aria-label="Escuchar {{ item.titulo }}"
+            aria-pressed="false">
             ▶ Escuchar
         </button>
     </div>

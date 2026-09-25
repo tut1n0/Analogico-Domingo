@@ -7,11 +7,16 @@
 
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Analógico Domingo</title>
+    <title>{% block title %}Analógico Domingo{% endblock %}</title>
+
+    <meta name="description" content="{% block meta_description %}Archivo del programa Analógico Domingo: discos, música, programas, videos y películas.{% endblock %}">
+
+    {% set url_canonica = canonical_url|default(request.url.scheme ~ '://' ~ request.url.netloc ~ request.url.path, true) %}
+    <link rel="canonical" href="{{ url_canonica }}">
 
     <meta name="csrf-token" content="{{ csrf_token }}">
 
-    <link rel="stylesheet" href="/static/css/style.css?v=20">
+    <link rel="stylesheet" href="/static/css/style.css?v=21">
     <link rel="icon" type="image/svg+xml" href="/static/favicon.svg">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -27,7 +32,7 @@
     <noscript>
         <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Alumni+Sans:ital,wght@0,100..900;1,100..900&family=Caacupe+One&display=swap">
     </noscript>
-    <script src="/static/js/app.js?v=7" defer></script>
+    <script src="/static/js/app.js?v=8" defer></script>
 
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-GBV5G4BQG6"></script>
 <script>
@@ -42,7 +47,7 @@
 <meta property="og:title" content="Analógico Domingo - Archivo del programa">
 <meta property="og:description" content="Archivo del programa Analógico Domingo: discos, música y emisiones.">
 <meta property="og:type" content="website">
-<meta property="og:url" content="{{ request.url }}">
+<meta property="og:url" content="{{ url_canonica }}">
 <meta property="og:image" content="{{ request.base_url }}static/header-opt.jpg">
 <meta property="og:image:alt" content="Analógico Domingo">
 <meta name="twitter:card" content="summary_large_image">
@@ -52,6 +57,8 @@
 </head>
 
 <body>
+
+<a class="enlace-salto" href="#contenido">Ir al contenido principal</a>
 
 <header>
 
@@ -64,14 +71,15 @@
     </div>
 
 {% set ruta = request.url.path %}
-<nav>
+<nav aria-label="Navegación principal">
 
-    <a href="/" {% if ruta == '/' %}class="activo"{% endif %}>Inicio</a>
-    <a href="/discos/" {% if ruta.startswith('/discos') %}class="activo"{% endif %}>Discos</a>
-    <a href="/programas/" {% if ruta.startswith('/programas') %}class="activo"{% endif %}>Programas</a>
-    <a href="/videos/" {% if ruta.startswith('/videos') %}class="activo"{% endif %}>Videos</a>
-    <a href="/peliculas/" {% if ruta.startswith('/peliculas') %}class="activo"{% endif %}>Peliculas</a>
-    <a href="/musica/" {% if ruta.startswith('/musica') %}class="activo"{% endif %}>Música</a>
+    <a href="/" {% if ruta == '/' %}class="activo" aria-current="page"{% endif %}>Inicio</a>
+    <a href="/discos/" {% if ruta == '/discos/' or ruta.startswith('/discos/') %}class="activo" aria-current="page"{% endif %}>Discos</a>
+    <a href="/programas/" {% if ruta == '/programas/' or ruta.startswith('/programas/') %}class="activo" aria-current="page"{% endif %}>Programas</a>
+    <a href="/videos/" {% if ruta == '/videos/' or ruta.startswith('/videos/') %}class="activo" aria-current="page"{% endif %}>Videos</a>
+    <a href="/peliculas/" {% if ruta == '/peliculas/' or ruta.startswith('/peliculas/') %}class="activo" aria-current="page"{% endif %}>Películas</a>
+    <a href="/musica/" {% if ruta == '/musica/' or ruta.startswith('/musica/') %}class="activo" aria-current="page"{% endif %}>Música</a>
+    <a href="/buscar/" {% if ruta == '/buscar/' or ruta == '/buscar' or ruta.startswith('/buscar/') %}class="activo" aria-current="page"{% endif %}>Buscar</a>
 
     {% if session.usuario %}
 
@@ -79,7 +87,7 @@
 
     {% else %}
 
-        <a href="/login">Iniciar sesión</a>
+        <a href="/login" {% if ruta == '/login' %}class="activo" aria-current="page"{% endif %}>Iniciar sesión</a>
 
     {% endif %}
 
@@ -87,14 +95,44 @@
 
 </header>
 
-<main style="padding-bottom: 90px;">
+<main id="contenido" tabindex="-1">
 
 {% if flash %}
-<div class="flash" role="status">
-    {% for m in flash %}
-    <div class="flash-item">{{ m }}</div>
+{% set tipos = namespace(success=false, error=false) %}
+{% for mensaje in flash %}
+{% set categoria = mensaje.get("categoria", "success") if mensaje is mapping else "success" %}
+{% if categoria == "error" %}
+{% set tipos.error = true %}
+{% else %}
+{% set tipos.success = true %}
+{% endif %}
+{% endfor %}
+{% if tipos.success %}
+<div class="flash flash-success-container">
+    {% for mensaje in flash %}
+    {% set categoria = mensaje.get("categoria", "success") if mensaje is mapping else "success" %}
+    {% if categoria != "error" %}
+    {% set texto = mensaje.get("mensaje", "") if mensaje is mapping else mensaje %}
+    <div class="flash-item flash-success" data-categoria="success" role="status">
+        {{ texto }}
+    </div>
+    {% endif %}
     {% endfor %}
 </div>
+{% endif %}
+{% if tipos.error %}
+<div class="flash-error-container">
+    {% for mensaje in flash %}
+    {% set categoria = mensaje.get("categoria", "success") if mensaje is mapping else "success" %}
+    {% if categoria == "error" %}
+    {% set texto = mensaje.get("mensaje", "") if mensaje is mapping else mensaje %}
+    <div class="flash-item flash-error" data-categoria="error" role="alert">
+        {{ texto }}
+    </div>
+    {% endif %}
+    {% endfor %}
+</div>
+{% endif %}
 {% endif %}
 
 {% block contenido %}
@@ -108,31 +146,32 @@
 
 </footer>
 
-<div class="reproductor-persistente" id="reproductor" style="display:none;">
-    <button class="rp-portada" id="rp-portada" onclick="rpToggle()" aria-label="Reproducir / Pausar"></button>
+<section class="reproductor-persistente" id="reproductor" aria-label="Reproductor de audio" style="display:none;">
+    <div class="rp-portada" id="rp-portada" aria-hidden="true"></div>
     <div class="reproductor-info">
-        <span id="rp-titulo">---</span>
+        <span id="rp-titulo" aria-live="polite">Sin reproducción</span>
     </div>
     <div class="reproductor-controles">
-        <button class="rp-seek" id="rp-atras10" onclick="rpSaltar(-10)" aria-label="Retroceder 10 segundos" title="Retroceder 10 segundos">−10</button>
-        <button id="rp-btn-play" onclick="rpToggle()" aria-label="Reproducir / Pausar" aria-pressed="false">▶</button>
-        <button class="rp-seek" id="rp-adelante10" onclick="rpSaltar(10)" aria-label="Avanzar 10 segundos" title="Avanzar 10 segundos">+10</button>
-        <button class="rp-seek" id="rp-next" onclick="rpSiguiente()" aria-label="Siguiente" title="Siguiente">⏭</button>
+        <button class="rp-seek" id="rp-atras10" type="button" onclick="rpSaltar(-10)" aria-label="Retroceder 10 segundos" title="Retroceder 10 segundos">−10</button>
+        <button id="rp-btn-play" type="button" onclick="rpToggle()" aria-label="Reproducir" aria-pressed="false" title="Reproducir">▶</button>
+        <button class="rp-seek" id="rp-adelante10" type="button" onclick="rpSaltar(10)" aria-label="Avanzar 10 segundos" title="Avanzar 10 segundos">+10</button>
+        <button class="rp-seek" id="rp-next" type="button" onclick="rpSiguiente()" aria-label="Siguiente pista" title="Siguiente pista">⏭</button>
         <div class="reproductor-progreso">
             <span id="rp-actual">0:00</span>
-            <div class="rp-barra" id="rp-barra" role="slider" aria-label="Progreso de reproducción" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" tabindex="0">
+            <div class="rp-barra" id="rp-barra" role="slider" aria-label="Progreso de reproducción" aria-orientation="horizontal" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" aria-valuetext="0:00 de 0:00" aria-describedby="rp-actual rp-duracion" tabindex="0">
                 <div class="rp-barra-fill" id="rp-barra-fill"></div>
                 <div class="rp-barra-thumb" id="rp-barra-thumb"></div>
             </div>
             <span id="rp-duracion">0:00</span>
         </div>
         <div class="reproductor-volumen">
+            <label class="sr-only" for="rp-volumen">Volumen</label>
             <input type="range" id="rp-volumen" aria-label="Volumen" min="0" max="100" value="80" oninput="rpVolumen(this.value)">
         </div>
-        <button id="rp-btn-close" onclick="rpCerrar()" title="Cerrar">✕</button>
+        <button id="rp-btn-close" type="button" onclick="rpCerrar()" aria-label="Cerrar reproductor" title="Cerrar reproductor">✕</button>
     </div>
-    <audio id="rp-audio" preload="none"></audio>
-</div>
+    <audio id="rp-audio" preload="none" aria-hidden="true"></audio>
+</section>
 
 </body>
 

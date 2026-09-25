@@ -1,11 +1,15 @@
 {% extends "base.html" %}
 
+{% block title %}{{ musica.titulo }} — {{ musica.artista }} | Analógico Domingo{% endblock %}
+
+{% block meta_description %}{% if musica.descripcion %}{{ musica.descripcion|truncate(160, true) }}{% else %}Canción {{ musica.titulo }}, de {{ musica.artista }}, en el archivo de Analógico Domingo.{% endif %}{% endblock %}
+
 {% block head %}
 <meta property="og:site_name" content="Analógico Domingo">
 <meta property="og:title" content="{{ musica.artista }} - {{ musica.titulo }}">
 <meta property="og:description" content="{{ (musica.descripcion or '')|truncate(200) }}">
 <meta property="og:type" content="music.song">
-<meta property="og:url" content="{{ request.url }}">
+<meta property="og:url" content="{{ url_canonica }}">
 {% if musica.portada %}
 <meta property="og:image" content="{{ img_social(musica.portada) }}">
 <meta property="og:image:width" content="1200">
@@ -55,11 +59,13 @@
         <div class="acciones-musica">
             {% if musica.audio %}
             <button
+                type="button"
                 class="boton"
                 data-play="{{ musica.audio }}"
                 data-titulo="{{ musica.artista }} - {{ musica.titulo }}"
                 data-portada="{{ img(musica.portada, 200) if musica.portada else '' }}"
-                aria-label="Escuchar {{ musica.titulo }}">
+                aria-label="Escuchar {{ musica.titulo }}"
+                aria-pressed="false">
                 ▶ Escuchar
             </button>
             {% endif %}

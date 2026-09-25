@@ -1,5 +1,9 @@
 {% extends "base.html" %}
 
+{% block title %}Editar {{ musica.titulo }} | Analógico Domingo{% endblock %}
+
+{% block meta_description %}Formulario para editar {{ musica.titulo }} en el catálogo de Analógico Domingo.{% endblock %}
+
 {% block contenido %}
 
 <h2>Editar Música</h2>
@@ -16,44 +20,44 @@
     class="formulario"
     id="form-musica">
 
-    <label>Título</label>
-    <input type="text" name="titulo" value="{{ musica.titulo }}" required>
+    <label for="musica-titulo">Título</label>
+    <input id="musica-titulo" type="text" name="titulo" value="{{ musica.titulo }}" required>
 
-    <label>Artista</label>
-    <input type="text" name="artista" value="{{ musica.artista }}" required>
+    <label for="musica-artista">Artista</label>
+    <input id="musica-artista" type="text" name="artista" value="{{ musica.artista }}" required>
 
-    <label>Año</label>
-    <input type="text" name="anio" value="{{ musica.anio }}">
+    <label for="musica-anio">Año</label>
+    <input id="musica-anio" type="text" name="anio" value="{{ musica.anio }}">
 
-    <label>Género</label>
-    <input type="text" name="genero" value="{{ musica.genero }}" placeholder="Ej: Indie Rock">
+    <label for="musica-genero">Género</label>
+    <input id="musica-genero" type="text" name="genero" value="{{ musica.genero }}" placeholder="Ej: Indie Rock">
 
-    <label>Descripción</label>
-    <textarea name="descripcion" rows="6">{{ musica.descripcion }}</textarea>
+    <label for="musica-descripcion">Descripción</label>
+    <textarea id="musica-descripcion" name="descripcion" rows="6">{{ musica.descripcion }}</textarea>
 
-    <label>Portada actual</label>
+    <p class="nota-formulario">Portada actual</p>
     {% if musica.portada %}
-    <p><img src="{{ img(musica.portada, 300) }}" style="max-height:200px; border-radius:6px;"></p>
+    <p><img src="{{ img(musica.portada, 300) }}" alt="Portada actual de {{ musica.titulo }}" style="max-height:200px; border-radius:6px;"></p>
     {% endif %}
 
-    <label>Nueva portada (opcional)</label>
+    <label for="input-portada">Nueva portada (opcional)</label>
     <input type="file" accept="image/*" id="input-portada">
     <img id="vista-previa-portada" class="preview-portada" alt="Vista previa de la nueva portada" hidden>
     <input type="hidden" name="portada_url" id="portada_url" value="">
 
-    <label>Audio actual</label>
+    <p class="nota-formulario">Audio actual</p>
     {% if musica.audio %}
-    <audio controls preload="none">
+    <audio controls preload="none" aria-label="Audio actual de {{ musica.titulo }}">
         <source src="{{ musica.audio }}" type="audio/mpeg">
     </audio>
     {% endif %}
 
-    <label>Nuevo audio (opcional)</label>
+    <label for="input-audio">Nuevo audio (opcional)</label>
     <input type="file" accept=".mp3,audio/*" id="input-audio">
     <input type="hidden" name="audio_url" id="audio_url" value="">
 
-    <label>Vincular a disco del catálogo</label>
-    <select name="id_disco">
+    <label for="musica-disco">Vincular a disco del catálogo</label>
+    <select id="musica-disco" name="id_disco">
         <option value="">--- Sin vínculo ---</option>
         {% for d in discos_list %}
             <option value="{{ d.id_disco }}" {% if disco_vinculado and disco_vinculado.id_disco == d.id_disco %}selected{% endif %}>{{ d.artista }} - {{ d.titulo }}</option>

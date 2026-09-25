@@ -2,6 +2,7 @@ from fastapi import APIRouter, Request, Form
 from fastapi.responses import RedirectResponse
 
 from utils.render import render
+from utils.mensajes import flash
 from utils.passwords import verificar_password, hash_password
 from models import obtener_usuario, actualizar_password
 
@@ -65,13 +66,7 @@ def _registrar_intento(request, usuario, ok):
 @router.get("/login")
 def login(request: Request):
 
-    return render(
-        request,
-        "login.html",
-        {
-            "error": ""
-        }
-    )
+    return render(request, "login.html")
 
 
 # ======================================================
@@ -89,25 +84,19 @@ def validar_login(
 ):
 
     if _verificar_bloqueo(request, usuario):
-        return render(
+        flash(
             request,
-            "login.html",
-            {
-                "error": "Demasiados intentos fallidos. Esperá unos minutos antes de volver a intentar."
-            }
+            "Demasiados intentos fallidos. Esperá unos minutos antes de volver a intentar.",
+            categoria="error"
         )
+        return render(request, "login.html")
 
     datos_usuario = obtener_usuario(usuario)
 
     if datos_usuario is None:
         _registrar_intento(request, usuario, False)
-        return render(
-            request,
-            "login.html",
-            {
-                "error": "Usuario o contraseña incorrectos."
-            }
-        )
+        flash(request, "Usuario o contraseña incorrectos.", categoria="error")
+        return render(request, "login.html")
 
     ok, requiere_rehash = verificar_password(
         password, datos_usuario["password"]
@@ -115,13 +104,8 @@ def validar_login(
 
     if not ok:
         _registrar_intento(request, usuario, False)
-        return render(
-            request,
-            "login.html",
-            {
-                "error": "Usuario o contraseña incorrectos."
-            }
-        )
+        flash(request, "Usuario o contraseña incorrectos.", categoria="error")
+        return render(request, "login.html")
 
     _registrar_intento(request, usuario, True)
 

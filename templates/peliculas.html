@@ -1,5 +1,9 @@
 {% extends "base.html" %}
 
+{% block title %}Películas | Analógico Domingo{% endblock %}
+
+{% block meta_description %}Catálogo de películas de Analógico Domingo con información sobre directores y enlaces disponibles.{% endblock %}
+
 {% block contenido %}
 
 <div class="barra-superior">
@@ -15,11 +19,11 @@
 </div>
 
 <form class="buscador" action="/peliculas/" method="get" id="form-filtrar-peliculas">
+    <label class="sr-only" for="filtro-genero-peliculas">Filtrar películas por género</label>
     <select
         id="filtro-genero-peliculas"
         name="genero"
-        class="filtro-stock"
-        aria-label="Filtrar películas por género">
+        class="filtro-stock">
         <option value="" {% if not genero %}selected{% endif %}>Todos los géneros</option>
         {% for genero_opcion in generos %}
         <option value="{{ genero_opcion }}" {% if genero == genero_opcion %}selected{% endif %}>{{ genero_opcion }}</option>
@@ -45,7 +49,11 @@
 
     <div class="portada">
 
+    {% if pelicula.url_pelicula %}
     <a href="{{ pelicula.url_pelicula }}" target="_blank" rel="noopener" class="portada-enlace">
+    {% else %}
+    <div class="portada-enlace">
+    {% endif %}
 
     {% if pelicula.portada %}
 
@@ -62,18 +70,32 @@
     {% endif %}
 
         <span class="pelicula-overlay">
-            <span class="pelicula-overlay-ico">▶</span> Ver
+            <span class="pelicula-overlay-ico">{% if pelicula.url_pelicula %}▶{% else %}—{% endif %}</span>
+            {% if pelicula.url_pelicula %}Ver película{% else %}No disponible{% endif %}
+            {% if pelicula.url_pelicula %}<span class="sr-only"> (abre en una pestaña nueva)</span>{% endif %}
         </span>
 
+    {% if pelicula.url_pelicula %}
     </a>
+    {% else %}
+    </div>
+    {% endif %}
 
     </div>
 
     <h3>
+        {% if pelicula.url_pelicula %}
         <a class="titulo-pelicula" href="{{ pelicula.url_pelicula }}" target="_blank" rel="noopener">
-            {{ pelicula.titulo }}
+            {{ pelicula.titulo }}<span class="sr-only"> (abre en una pestaña nueva)</span>
         </a>
+        {% else %}
+        <span class="titulo-pelicula">{{ pelicula.titulo }}</span>
+        {% endif %}
     </h3>
+
+    {% if not pelicula.url_pelicula %}
+    <p class="estado-enlace">Enlace no disponible</p>
+    {% endif %}
 
     <p>
         Director: <strong>{{ pelicula.director }}</strong>
@@ -83,7 +105,7 @@
 
     {% if pelicula.url_subtitulos %}
     <p class="pelicula-subtitulos">
-        <a class="link-subtitulos" href="{{ pelicula.url_subtitulos }}" target="_blank" rel="noopener">📄 Descargar subtítulos</a>
+        <a class="link-subtitulos" href="{{ pelicula.url_subtitulos }}" target="_blank" rel="noopener">Descargar subtítulos (externo)<span class="sr-only">, abre en una pestaña nueva</span></a>
     </p>
     {% endif %}
 
@@ -93,7 +115,7 @@
         <a href="/peliculas/editar/{{ pelicula.id_pelicula }}">Editar</a>
 
         <form method="post" action="/peliculas/eliminar/{{ pelicula.id_pelicula }}?csrf_token={{ csrf_token }}" class="form-eliminar"
-              onsubmit="return confirmEliminar('¿Eliminar esta pelicula?')">
+              onsubmit="return confirmEliminar('¿Eliminar esta película?')">
             <button type="submit" class="link-eliminar">Eliminar</button>
         </form>
 

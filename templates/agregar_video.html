@@ -1,5 +1,9 @@
 {% extends "base.html" %}
 
+{% block title %}Agregar video | Analógico Domingo{% endblock %}
+
+{% block meta_description %}Formulario para agregar un video o audio al archivo de Analógico Domingo.{% endblock %}
+
 {% block contenido %}
 
 <h2>Nuevo Video</h2>
@@ -17,20 +21,22 @@
     class="formulario"
     id="form-video">
 
-    <label>Título</label>
+    <label for="video-titulo">Título</label>
 
     <input
+        id="video-titulo"
         type="text"
         name="titulo"
         required>
 
-    <label>Fecha</label>
+    <label for="video-fecha">Fecha</label>
 
     <input
+        id="video-fecha"
         type="date"
         name="fecha">
 
-    <label>Archivo (audio o video)</label>
+    <label for="input-archivo">Archivo (audio o video)</label>
 
     <input
         type="file"

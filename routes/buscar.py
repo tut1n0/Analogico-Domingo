@@ -8,6 +8,8 @@ router = APIRouter(
     tags=["Busqueda"]
 )
 
+LIMITE_BUSQUEDA_GLOBAL = 6
+
 
 @router.get("")
 @router.get("/")
@@ -25,5 +27,6 @@ def buscar(
         {
             "q": texto,
             "resultados": resultados,
+            "limite_resultados": LIMITE_BUSQUEDA_GLOBAL if texto else None,
         }
     )

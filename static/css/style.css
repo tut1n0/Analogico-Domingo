@@ -6,11 +6,35 @@
 
 }
 
+:root {
+    --reproductor-espacio: 90px;
+}
+
 body {
     font-family: "Alumni Sans", "Caacupe One", sans-serif;
     background: #000;
     color: white;
     font-size: 17px;
+    min-height: 100vh;
+    padding-bottom: var(--reproductor-espacio, 90px);
+}
+
+.enlace-salto {
+    position: fixed;
+    top: 8px;
+    left: 8px;
+    z-index: 10000;
+    padding: 10px 14px;
+    border-radius: 6px;
+    background: #f2c14e;
+    color: #111;
+    font-weight: 700;
+    text-decoration: none;
+    transform: translateY(-150%);
+}
+
+.enlace-salto:focus {
+    transform: translateY(0);
 }
 
 header{
@@ -183,7 +207,8 @@ main h3{
 }
 
 .buscador-global input:focus {
-    outline: none;
+    outline: 2px solid #f2c14e;
+    outline-offset: 2px;
     border-color: #d4a000;
 }
 
@@ -273,15 +298,62 @@ footer{
 
 }
 
+.tarjetas{
+    display:grid;
+    grid-template-columns:repeat(auto-fill,minmax(250px,1fr));
+    gap:20px;
+}
+
 .tarjeta{
 
     background:#030303;
     border-radius:8px;
     padding:20px;
     border:1px solid #dba801;
+    display:flex;
+    flex-direction:column;
+    min-width:0;
     transition:transform 0.25s ease, box-shadow 0.25s ease;
     will-change:transform;
 
+}
+
+.tarjetas .tarjeta{
+    height:100%;
+    padding:0;
+    overflow:hidden;
+    color:#fff;
+    text-decoration:none;
+}
+
+.tarjetas .tarjeta > img{
+    display:block;
+    width:100%;
+    aspect-ratio:1 / 1;
+    object-fit:cover;
+    background:#2a2200;
+}
+
+.tarjetas .tarjeta-info{
+    display:flex;
+    flex:1;
+    flex-direction:column;
+    align-items:flex-start;
+    gap:4px;
+    min-width:0;
+    padding:14px 16px 16px;
+}
+
+.tarjetas .tarjeta-info strong{
+    color:#f2c14e;
+    line-height:1.35;
+    overflow-wrap:anywhere;
+}
+
+.tarjetas .tarjeta-info > span:not(.badge){
+    color:#e6e6e6;
+    line-height:1.4;
+    overflow-wrap:anywhere;
 }
 
 .tarjeta:hover{
@@ -350,12 +422,12 @@ footer{
 .portada{
 
     height:250px;
-    background:#9f8701;
+    background:#3a2e00;
     display:flex;
     justify-content:center;
     align-items:center;
     margin-bottom:15px;
-    color:#999;
+    color:#f2c14e;
     position:relative;
     overflow:hidden;
 
@@ -507,7 +579,8 @@ footer{
 }
 
 .buscador input:focus{
-    outline:none;
+    outline:2px solid #f2c14e;
+    outline-offset:2px;
     border-color:#d4a000;
 }
 
@@ -552,6 +625,11 @@ footer{
 
 .sin-resultados strong{
     color:#d39a0c;
+}
+
+.estado-enlace{
+    color:rgba(255,255,255,0.7);
+    font-style:italic;
 }
 
 .tabla{
@@ -736,7 +814,8 @@ footer{
 
 .login-form input:focus{
 
-    outline:none;
+    outline:2px solid #f2c14e;
+    outline-offset:2px;
     border-color:#d4a000;
 
 }
@@ -1009,9 +1088,12 @@ footer{
     bottom: 0;
     left: 0;
     right: 0;
+    width: 100%;
+    min-width: 0;
     background: #111;
     border-top: 2px solid #d4a000;
     padding: 10px 20px;
+    padding-bottom: calc(10px + env(safe-area-inset-bottom, 0px));
     display: flex;
     align-items: center;
     gap: 15px;
@@ -1037,7 +1119,6 @@ footer{
     background:#1f1f1f center/cover no-repeat;
     color:#d4a000;
     font-size:18px;
-    cursor:pointer;
     display:flex;
     align-items:center;
     justify-content:center;
@@ -1047,12 +1128,8 @@ footer{
     border-color:rgba(255,255,255,0.25);
 }
 
-.rp-portada.tiene-portada:hover{
-    border-color:#d4a000;
-}
-
 .rp-portada:not(.tiene-portada)::before{
-    content:'▶';
+    content:'♪';
 }
 
 .reproductor-info span {
@@ -1069,6 +1146,7 @@ footer{
     align-items: center;
     gap: 10px;
     flex: 1;
+    min-width: 0;
 }
 
 .reproductor-controles button {
@@ -1115,6 +1193,7 @@ footer{
     align-items: center;
     gap: 8px;
     flex: 1;
+    min-width: 0;
 }
 
 .reproductor-progreso span {
@@ -1125,11 +1204,13 @@ footer{
 
 .rp-barra {
     flex: 1;
+    min-width: 0;
     height: 8px;
     background: #333;
     border-radius: 4px;
     cursor: pointer;
     position: relative;
+    touch-action: none;
 }
 
 .rp-barra-fill {
@@ -1165,8 +1246,14 @@ footer{
     appearance: none;
     background: #333;
     border-radius: 2px;
-    outline: none;
+    outline: 2px solid transparent;
+    outline-offset: 4px;
     cursor: pointer;
+}
+
+.reproductor-volumen input[type="range"]:focus,
+.reproductor-volumen input[type="range"]:focus-visible {
+    outline: 2px solid #f2c14e;
 }
 
 .reproductor-volumen input[type="range"]::-webkit-slider-thumb {
@@ -1201,6 +1288,10 @@ footer{
 ===================================== */
 
 @media (max-width: 768px) {
+
+    :root {
+        --reproductor-espacio: 150px;
+    }
 
     main {
         width: 100%;
@@ -1242,6 +1333,11 @@ footer{
 
     .contenedor-programas {
         grid-template-columns: repeat(2, 1fr);
+        gap: 15px;
+    }
+
+    .tarjetas {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
         gap: 15px;
     }
 
@@ -1343,33 +1439,65 @@ footer{
         flex-wrap: wrap;
         gap: 8px;
         padding: 8px 12px;
+        padding-bottom: calc(8px + env(safe-area-inset-bottom, 0px));
+        max-height: calc(100vh - 16px);
+        max-height: calc(100dvh - 16px);
+        overflow-y: auto;
+        overscroll-behavior: contain;
+        -webkit-overflow-scrolling: touch;
     }
 
     .reproductor-info {
-        min-width: 120px;
+        min-width: 0;
         max-width: 150px;
-        flex: 1;
+        flex: 1 1 auto;
     }
 
     .rp-portada{
-        width:40px;
-        height:40px;
+        width:44px;
+        height:44px;
     }
 
     .reproductor-controles {
         flex: 1 1 100%;
         flex-wrap: wrap;
+        min-width: 0;
     }
 
     .reproductor-controles button {
-        width: 40px;
-        height: 40px;
+        width: 44px;
+        min-width: 44px;
+        height: 44px;
+        min-height: 44px;
     }
 
     .reproductor-controles button.rp-seek {
-        height: 40px;
-        min-width: 52px;
+        height: 44px;
+        min-height: 44px;
+        min-width: 56px;
         font-size: 14px;
+    }
+
+    .reproductor-progreso {
+        flex: 1 1 240px;
+        min-width: 0;
+    }
+
+    .reproductor-progreso span {
+        min-width: 32px;
+    }
+
+    .rp-barra {
+        height: 44px;
+        background: linear-gradient(#333, #333) center / 100% 8px no-repeat;
+    }
+
+    .reproductor-progreso .rp-barra-fill {
+        position: absolute;
+        top: 50%;
+        left: 0;
+        height: 8px;
+        transform: translateY(-50%);
     }
 
     .reproductor-volumen {
@@ -1384,6 +1512,10 @@ footer{
 ===================================== */
 
 @media (max-width: 480px) {
+
+    :root {
+        --reproductor-espacio: 190px;
+    }
 
     body {
         font-size: 15px;
@@ -1411,6 +1543,11 @@ footer{
     }
 
     .contenedor-programas {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+
+    .tarjetas {
         grid-template-columns: 1fr;
         gap: 20px;
     }
@@ -1507,11 +1644,16 @@ footer{
 
     .reproductor-persistente {
         padding: 6px 10px;
+        padding-bottom: calc(6px + env(safe-area-inset-bottom, 0px));
     }
 
     .reproductor-info {
-        min-width: 100px;
-        max-width: 120px;
+        min-width: 0;
+        max-width: none;
+    }
+
+    .reproductor-progreso {
+        flex: 1 1 100%;
     }
 
     .reproductor-info span {
@@ -1731,7 +1873,8 @@ footer{
     color:inherit;
 }
 
-.portada-enlace:hover .pelicula-overlay{
+.portada-enlace:hover .pelicula-overlay,
+.portada-enlace:focus-visible .pelicula-overlay{
     opacity:1;
     background:#d4a000;
     color:#111;
@@ -1767,6 +1910,7 @@ footer{
 }
 
 .play-overlay:hover,
+.play-overlay:focus-visible,
 .play-overlay.activa {
     background: #d4a000;
     color: #111;
@@ -1775,6 +1919,14 @@ footer{
 
 .portada:hover .play-overlay {
     opacity: 1;
+}
+
+@media (hover:none){
+    .play-overlay{
+        opacity:1;
+        background:#d4a000;
+        color:#111;
+    }
 }
 
 /* --- Estado de pista activa --- */
@@ -1786,7 +1938,7 @@ footer{
 .boton-play.activa,
 .boton[data-play].activa,
 .boton-play.activa:hover {
-    background: #3a9d5d;
+    background: #2e7d32;
     color: #fff;
 }
 
@@ -1855,7 +2007,7 @@ main.rp-fade-in {
 .toast {
     position: fixed;
     left: 50%;
-    bottom: 90px;
+    bottom: calc(var(--reproductor-espacio, 90px) + 16px);
     transform: translateX(-50%) translateY(20px);
     background: #222;
     color: #fff;
@@ -1976,7 +2128,7 @@ html {
 
 /* Estado de pista activa también en el reproductor */
 .reproductor-controles button.activa {
-    background: #3a9d5d;
+    background: #2e7d32;
     color: #fff;
 }
 
@@ -1999,7 +2151,8 @@ html {
 /* ============================================
    Flash (mensajes de éxito / error)
    ============================================ */
-.flash {
+.flash,
+.flash-error-container {
     max-width: 900px;
     margin: 0 auto 16px;
     display: flex;
@@ -2014,6 +2167,35 @@ html {
     border: 1px solid #3a9d5d;
     color: #d9f7e3;
     font-size: 15px;
+    line-height: 1.5;
+}
+
+.flash-item.success,
+.flash-item.flash-success,
+.success-message {
+    background: #1c2f23;
+    border-color: #5fbf7a;
+    color: #e6f8eb;
+}
+
+.flash-item.error,
+.flash-item.flash-error,
+.error-message,
+.error-login,
+.upload-error {
+    background: #641b1b;
+    border: 1px solid #e57373;
+    color: #fff1f1;
+    line-height: 1.5;
+}
+
+.flash-item.warning,
+.flash-item.flash-warning,
+.warning-message {
+    background: #4a3708;
+    border-color: #e0b83f;
+    color: #fff4c7;
+    line-height: 1.5;
 }
 
 .flash {

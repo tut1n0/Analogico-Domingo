@@ -135,9 +135,9 @@ def guardar_video(
             status_code=303
         )
 
-    except Exception as e:
+    except Exception:
         logger.exception("Error al guardar video")
-        flash(request, [f"No se pudo guardar el video: {e}"])
+        flash(request, ["No se pudo guardar el video."], categoria="error")
         return RedirectResponse(
             url="/videos/nuevo",
             status_code=303
@@ -159,7 +159,7 @@ def editar(request: Request, id_video: int):
     video = obtener_video(id_video)
 
     if not video:
-        flash(request, ["Video no encontrado."])
+        flash(request, ["Video no encontrado."], categoria="error")
         return RedirectResponse(url="/videos/", status_code=303)
 
     return render(
@@ -198,7 +198,7 @@ def actualizar(
         video = obtener_video(id_video)
 
         if not video:
-            flash(request, ["Video no encontrado."])
+            flash(request, ["Video no encontrado."], categoria="error")
             return RedirectResponse(url="/videos/", status_code=303)
 
         nombre_archivo = video["archivo_url"]
@@ -232,9 +232,9 @@ def actualizar(
             status_code=303
         )
 
-    except Exception as e:
+    except Exception:
         logger.exception("Error al actualizar video")
-        flash(request, [f"No se pudo actualizar el video: {e}"])
+        flash(request, ["No se pudo actualizar el video."], categoria="error")
         return RedirectResponse(
             url=f"/videos/editar/{id_video}",
             status_code=303
@@ -257,7 +257,7 @@ def eliminar(request: Request, id_video: int):
         video = obtener_video(id_video)
 
         if not video:
-            flash(request, ["Video no encontrado."])
+            flash(request, ["Video no encontrado."], categoria="error")
             return RedirectResponse(url="/videos/", status_code=303)
 
         if video["archivo_url"]:
@@ -266,9 +266,9 @@ def eliminar(request: Request, id_video: int):
         eliminar_video(id_video)
 
         flash(request, ["Video eliminado."])
-    except Exception as e:
+    except Exception:
         logger.exception("Error al eliminar video")
-        flash(request, [f"No se pudo eliminar el video: {e}"])
+        flash(request, ["No se pudo eliminar el video."], categoria="error")
 
     return RedirectResponse(
         url="/videos/",

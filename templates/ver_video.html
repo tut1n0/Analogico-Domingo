@@ -1,11 +1,15 @@
 {% extends "base.html" %}
 
+{% block title %}{{ video.titulo }} | Analógico Domingo{% endblock %}
+
+{% block meta_description %}Video o audio documentado en Analógico Domingo: {{ video.titulo|truncate(120, true) }}.{% endblock %}
+
 {% block head %}
 <meta property="og:site_name" content="Analógico Domingo">
 <meta property="og:title" content="{{ video.titulo }} - Video">
 <meta property="og:description" content="Video documentado en Analógico Domingo: {{ video.titulo }}">
 <meta property="og:type" content="video.other">
-<meta property="og:url" content="{{ request.url }}">
+<meta property="og:url" content="{{ url_canonica }}">
 <meta property="og:image" content="{{ request.base_url }}static/header-opt.jpg">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:image" content="{{ request.base_url }}static/header-opt.jpg">
@@ -13,26 +17,27 @@
 
 {% block contenido %}
 
-<div class="detalle-video">
+<article class="detalle-video">
 
     <div class="cabecera-disco">
         <h2>{{ video.titulo }}</h2>
     </div>
 
     {% if video.fecha %}
-    <p class="video-fecha-detalle"><strong>Fecha:</strong> {{ video.fecha }}</p>
+    <p class="video-fecha-detalle"><strong>Fecha:</strong> <time datetime="{{ video.fecha }}">{{ video.fecha }}</time></p>
     {% endif %}
 
     {% if video.archivo_url %}
     <div class="video-reproductor">
         {% if video.tipo_archivo == "video" %}
-        <video controls style="width:100%; border-radius:8px;">
+        <video controls style="width:100%; border-radius:8px;" aria-label="Video: {{ video.titulo }}">
             <source src="{{ video.archivo_url }}">
             Tu navegador no soporta video.
         </video>
         {% else %}
-        <audio controls style="width:100%;">
+        <audio controls style="width:100%;" aria-label="Audio: {{ video.titulo }}">
             <source src="{{ video.archivo_url }}">
+            Tu navegador no soporta audio.
         </audio>
         {% endif %}
     </div>
@@ -59,6 +64,6 @@
 
     </div>
 
-</div>
+</article>
 
 {% endblock %}

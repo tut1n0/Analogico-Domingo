@@ -1,8 +1,12 @@
 {% extends "base.html" %}
 
+{% block title %}Agregar canción | Analógico Domingo{% endblock %}
+
+{% block meta_description %}Formulario para agregar una canción al catálogo de Analógico Domingo.{% endblock %}
+
 {% block contenido %}
 
-<h2>Nuevo Música</h2>
+<h2>Nueva canción</h2>
 
 <div id="upload-status" class="upload-status" role="status"></div>
 <div id="upload-error" class="upload-error" role="alert"></div>
@@ -16,27 +20,27 @@
     class="formulario"
     id="form-musica">
 
-    <label>Título</label>
-    <input type="text" name="titulo" required>
+    <label for="musica-titulo">Título</label>
+    <input id="musica-titulo" type="text" name="titulo" required>
 
-    <label>Artista</label>
-    <input type="text" name="artista" required>
+    <label for="musica-artista">Artista</label>
+    <input id="musica-artista" type="text" name="artista" required>
 
-    <label>Año</label>
-    <input type="text" name="anio">
+    <label for="musica-anio">Año</label>
+    <input id="musica-anio" type="text" name="anio">
 
-    <label>Género</label>
-    <input type="text" name="genero" placeholder="Ej: Indie Rock">
+    <label for="musica-genero">Género</label>
+    <input id="musica-genero" type="text" name="genero" placeholder="Ej: Indie Rock">
 
-    <label>Descripción</label>
-    <textarea name="descripcion" rows="6"></textarea>
+    <label for="musica-descripcion">Descripción</label>
+    <textarea id="musica-descripcion" name="descripcion" rows="6"></textarea>
 
-    <label>Portada (imagen)</label>
+    <label for="input-portada">Portada (imagen)</label>
     <input type="file" accept="image/*" id="input-portada">
     <img id="vista-previa-portada" class="preview-portada" alt="Vista previa de la portada" hidden>
     <input type="hidden" name="portada_url" id="portada_url" value="">
 
-    <label>Audio (MP3)</label>
+    <label for="input-audio">Audio (MP3)</label>
     <input type="file" accept=".mp3,audio/*" id="input-audio">
     <input type="hidden" name="audio_url" id="audio_url" value="">
 

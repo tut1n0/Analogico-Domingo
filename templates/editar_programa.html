@@ -1,5 +1,9 @@
 {% extends "base.html" %}
 
+{% block title %}Editar programa #{{ programa.numero }} | Analógico Domingo{% endblock %}
+
+{% block meta_description %}Formulario para editar el programa #{{ programa.numero }} de Analógico Domingo.{% endblock %}
+
 {% block contenido %}
 
 <h2>Editar Programa</h2>
@@ -17,29 +21,32 @@
     class="formulario"
     id="form-programa">
 
-    <label>Número</label>
+    <label for="programa-numero">Número</label>
 
     <input
+        id="programa-numero"
         type="number"
         name="numero"
         value="{{ programa.numero }}"
         required>
 
-    <label>Fecha</label>
+    <label for="programa-fecha">Fecha</label>
 
     <input
+        id="programa-fecha"
         type="date"
         name="fecha"
         value="{{ programa.fecha }}"
         required>
 
-    <label>Observaciones</label>
+    <label for="programa-observaciones">Observaciones</label>
 
     <textarea
+        id="programa-observaciones"
         name="observaciones"
         rows="6">{{ programa.observaciones }}</textarea>
 
-    <label>Audio del programa</label>
+    <label for="input-audio">Audio del programa</label>
 
     <input
         type="file"
@@ -53,34 +60,39 @@
 
     <p>Audio actual:</p>
 
-        <audio controls preload="none">
+        <audio controls preload="none" aria-label="Audio actual del programa #{{ programa.numero }}">
 
             <source
                 src="{{ programa.audio }}"
                 type="audio/mpeg">
 
+            Tu navegador no soporta audio.
+
         </audio>
 
     {% endif %}
 
-    <label>Discos del programa</label>
-    <div class="lista-discos">
-    {% for disco in discos %}
+    <fieldset>
+        <legend>Discos del programa</legend>
+        <div class="lista-discos">
+        {% for disco in discos %}
 
-        <label>
+            <label for="programa-disco-{{ disco.id_disco }}">
 
-            <input
-                type="checkbox"
-                name="discos"
-                value="{{ disco.id_disco }}"
-                {% if disco.id_disco in seleccionados %}checked{% endif %}>
+                <input
+                    id="programa-disco-{{ disco.id_disco }}"
+                    type="checkbox"
+                    name="discos"
+                    value="{{ disco.id_disco }}"
+                    {% if disco.id_disco in seleccionados %}checked{% endif %}>
 
-            {{ disco.artista }} - {{ disco.titulo }}
+                {{ disco.artista }} - {{ disco.titulo }}
 
-        </label>
+            </label>
 
-    {% endfor %}
-    </div>
+        {% endfor %}
+        </div>
+    </fieldset>
 
     <br>
 

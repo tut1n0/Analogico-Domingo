@@ -158,9 +158,9 @@ def guardar_programa(
             status_code=303
         )
 
-    except Exception as e:
+    except Exception:
         logger.exception("Error al guardar programa")
-        flash(request, [f"No se pudo guardar el programa: {e}"])
+        flash(request, ["No se pudo guardar el programa."], categoria="error")
         return RedirectResponse(
             url="/programas/nuevo",
             status_code=303
@@ -182,7 +182,7 @@ def editar(request: Request, id_programa: int):
     programa = obtener_programa(id_programa)
 
     if not programa:
-        flash(request, ["Programa no encontrado."])
+        flash(request, ["Programa no encontrado."], categoria="error")
         return RedirectResponse(url="/programas/", status_code=303)
 
     discos = obtener_discos()
@@ -214,7 +214,7 @@ def ver_programa(request: Request, id_programa: int):
     programa = obtener_programa(id_programa)
 
     if not programa:
-        flash(request, ["Programa no encontrado."])
+        flash(request, ["Programa no encontrado."], categoria="error")
         return RedirectResponse(url="/programas/", status_code=303)
 
     discos_programa = obtener_discos_programa(id_programa)
@@ -257,7 +257,7 @@ def actualizar(
         programa = obtener_programa(id_programa)
 
         if not programa:
-            flash(request, ["Programa no encontrado."])
+            flash(request, ["Programa no encontrado."], categoria="error")
             return RedirectResponse(url="/programas/", status_code=303)
 
         nombre_audio = programa["audio"]
@@ -301,9 +301,9 @@ def actualizar(
             status_code=303
         )
 
-    except Exception as e:
+    except Exception:
         logger.exception("Error al actualizar programa")
-        flash(request, [f"No se pudo actualizar el programa: {e}"])
+        flash(request, ["No se pudo actualizar el programa."], categoria="error")
         return RedirectResponse(
             url=f"/programas/editar/{id_programa}",
             status_code=303
@@ -326,7 +326,7 @@ def eliminar(request: Request, id_programa: int):
         programa = obtener_programa(id_programa)
 
         if not programa:
-            flash(request, ["Programa no encontrado."])
+            flash(request, ["Programa no encontrado."], categoria="error")
             return RedirectResponse(url="/programas/", status_code=303)
 
         if programa["audio"]:
@@ -335,9 +335,9 @@ def eliminar(request: Request, id_programa: int):
         eliminar_programa(id_programa)
 
         flash(request, ["Programa eliminado."])
-    except Exception as e:
+    except Exception:
         logger.exception("Error al eliminar programa")
-        flash(request, [f"No se pudo eliminar el programa: {e}"])
+        flash(request, ["No se pudo eliminar el programa."], categoria="error")
 
     return RedirectResponse(
         url="/programas/",

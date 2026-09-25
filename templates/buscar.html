@@ -1,5 +1,9 @@
 {% extends "base.html" %}
 
+{% block title %}{% if q %}Resultados de “{{ q }}” | Analógico Domingo{% else %}Buscar | Analógico Domingo{% endif %}{% endblock %}
+
+{% block meta_description %}{% if q %}Resultados para “{{ q }}” en el archivo de Analógico Domingo.{% else %}Buscá discos, música, películas, videos y programas en el archivo de Analógico Domingo.{% endif %}{% endblock %}
+
 {% block contenido %}
 
 <div class="filtros" style="margin-bottom: 16px;">
@@ -10,11 +14,17 @@
     </form>
 </div>
 
+<h2 id="resultados-busqueda">{% if q %}Resultados para “{{ q }}”{% else %}Buscar en el archivo{% endif %}</h2>
+
+{% if q and limite_resultados %}
+<p class="resultados-busqueda">Se muestran hasta {{ limite_resultados }} resultados por categoría.</p>
+{% endif %}
+
 {% if resultados %}
 
     {% if resultados.discos %}
-    <section class="resultados-seccion">
-        <h3>Discos</h3>
+    <section class="resultados-seccion" aria-labelledby="resultados-discos">
+        <h3 id="resultados-discos">Discos</h3>
         <div class="tarjetas">
             {% for disco in resultados.discos %}
             <a class="tarjeta" href="/discos/{{ disco.id_disco }}">
@@ -35,8 +45,8 @@
     {% endif %}
 
     {% if resultados.musica %}
-    <section class="resultados-seccion">
-        <h3>Música</h3>
+    <section class="resultados-seccion" aria-labelledby="resultados-musica">
+        <h3 id="resultados-musica">Música</h3>
         <div class="tarjetas">
             {% for item in resultados.musica %}
             <a class="tarjeta" href="/musica/{{ item.id_musica }}">
@@ -57,11 +67,15 @@
     {% endif %}
 
     {% if resultados.peliculas %}
-    <section class="resultados-seccion">
-        <h3>Películas</h3>
+    <section class="resultados-seccion" aria-labelledby="resultados-peliculas">
+        <h3 id="resultados-peliculas">Películas</h3>
         <div class="tarjetas">
             {% for pelicula in resultados.peliculas %}
+            {% if pelicula.url_pelicula %}
             <a class="tarjeta" href="{{ pelicula.url_pelicula }}" target="_blank" rel="noopener">
+            {% else %}
+            <div class="tarjeta">
+            {% endif %}
                 {% if pelicula.portada %}
                 <img src="{{ img(pelicula.portada, 300) }}" alt="Portada de {{ pelicula.titulo }}" loading="lazy">
                 {% else %}
@@ -71,21 +85,30 @@
                     <strong>{{ pelicula.titulo }}</strong>
                     <span>{{ pelicula.director }}</span>
                     {% if pelicula.genero %}<span class="badge">{{ pelicula.genero }}</span>{% endif %}
+                    {% if pelicula.url_pelicula %}
+                    <span class="sr-only">Abre en una pestaña nueva</span>
+                    {% else %}
+                    <span class="estado-enlace">Enlace no disponible</span>
+                    {% endif %}
                 </div>
+            {% if pelicula.url_pelicula %}
             </a>
+            {% else %}
+            </div>
+            {% endif %}
             {% endfor %}
         </div>
     </section>
     {% endif %}
 
     {% if resultados.programas %}
-    <section class="resultados-seccion">
-        <h3>Programas</h3>
+    <section class="resultados-seccion" aria-labelledby="resultados-programas">
+        <h3 id="resultados-programas">Programas</h3>
         <ul class="lista-resultados">
             {% for programa in resultados.programas %}
             <li>
                 <a href="/programas/{{ programa.id_programa }}">
-                    Programa {{ programa.numero }}{% if programa.fecha %} · {{ programa.fecha }}{% endif %}
+                    Programa {{ programa.numero }}{% if programa.fecha %} · <time datetime="{{ programa.fecha }}">{{ programa.fecha }}</time>{% endif %}
                 </a>
                 {% if programa.observaciones %}<span class="desc">{{ programa.observaciones }}</span>{% endif %}
             </li>
@@ -95,13 +118,13 @@
     {% endif %}
 
     {% if resultados.videos %}
-    <section class="resultados-seccion">
-        <h3>Videos</h3>
+    <section class="resultados-seccion" aria-labelledby="resultados-videos">
+        <h3 id="resultados-videos">Videos</h3>
         <ul class="lista-resultados">
             {% for video in resultados.videos %}
             <li>
                 <a href="/videos/{{ video.id_video }}">{{ video.titulo }}</a>
-                {% if video.fecha %}<span class="desc">{{ video.fecha }}</span>{% endif %}
+                {% if video.fecha %}<time class="desc" datetime="{{ video.fecha }}">{{ video.fecha }}</time>{% endif %}
             </li>
             {% endfor %}
         </ul>

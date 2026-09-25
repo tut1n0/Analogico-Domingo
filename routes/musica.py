@@ -87,8 +87,12 @@ def upload_local(request: Request, file: UploadFile = File(...), folder: str = "
             url = upload_file_local(file, folder)
 
         return JSONResponse(content={"url": url})
-    except Exception as e:
-        return JSONResponse(status_code=500, content={"error": str(e)})
+    except Exception:
+        logger.exception("Error al subir archivo")
+        return JSONResponse(
+            status_code=500,
+            content={"error": "No se pudo subir el archivo."},
+        )
 
 
 @router.get("/nuevo")
@@ -131,9 +135,9 @@ def guardar(
 
         return RedirectResponse(url="/musica/", status_code=303)
 
-    except Exception as e:
+    except Exception:
         logger.exception("Error al guardar musica")
-        flash(request, [f"No se pudo guardar la canción: {e}"])
+        flash(request, ["No se pudo guardar la canción."], categoria="error")
         return RedirectResponse(url="/musica/nuevo", status_code=303)
 
 
@@ -146,7 +150,7 @@ def editar(request: Request, id_musica: int):
     item = obtener_musica_por_id(id_musica)
 
     if not item:
-        flash(request, ["Canción no encontrada."])
+        flash(request, ["Canción no encontrada."], categoria="error")
         return RedirectResponse(url="/musica/", status_code=303)
 
     disco_vinculado = obtener_disco_vinculado_a_musica(id_musica)
@@ -180,7 +184,7 @@ def actualizar(
         item = obtener_musica_por_id(id_musica)
 
         if not item:
-            flash(request, ["Canción no encontrada."])
+            flash(request, ["Canción no encontrada."], categoria="error")
             return RedirectResponse(url="/musica/", status_code=303)
 
         nombre_portada = item["portada"]
@@ -222,9 +226,9 @@ def actualizar(
 
         return RedirectResponse(url="/musica/", status_code=303)
 
-    except Exception as e:
+    except Exception:
         logger.exception("Error al actualizar musica")
-        flash(request, [f"No se pudo actualizar la canción: {e}"])
+        flash(request, ["No se pudo actualizar la canción."], categoria="error")
         return RedirectResponse(
             url=f"/musica/editar/{id_musica}",
             status_code=303
@@ -241,7 +245,7 @@ def eliminar(request: Request, id_musica: int):
         item = obtener_musica_por_id(id_musica)
 
         if not item:
-            flash(request, ["Canción no encontrada."])
+            flash(request, ["Canción no encontrada."], categoria="error")
             return RedirectResponse(url="/musica/", status_code=303)
 
         if item["portada"]:
@@ -252,9 +256,9 @@ def eliminar(request: Request, id_musica: int):
         eliminar_musica(id_musica)
 
         flash(request, ["Canción eliminada."])
-    except Exception as e:
+    except Exception:
         logger.exception("Error al eliminar musica")
-        flash(request, [f"No se pudo eliminar la canción: {e}"])
+        flash(request, ["No se pudo eliminar la canción."], categoria="error")
 
     return RedirectResponse(url="/musica/", status_code=303)
 

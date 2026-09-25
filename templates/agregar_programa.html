@@ -1,5 +1,9 @@
 {% extends "base.html" %}
 
+{% block title %}Nuevo programa | Analógico Domingo{% endblock %}
+
+{% block meta_description %}Formulario para crear un programa en el archivo de Analógico Domingo.{% endblock %}
+
 {% block contenido %}
 
 <h2>Nuevo Programa</h2>
@@ -17,27 +21,30 @@
     class="formulario"
     id="form-programa">
 
-    <label>Número</label>
+    <label for="programa-numero">Número</label>
 
     <input
+        id="programa-numero"
         type="number"
         name="numero"
         required>
 
-    <label>Fecha</label>
+    <label for="programa-fecha">Fecha</label>
 
     <input
+        id="programa-fecha"
         type="date"
         name="fecha"
         required>
 
-    <label>Observaciones</label>
+    <label for="programa-observaciones">Observaciones</label>
 
     <textarea
+        id="programa-observaciones"
         name="observaciones"
         rows="6"></textarea>
 
-    <label>Audio del programa (MP3)</label>
+    <label for="input-audio">Audio del programa (MP3)</label>
 
     <input
         type="file"
@@ -47,40 +54,43 @@
 
     <input type="hidden" name="audio_url" id="audio_url" value="">
 
-    <h3>Discos del programa</h3>
+    <fieldset>
+        <legend>Discos del programa</legend>
 
-    {% if discos %}
+        {% if discos %}
 
-        {% for disco in discos %}
+            {% for disco in discos %}
 
-        <div class="checkbox-disco">
+            <div class="checkbox-disco">
 
-            <label>
+                <label for="programa-disco-{{ disco.id_disco }}">
 
-                <input
-                    type="checkbox"
-                    name="discos"
-                    value="{{ disco.id_disco }}">
+                    <input
+                        id="programa-disco-{{ disco.id_disco }}"
+                        type="checkbox"
+                        name="discos"
+                        value="{{ disco.id_disco }}">
 
-                <strong>{{ disco.artista }}</strong>
-                -
-                {{ disco.titulo }}
+                    <strong>{{ disco.artista }}</strong>
+                    -
+                    {{ disco.titulo }}
 
-                {% if disco.anio %}
-                    ({{ disco.anio }})
-                {% endif %}
+                    {% if disco.anio %}
+                        ({{ disco.anio }})
+                    {% endif %}
 
-            </label>
+                </label>
 
-        </div>
+            </div>
 
-        {% endfor %}
+            {% endfor %}
 
-    {% else %}
+        {% else %}
 
-        <p>No hay discos pendientes.</p>
+            <p>No hay discos pendientes.</p>
 
-    {% endif %}
+        {% endif %}
+    </fieldset>
 
     <button
         type="submit"

@@ -10,6 +10,7 @@ from utils.csrf import obtener_token
 templates = Jinja2Templates(directory="templates")
 
 _PATRON_MAIN = re.compile(r"<main[^>]*>(.*?)</main>", re.DOTALL | re.IGNORECASE)
+_PATRON_HEAD = re.compile(r"<head[^>]*>(.*?)</head>", re.DOTALL | re.IGNORECASE)
 _PATRON_TITLE = re.compile(r"<title>(.*?)</title>", re.DOTALL | re.IGNORECASE)
 
 
@@ -44,13 +45,19 @@ def render(request, template, context=None):
     if request.headers.get("x-partial") == "1":
         m = _PATRON_MAIN.search(html)
         if m:
-            titulo = ""
-            mt = _PATRON_TITLE.search(html)
-            if mt:
-                titulo = mt.group(1)
+            head = ""
+            mh = _PATRON_HEAD.search(html)
+            if mh:
+                head = mh.group(1)
+            if not head:
+                titulo = ""
+                mt = _PATRON_TITLE.search(html)
+                if mt:
+                    titulo = mt.group(1)
+                head = "<title>" + titulo + "</title>"
             inner = m.group(1)
             html = (
-                "<html><head><title>" + titulo + "</title>"
+                "<html><head>" + head +
                 "</head><body><main>" + inner + "</main></body></html>"
             )
 

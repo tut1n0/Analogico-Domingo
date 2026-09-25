@@ -1,5 +1,9 @@
 {% extends "base.html" %}
 
+{% block title %}Discos | Analógico Domingo{% endblock %}
+
+{% block meta_description %}Catálogo de discos de Analógico Domingo con títulos, artistas, géneros y disponibilidad.{% endblock %}
+
 {% block contenido %}
 
 
@@ -17,28 +21,28 @@
 </div>
 
 <form class="buscador" action="/discos/" method="get" id="form-buscar">
+    <label class="sr-only" for="buscar-discos">Buscar discos</label>
     <input
         id="buscar-discos"
         type="search"
         name="q"
         value="{{ q }}"
         placeholder="Buscar por título, artista, género, sello o productor..."
-        autocomplete="off"
-        aria-label="Buscar discos">
+        autocomplete="off">
+    <label class="sr-only" for="filtro-stock">Filtrar por stock</label>
     <select
         id="filtro-stock"
         name="stock"
-        class="filtro-stock"
-        aria-label="Filtrar por stock">
+        class="filtro-stock">
         <option value="" {% if stock is none %}selected{% endif %}>Todos</option>
         <option value="1" {% if stock == 1 %}selected{% endif %}>En stock</option>
         <option value="0" {% if stock == 0 %}selected{% endif %}>Sin stock</option>
     </select>
+    <label class="sr-only" for="filtro-genero">Filtrar por género</label>
     <select
         id="filtro-genero"
         name="genero"
-        class="filtro-stock"
-        aria-label="Filtrar por género">
+        class="filtro-stock">
         <option value="">Todos los géneros</option>
         {% for genero_opcion in generos %}
         <option value="{{ genero_opcion }}" {% if genero == genero_opcion %}selected{% endif %}>{{ genero_opcion }}</option>
@@ -71,7 +75,10 @@
         type="button"
         class="badge-stock {% if disco.en_stock %}badge-stock-si{% else %}badge-stock-no{% endif %} toggle-stock"
         data-id="{{ disco.id_disco }}"
-        title="Tildar según si está en stock o no">
+        data-titulo="{{ disco.titulo }}"
+        aria-label="Disponibilidad: {{ disco.titulo }}"
+        aria-pressed="{% if disco.en_stock %}true{% else %}false{% endif %}"
+        title="Cambiar disponibilidad">
         {% if disco.en_stock %}En stock{% else %}Sin stock{% endif %}
     </button>
     {% else %}
@@ -101,7 +108,7 @@
     </a>
 
     {% if disco.musica_audio %}
-    <button class="play-overlay" data-play="{{ disco.musica_audio }}" data-titulo="{{ disco.artista }} - {{ disco.titulo }}" data-portada="{{ img(disco.portada, 200) if disco.portada else '' }}" aria-label="Escuchar {{ disco.titulo }}">▶</button>
+    <button type="button" class="play-overlay" data-play="{{ disco.musica_audio }}" data-titulo="{{ disco.artista }} - {{ disco.titulo }}" data-portada="{{ img(disco.portada, 200) if disco.portada else '' }}" aria-label="Escuchar {{ disco.titulo }}" aria-pressed="false">▶</button>
     {% endif %}
 
     </div>
@@ -122,7 +129,7 @@
 
     {% if disco.musica_audio %}
     <div class="acciones-play">
-        <button class="boton-play" data-play="{{ disco.musica_audio }}" data-titulo="{{ disco.artista }} - {{ disco.titulo }}" data-portada="{{ img(disco.portada, 200) if disco.portada else '' }}" aria-label="Escuchar {{ disco.titulo }}">
+        <button type="button" class="boton-play" data-play="{{ disco.musica_audio }}" data-titulo="{{ disco.artista }} - {{ disco.titulo }}" data-portada="{{ img(disco.portada, 200) if disco.portada else '' }}" aria-label="Escuchar {{ disco.titulo }}" aria-pressed="false">
             ▶ Escuchar
         </button>
     </div>

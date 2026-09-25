@@ -1,11 +1,15 @@
 {% extends "base.html" %}
 
+{% block title %}{{ disco.titulo }} — {{ disco.artista }} | Analógico Domingo{% endblock %}
+
+{% block meta_description %}{% if disco.descripcion %}{{ disco.descripcion|truncate(160, true) }}{% else %}Ficha de {{ disco.titulo }}, de {{ disco.artista }}, en el catálogo de Analógico Domingo.{% endif %}{% endblock %}
+
 {% block head %}
 <meta property="og:site_name" content="Analógico Domingo">
 <meta property="og:title" content="{{ disco.artista }} - {{ disco.titulo }}">
 <meta property="og:description" content="{{ (disco.descripcion or '')|truncate(200) }}">
 <meta property="og:type" content="music.album">
-<meta property="og:url" content="{{ request.url }}">
+<meta property="og:url" content="{{ url_canonica }}">
 {% if disco.portada %}
 {% if disco.portada.startswith('http') %}{% set og_img = img_social(disco.portada) %}{% else %}{% set og_img = request.base_url ~ disco.portada.lstrip('/') %}{% endif %}
 <meta property="og:image" content="{{ og_img }}">
@@ -52,66 +56,76 @@
             method="post"
             enctype="multipart/form-data">
 
-            <label>Título</label>
+            <label for="disco-titulo">Título</label>
 
             <input
+                id="disco-titulo"
                 type="text"
                 name="titulo"
-                value="{{ disco.titulo }}">
+                value="{{ disco.titulo }}"
+                required>
 
-            <label>Artista</label>
+            <label for="disco-artista">Artista</label>
 
             <input
+                id="disco-artista"
                 type="text"
                 name="artista"
-                value="{{ disco.artista }}">
+                value="{{ disco.artista }}"
+                required>
 
-            <label>Año</label>
+            <label for="disco-anio">Año</label>
 
             <input
+                id="disco-anio"
                 type="number"
                 name="anio"
                 value="{{ disco.anio }}">
 
-            <label>Género</label>
+            <label for="disco-genero">Género</label>
 
             <input
+                id="disco-genero"
                 type="text"
                 name="genero"
-                value="{{ disco.genero }}">
+                value="{{ disco.genero or '' }}">
 
-            <label>Sello</label>
+            <label for="disco-sello">Sello</label>
 
             <input
+                id="disco-sello"
                 type="text"
                 name="sello"
-                value="{{ disco.sello }}">
+                value="{{ disco.sello or '' }}">
 
-            <label>Productor</label>
+            <label for="disco-productor">Productor</label>
 
             <input
+                id="disco-productor"
                 type="text"
                 name="productor"
-                value="{{ disco.productor }}">
+                value="{{ disco.productor or '' }}">
 
-            <label>Duración</label>
+            <label for="disco-duracion">Duración</label>
 
             <input
+                id="disco-duracion"
                 type="text"
                 name="duracion"
-                value="{{ disco.duracion }}">
+                value="{{ disco.duracion or '' }}">
 
-            <label>Descripción</label>
+            <label for="disco-descripcion">Descripción</label>
 
             <textarea
+                id="disco-descripcion"
                 name="descripcion"
-                rows="12">{{ disco.descripcion }}</textarea>
+                rows="12">{{ disco.descripcion or '' }}</textarea>
 
-            <label>Portada</label>
+            <label for="input-portada">Portada</label>
 
             {% if disco.portada %}
                 <p style="margin-bottom: 4px;">Portada actual:</p>
-                <img src="{{ img(disco.portada, 300) }}" alt="Portada actual" style="max-width: 200px; margin-bottom: 8px;">
+                <img src="{{ img(disco.portada, 300) }}" alt="Portada actual de {{ disco.titulo }}" style="max-width: 200px; margin-bottom: 8px;">
             {% endif %}
 
             <input
@@ -122,20 +136,23 @@
 
             <img id="vista-previa-portada" class="preview-portada" alt="Vista previa de la nueva portada" hidden>
 
-            <label>Tema de Música vinculado</label>
-            <select name="id_musica">
+            <label for="disco-musica">Tema de Música vinculado</label>
+            <select id="disco-musica" name="id_musica">
                 <option value="">--- Sin vínculo ---</option>
                 {% for m in musica_list %}
                     <option value="{{ m.id_musica }}" {% if disco.id_musica == m.id_musica %}selected{% endif %}>{{ m.artista }} - {{ m.titulo }}{% if m.audio %} (con audio){% endif %}</option>
                 {% endfor %}
             </select>
 
-            <label>Sonó en el aire</label>
-            <input type="checkbox" name="escuchado" value="true" {% if disco.escuchado %}checked{% endif %}>
+            <fieldset>
+                <legend>Estado del disco</legend>
+                <label for="disco-escuchado">Sonó en el aire</label>
+                <input id="disco-escuchado" type="checkbox" name="escuchado" value="true" {% if disco.escuchado %}checked{% endif %}>
 
-            <label>En stock</label>
-            <input type="checkbox" name="en_stock" value="1" {% if disco.en_stock %}checked{% endif %}>
-            <span class="nota-formulario">Desmarcar si el disco no está disponible en stock.</span>
+                <label for="disco-en-stock">En stock</label>
+                <input id="disco-en-stock" type="checkbox" name="en_stock" value="1" {% if disco.en_stock %}checked{% endif %}>
+                <span class="nota-formulario">Desmarcar si el disco no está disponible en stock.</span>
+            </fieldset>
 
             <br>
 
@@ -191,11 +208,13 @@
 
             {% if disco.musica_audio %}
             <button
+                type="button"
                 class="boton"
                 data-play="{{ disco.musica_audio }}"
                 data-titulo="{{ disco.artista }} - {{ disco.titulo }}"
                 data-portada="{{ img(disco.portada, 200) if disco.portada else '' }}"
-                aria-label="Escuchar {{ disco.titulo }}">
+                aria-label="Escuchar {{ disco.titulo }}"
+                aria-pressed="false">
                 ▶ Escuchar
             </button>
             {% endif %}

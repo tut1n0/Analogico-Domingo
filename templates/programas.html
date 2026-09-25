@@ -1,5 +1,9 @@
 {% extends "base.html" %}
 
+{% block title %}Programas | Analógico Domingo{% endblock %}
+
+{% block meta_description %}Historial de programas de Analógico Domingo con fechas, observaciones y audios disponibles.{% endblock %}
+
 {% block contenido %}
 
 <div class="barra-superior">
@@ -23,9 +27,11 @@
 <div class="tarjeta tarjeta-programa">
 
     <div class="programa-cabecera">
-        <span class="programa-numero">#{{ programa.numero }}</span>
+        <h3 class="programa-numero">
+            <a href="/programas/{{ programa.id_programa }}">Programa #{{ programa.numero }}</a>
+        </h3>
         {% if programa.fecha %}
-        <span class="programa-fecha">{{ programa.fecha }}</span>
+        <time class="programa-fecha" datetime="{{ programa.fecha }}">{{ programa.fecha }}</time>
         {% endif %}
     </div>
 
@@ -36,10 +42,12 @@
     {% if programa.audio %}
     <div class="acciones-play">
         <button
+            type="button"
             class="boton-play"
             data-play="{{ programa.audio }}"
             data-titulo="Programa #{{ programa.numero }}"
-            aria-label="Reproducir programa {{ programa.numero }}">
+            aria-label="Reproducir programa {{ programa.numero }}"
+            aria-pressed="false">
             ▶ Escuchar programa
         </button>
     </div>

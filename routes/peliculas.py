@@ -116,9 +116,9 @@ def guardar_pelicula(
         }
 
         agregar_pelicula(datos)
-    except Exception as e:
+    except Exception:
         logger.exception("Error al guardar pelicula")
-        flash(request, [f"No se pudo guardar la pelicula: {e}"])
+        flash(request, ["No se pudo guardar la película."], categoria="error")
         return RedirectResponse(
             url="/peliculas/nuevo",
             status_code=303
@@ -147,7 +147,7 @@ def editar_pelicula(request: Request, id_pelicula: int):
     pelicula = obtener_pelicula(id_pelicula)
 
     if not pelicula:
-        flash(request, ["Película no encontrada."])
+        flash(request, ["Película no encontrada."], categoria="error")
         return RedirectResponse(url="/peliculas/", status_code=303)
 
     return render(
@@ -185,7 +185,7 @@ def actualizar(
         pelicula_actual = obtener_pelicula(id_pelicula)
 
         if not pelicula_actual:
-            flash(request, ["Película no encontrada."])
+            flash(request, ["Película no encontrada."], categoria="error")
             return RedirectResponse(url="/peliculas/", status_code=303)
 
         portada_url = pelicula_actual["portada"]
@@ -205,9 +205,9 @@ def actualizar(
         }
 
         actualizar_pelicula(id_pelicula, datos)
-    except Exception as e:
+    except Exception:
         logger.exception("Error al actualizar pelicula")
-        flash(request, [f"No se pudo actualizar la pelicula: {e}"])
+        flash(request, ["No se pudo actualizar la película."], categoria="error")
         return RedirectResponse(
             url=f"/peliculas/editar/{id_pelicula}",
             status_code=303
@@ -242,9 +242,9 @@ def eliminar(request: Request, id_pelicula: int):
         eliminar_pelicula(id_pelicula)
 
         flash(request, ["Pelicula eliminada."])
-    except Exception as e:
+    except Exception:
         logger.exception("Error al eliminar pelicula")
-        flash(request, [f"No se pudo eliminar la pelicula: {e}"])
+        flash(request, ["No se pudo eliminar la película."], categoria="error")
 
     return RedirectResponse(
         url="/peliculas/",

@@ -1,5 +1,9 @@
 {% extends "base.html" %}
 
+{% block title %}Editar {{ video.titulo }} | Analógico Domingo{% endblock %}
+
+{% block meta_description %}Formulario para editar {{ video.titulo }} en el archivo de Analógico Domingo.{% endblock %}
+
 {% block contenido %}
 
 <h2>Editar Video</h2>
@@ -17,31 +21,35 @@
     class="formulario"
     id="form-video">
 
-    <label>Título</label>
+    <label for="video-titulo">Título</label>
 
     <input
+        id="video-titulo"
         type="text"
         name="titulo"
         value="{{ video.titulo }}"
         required>
 
-    <label>Fecha</label>
+    <label for="video-fecha">Fecha</label>
 
     <input
+        id="video-fecha"
         type="date"
         name="fecha"
-        value="{{ video.fecha }}">
+        value="{{ video.fecha or '' }}">
 
-    <label>Archivo (audio o video)</label>
+    <label for="input-archivo">Archivo (audio o video)</label>
 
     {% if video.archivo_url %}
         {% if video.tipo_archivo == "video" %}
-        <video controls style="max-width:100%; border-radius:8px; margin-bottom:10px;">
+        <video controls style="max-width:100%; border-radius:8px; margin-bottom:10px;" aria-label="Video actual de {{ video.titulo }}">
             <source src="{{ video.archivo_url }}">
+            Tu navegador no soporta video.
         </video>
         {% else %}
-        <audio controls style="width:100%; margin-bottom:10px;">
+        <audio controls style="width:100%; margin-bottom:10px;" aria-label="Audio actual de {{ video.titulo }}">
             <source src="{{ video.archivo_url }}">
+            Tu navegador no soporta audio.
         </audio>
         {% endif %}
         <p style="color:rgba(255,255,255,0.6); font-size:14px; margin-bottom:8px;">Archivo actual. Subí uno nuevo para reemplazarlo.</p>

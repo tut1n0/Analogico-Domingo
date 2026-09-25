@@ -1,11 +1,15 @@
 {% extends "base.html" %}
 
+{% block title %}Programa #{{ programa.numero }} | Analógico Domingo{% endblock %}
+
+{% block meta_description %}{% if programa.observaciones %}{{ programa.observaciones|truncate(160, true) }}{% else %}Programa #{{ programa.numero }} de Analógico Domingo{% if programa.fecha %} del {{ programa.fecha }}{% endif %}.{% endif %}{% endblock %}
+
 {% block head %}
 <meta property="og:site_name" content="Analógico Domingo">
 <meta property="og:title" content="Programa #{{ programa.numero }} - Analógico Domingo">
 <meta property="og:description" content="Programa #{{ programa.numero }} de Analógico Domingo{% if programa.fecha %} - {{ programa.fecha }}{% endif %}">
 <meta property="og:type" content="music.radio_station">
-<meta property="og:url" content="{{ request.url }}">
+<meta property="og:url" content="{{ url_canonica }}">
 <meta property="og:image" content="{{ request.base_url }}static/header-opt.jpg">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:image" content="{{ request.base_url }}static/header-opt.jpg">
@@ -13,12 +17,12 @@
 
 {% block contenido %}
 
-<div class="detalle-video">
+<article class="detalle-video">
 
     <div class="cabecera-disco">
         <h2>Programa #{{ programa.numero }}</h2>
         {% if programa.fecha %}
-        <p class="programa-fecha-detalle"><strong>Fecha:</strong> {{ programa.fecha }}</p>
+        <p class="programa-fecha-detalle"><strong>Fecha:</strong> <time datetime="{{ programa.fecha }}">{{ programa.fecha }}</time></p>
         {% endif %}
     </div>
 
@@ -29,10 +33,12 @@
     {% if programa.audio %}
     <div class="acciones-play">
         <button
+            type="button"
             class="boton-play"
             data-play="{{ programa.audio }}"
             data-titulo="Programa #{{ programa.numero }}"
-            aria-label="Reproducir programa {{ programa.numero }}">
+            aria-label="Reproducir programa {{ programa.numero }}"
+            aria-pressed="false">
             ▶ Escuchar programa
         </button>
     </div>
@@ -43,7 +49,13 @@
         <h3>Discos del programa</h3>
         <ul>
             {% for disco in discos_programa %}
-            <li>{{ disco.artista }} — {{ disco.titulo }}</li>
+            <li>
+                {% if disco.id_disco %}
+                <a href="/discos/{{ disco.id_disco }}">{{ disco.artista }} — {{ disco.titulo }}</a>
+                {% else %}
+                {{ disco.artista }} — {{ disco.titulo }}
+                {% endif %}
+            </li>
             {% endfor %}
         </ul>
     </div>
@@ -70,6 +82,6 @@
 
     </div>
 
-</div>
+</article>
 
 {% endblock %}

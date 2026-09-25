@@ -155,9 +155,9 @@ def guardar_disco(
         }
 
         agregar_disco(datos)
-    except Exception as e:
+    except Exception:
         logger.exception("Error al guardar disco")
-        flash(request, [f"No se pudo guardar el disco: {e}"])
+        flash(request, ["No se pudo guardar el disco."], categoria="error")
         return RedirectResponse(
             url="/discos/nuevo",
             status_code=303
@@ -203,7 +203,7 @@ def actualizar(
         disco_actual = obtener_disco(id_disco)
 
         if not disco_actual:
-            flash(request, ["Disco no encontrado."])
+            flash(request, ["Disco no encontrado."], categoria="error")
             return RedirectResponse(url="/discos/", status_code=303)
 
         portada_url = disco_actual["portada"]
@@ -233,9 +233,9 @@ def actualizar(
         }
 
         actualizar_disco(id_disco, datos)
-    except Exception as e:
+    except Exception:
         logger.exception("Error al actualizar disco")
-        flash(request, [f"No se pudo actualizar el disco: {e}"])
+        flash(request, ["No se pudo actualizar el disco."], categoria="error")
         return RedirectResponse(
             url=f"/discos/{id_disco}?editar=1",
             status_code=303
@@ -270,9 +270,9 @@ def eliminar(request: Request, id_disco: int):
         eliminar_disco(id_disco)
 
         flash(request, ["Disco eliminado."])
-    except Exception as e:
+    except Exception:
         logger.exception("Error al eliminar disco")
-        flash(request, [f"No se pudo eliminar el disco: {e}"])
+        flash(request, ["No se pudo eliminar el disco."], categoria="error")
 
     return RedirectResponse(
         url="/discos/",
@@ -293,7 +293,7 @@ def ver_disco(
     disco = obtener_disco(id_disco)
 
     if not disco:
-        flash(request, ["Disco no encontrado."])
+        flash(request, ["Disco no encontrado."], categoria="error")
         return RedirectResponse(url="/discos/", status_code=303)
 
     musica_list = obtener_musica()
