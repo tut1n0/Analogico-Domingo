@@ -62,13 +62,13 @@
 
 {% if discos %}
 
-<div class="contenedor-discos">
+<div class="contenedor-discos catalogo-discos">
 
 {% for disco in discos %}
 
 <div class="tarjeta{% if disco.escuchado %} tarjeta-escuchado{% endif %}">
 
-    <div class="portada">
+    <div class="portada{% if not disco.portada %} portada-vacia{% endif %}">
 
     {% if session.usuario %}
     <button
