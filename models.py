@@ -70,6 +70,28 @@ def obtener_generos_discos():
         conexion.close()
 
 
+def obtener_artistas_discos():
+    conexion = get_connection()
+
+    try:
+        with conexion.cursor() as cursor:
+
+            sql = """
+                SELECT DISTINCT artista
+                FROM discos
+                WHERE artista IS NOT NULL
+                  AND TRIM(artista) <> ''
+                ORDER BY artista ASC
+            """
+
+            cursor.execute(sql)
+
+            return [fila["artista"] for fila in cursor.fetchall()]
+
+    finally:
+        conexion.close()
+
+
 def _where_busqueda_discos():
     return """
         LOWER(d.titulo) LIKE LOWER(?)
@@ -85,7 +107,7 @@ def _params_busqueda_discos(texto):
     return (busqueda, busqueda, busqueda, busqueda, busqueda)
 
 
-def _where_y_params_discos(texto, stock, genero=None, decada=None):
+def _where_y_params_discos(texto, stock, genero=None, decada=None, artista=None):
     clausulas = [
         "(d.anio IS NULL OR TRIM(d.anio) = '' OR CAST(TRIM(d.anio) AS INTEGER) >= ?)"
     ]
@@ -107,6 +129,10 @@ def _where_y_params_discos(texto, stock, genero=None, decada=None):
         clausulas.append("CAST(TRIM(d.anio) AS INTEGER) BETWEEN ? AND ?")
         params.extend([decada["minimo"], decada["maximo"]])
 
+    if artista:
+        clausulas.append("d.artista = ?")
+        params.append(artista)
+
     if not clausulas:
         return "", []
 
@@ -114,7 +140,7 @@ def _where_y_params_discos(texto, stock, genero=None, decada=None):
 
 
 
-def obtener_discos_paginados(page, por_pagina, texto=None, stock=None, genero=None, decada=None):
+def obtener_discos_paginados(page, por_pagina, texto=None, stock=None, genero=None, decada=None, artista=None):
     conexion = get_connection()
 
     try:
@@ -137,7 +163,7 @@ def obtener_discos_paginados(page, por_pagina, texto=None, stock=None, genero=No
                 LEFT JOIN musica m ON d.id_musica = m.id_musica
             """
 
-            where, params = _where_y_params_discos(texto, stock, genero, decada)
+            where, params = _where_y_params_discos(texto, stock, genero, decada, artista)
 
             sql += where + " ORDER BY d.id_disco DESC LIMIT ? OFFSET ?"
 
@@ -153,7 +179,7 @@ def obtener_discos_paginados(page, por_pagina, texto=None, stock=None, genero=No
         conexion.close()
 
 
-def contar_discos(texto=None, stock=None, genero=None, decada=None):
+def contar_discos(texto=None, stock=None, genero=None, decada=None, artista=None):
     conexion = get_connection()
 
     try:
@@ -161,7 +187,7 @@ def contar_discos(texto=None, stock=None, genero=None, decada=None):
 
             sql = "SELECT COUNT(*) AS total FROM discos d"
 
-            where, params = _where_y_params_discos(texto, stock, genero, decada)
+            where, params = _where_y_params_discos(texto, stock, genero, decada, artista)
 
             sql += where
 

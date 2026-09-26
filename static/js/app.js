@@ -1064,6 +1064,9 @@ function rpBuscarDiscos(valor, input) {
     var dselect = document.getElementById("filtro-decada");
     var dval = dselect ? dselect.value : "";
     if (dval) params.push("decada=" + encodeURIComponent(dval));
+    var aselect = document.getElementById("filtro-artista");
+    var aval = aselect ? aselect.value : "";
+    if (aval) params.push("artista=" + encodeURIComponent(aval));
     if (params.length) url += "?" + params.join("&");
     var opciones = {
         historial: "replace",
@@ -1188,7 +1191,7 @@ rpEscuchar(document, "change", "discos:change", function(e) {
         return;
     }
 
-    if (target.id !== "filtro-stock" && target.id !== "filtro-genero" && target.id !== "filtro-decada") return;
+    if (target.id !== "filtro-stock" && target.id !== "filtro-genero" && target.id !== "filtro-decada" && target.id !== "filtro-artista") return;
     var campo = document.getElementById("buscar-discos");
     var valor = campo && campo.value ? campo.value : "";
     rpBuscarDiscos(valor, campo);

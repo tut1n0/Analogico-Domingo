@@ -45,18 +45,11 @@ CREATE TABLE IF NOT EXISTS usuarios (
     password VARCHAR(255) NOT NULL
 );
 
-CREATE TABLE IF NOT EXISTS videos (
-    id_video SERIAL PRIMARY KEY,
-    titulo VARCHAR(255) NOT NULL,
-    fecha VARCHAR(10),
-    archivo_url VARCHAR(255),
-    tipo_archivo VARCHAR(10) DEFAULT 'audio'
-);
-
 CREATE TABLE IF NOT EXISTS peliculas (
     id_pelicula SERIAL PRIMARY KEY,
     titulo VARCHAR(255) NOT NULL,
     director VARCHAR(255) NOT NULL,
+    anio VARCHAR(10),
     genero VARCHAR(100),
     portada VARCHAR(255),
     url_pelicula VARCHAR(500),

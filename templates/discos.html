@@ -55,15 +55,26 @@
         <option value="{{ rango_decada.etiqueta }}" {% if decada == rango_decada.etiqueta %}selected{% endif %}>{{ rango_decada.etiqueta }}</option>
         {% endfor %}
     </select>
+    <label class="sr-only" for="filtro-artista">Filtrar discos por artista</label>
+    <select
+        id="filtro-artista"
+        name="artista"
+        class="filtro-stock">
+        <option value="">Todos los artistas</option>
+        {% for artista_opcion in artistas %}
+        <option value="{{ artista_opcion }}" {% if artista == artista_opcion %}selected{% endif %}>{{ artista_opcion }}</option>
+        {% endfor %}
+    </select>
     <button type="submit" class="boton">Buscar</button>
 </form>
 
-{% if q or (stock is not none) or genero or decada %}
+{% if q or (stock is not none) or genero or decada or artista %}
 <p class="resultados-busqueda">
     {{ total }} resultado(s)
     {% if q %}para <strong>"{{ q }}"</strong>{% endif %}
     {% if genero %}en <strong>{{ genero }}</strong>{% endif %}
     {% if decada %}en la década <strong>{{ decada }}</strong>{% endif %}
+    {% if artista %}de <strong>{{ artista }}</strong>{% endif %}
     {% if total %}<a href="/discos/" class="limpiar-busqueda">✕ Limpiar</a>{% endif %}
 </p>
 {% endif %}

@@ -47,18 +47,11 @@ CREATE TABLE IF NOT EXISTS usuarios (
     password TEXT NOT NULL
 );
 
-CREATE TABLE IF NOT EXISTS videos (
-    id_video INTEGER PRIMARY KEY AUTOINCREMENT,
-    titulo TEXT NOT NULL,
-    fecha TEXT,
-    archivo_url TEXT,
-    tipo_archivo TEXT DEFAULT 'audio'
-);
-
 CREATE TABLE IF NOT EXISTS peliculas (
     id_pelicula INTEGER PRIMARY KEY AUTOINCREMENT,
     titulo TEXT NOT NULL,
     director TEXT NOT NULL,
+    anio TEXT,
     genero TEXT,
     portada TEXT,
     url_pelicula TEXT,

@@ -23,6 +23,7 @@ from models import (
     eliminar_disco,
     obtener_musica,
     obtener_generos_discos,
+    obtener_artistas_discos,
 )
 
 router = APIRouter(
@@ -45,7 +46,8 @@ def listar_discos(
     q: str = Query("", max_length=200),
     stock: str = Query("", max_length=10),
     genero: str = Query("", max_length=100),
-    decada: str = Query("", max_length=10)
+    decada: str = Query("", max_length=10),
+    artista: str = Query("", max_length=100)
 ):
 
     texto = q.strip() if q else ""
@@ -57,8 +59,9 @@ def listar_discos(
 
     filtro_genero = genero.strip() if genero else None
     rango_decada = obtener_rango_decada(decada.strip() if decada else "")
+    filtro_artista = artista.strip() if artista else None
 
-    total = contar_discos(texto, filtro_stock, filtro_genero, rango_decada)
+    total = contar_discos(texto, filtro_stock, filtro_genero, rango_decada, filtro_artista)
     total_paginas = max(math.ceil(total / POR_PAGINA), 1)
 
     if page > total_paginas:
@@ -74,6 +77,7 @@ def listar_discos(
         filtro_stock,
         filtro_genero,
         rango_decada,
+        filtro_artista,
     )
 
     return render(
@@ -89,7 +93,9 @@ def listar_discos(
             "genero": filtro_genero,
             "decada": rango_decada["etiqueta"] if rango_decada else "",
             "decadas": DECADAS,
-            "generos": obtener_generos_discos()
+            "generos": obtener_generos_discos(),
+            "artista": filtro_artista,
+            "artistas": obtener_artistas_discos()
         }
     )
 

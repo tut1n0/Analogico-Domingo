@@ -3,5 +3,5 @@
 uploads/*
 __pycache__      
 .vercel
-templates/ver_entrevista.html
+*.backup-antes-eliminar-videos-*
 analogico_domingo.db
