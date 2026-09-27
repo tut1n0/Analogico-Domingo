@@ -593,6 +593,18 @@ footer{
     font-family:"Caacupe One", "Alumni Sans", sans-serif;
 }
 
+.barra-superior h2 a{
+    color:inherit;
+    text-decoration:none;
+    transition:color 0.2s ease;
+}
+
+.barra-superior h2 a:hover,
+.barra-superior h2 a:focus-visible{
+    color:#f2c14e;
+    text-decoration:underline;
+}
+
 .buscador{
     display:flex;
     flex-wrap:wrap;
