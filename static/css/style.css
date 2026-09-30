@@ -188,6 +188,41 @@ main h3{
 
 }
 
+/* --- Paginas de error --- */
+
+.pagina-error{
+    text-align:center;
+    margin-top:40px;
+    padding:20px 0 40px;
+}
+
+.error-codigo{
+    font-family:"Caacupe One", "Alumni Sans", sans-serif;
+    font-size:72px;
+    line-height:1;
+    color:#f2c14e;
+    margin-bottom:8px;
+}
+
+.pagina-error h2{
+    font-size:clamp(24px, 5vw, 34px);
+    margin-bottom:12px;
+    overflow-wrap:break-word;
+}
+
+.error-detalle{
+    color:rgba(255,255,255,0.75);
+    line-height:1.7;
+    max-width:46ch;
+    margin:0 auto 8px;
+}
+
+@media (max-width:480px){
+    .error-codigo{
+        font-size:54px;
+    }
+}
+
 .buscador-global {
     display: flex;
     gap: 10px;

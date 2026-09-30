@@ -13,7 +13,7 @@ _PATRON_HEAD = re.compile(r"<head[^>]*>(.*?)</head>", re.DOTALL | re.IGNORECASE)
 _PATRON_TITLE = re.compile(r"<title>(.*?)</title>", re.DOTALL | re.IGNORECASE)
 
 
-def render(request, template, context=None):
+def render(request, template, context=None, status=200):
 
     if context is None:
         context = {}
@@ -47,4 +47,4 @@ def render(request, template, context=None):
                 "</head><body><main>" + inner + "</main></body></html>"
             )
 
-    return HTMLResponse(content=html)
+    return HTMLResponse(content=html, status_code=status)

@@ -4,8 +4,11 @@ import secrets
 
 from contextlib import asynccontextmanager
 
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
+from fastapi.exceptions import RequestValidationError
+from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
+from starlette.exceptions import HTTPException as StarletteHTTPException
 from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.middleware.sessions import SessionMiddleware
 
@@ -23,6 +26,7 @@ from database import (
 )
 from models import asegurar_columnas
 from utils.csrf import csrf_middleware
+from utils.render import render
 
 
 @asynccontextmanager
@@ -113,3 +117,72 @@ app.include_router(programas_router)
 app.include_router(musica_router)
 app.include_router(peliculas_router)
 app.include_router(auth_router)
+
+
+# =====================================================
+# PAGINAS DE ERROR
+# =====================================================
+
+ERRORES = {
+    400: ("Petición inválida", "No pudimos entender lo que pediste."),
+    401: ("Necesitás iniciar sesión", "Esta sección es sólo para quienes están conectados."),
+    403: ("No tenés permiso", "Tu sesión pudo haber expirado. Volvé a iniciar sesión."),
+    404: ("No encontramos esa página", "Puede que el enlace haya cambiado o que ya no exista."),
+    422: ("No pudimos procesar los datos", "Revisá los campos del formulario e intentá de nuevo."),
+    500: ("Algo falló de nuestro lado", "Ya lo estamos mirando. Probá de nuevo en un momento."),
+}
+
+ERROR_POR_DEFECTO = ("Error inesperado", "Ocurrió un problema y no pudimos completar la operación.")
+
+
+def _quiere_json(request):
+    """Las llamadas de la SPA y los XHR esperan JSON, no HTML."""
+    if request.headers.get("x-partial") == "1":
+        return False
+
+    accept = request.headers.get("accept", "")
+
+    if "application/json" in accept:
+        return "text/html" not in accept
+
+    return request.headers.get("x-requested-with") == "fetch"
+
+
+def _respuesta_error(request, codigo):
+    titulo, detalle = ERRORES.get(codigo, ERROR_POR_DEFECTO)
+
+    if _quiere_json(request):
+        return JSONResponse(status_code=codigo, content={"error": titulo})
+
+    try:
+        return render(
+            request,
+            "error.html",
+            {"codigo": codigo, "titulo": titulo, "detalle": detalle},
+            status=codigo,
+        )
+    except Exception:
+        logger.exception("No se pudo renderizar la pagina de error %s", codigo)
+        return HTMLResponse(
+            "<!DOCTYPE html><html lang=\"es\"><head><meta charset=\"UTF-8\">"
+            f"<title>{codigo}</title></head><body>"
+            f"<h1>{codigo}</h1><p>{titulo}</p>"
+            "<p><a href=\"/\">Volver al inicio</a></p></body></html>",
+            status_code=codigo,
+        )
+
+
+@app.exception_handler(StarletteHTTPException)
+async def error_http(request, exc):
+    return _respuesta_error(request, exc.status_code)
+
+
+@app.exception_handler(RequestValidationError)
+async def error_validacion(request, exc):
+    return _respuesta_error(request, 422)
+
+
+@app.exception_handler(Exception)
+async def error_servidor(request, exc):
+    logger.exception("Error no controlado: %s", exc)
+    return _respuesta_error(request, 500)
