@@ -2,23 +2,11 @@ import re
 
 MARCADOR_UPLOAD = "/image/upload/"
 
-RE_VERSION = re.compile(r"^v\d+$")
 RE_TRANSFORM = re.compile(r"^[a-z]+_(?:\d+|[a-z]+)(?:,|$)")
 
 
 def _es_cloudinary(url):
     return bool(url) and MARCADOR_UPLOAD in url
-
-
-def _transform_actual(url):
-    """Primer segmento tras /upload/ si es un transform de Cloudinary."""
-    resto = url.split(MARCADOR_UPLOAD, 1)[1]
-    primero = resto.split("/", 1)[0]
-
-    if RE_VERSION.match(primero) or RE_TRANSFORM.match(primero):
-        return primero
-
-    return None
 
 
 def _fusionar(nuestros, previos):
@@ -37,20 +25,22 @@ def _fusionar(nuestros, previos):
 
 
 def _con_transform(url, cadena):
-    """Inserta (o fusiona) un transform de Cloudinary justo despues de /upload/."""
+    """Inserta (o fusiona) un transform de Cloudinary justo despues de /upload/.
+
+    El formato es /upload/<transforms>/<version>/<public_id>, asi que la
+    version NO se puede absorber dentro del transform: debe quedar despues."""
     if not _es_cloudinary(url):
         return url
 
     base, resto = url.split(MARCADOR_UPLOAD, 1)
-    actual = _transform_actual(url)
+    primero, separador, cola = resto.partition("/")
 
-    if actual is None:
-        return f"{base}{MARCADOR_UPLOAD}{cadena}/{resto}"
+    if RE_TRANSFORM.match(primero):
+        fusionado = _fusionar(cadena.split(","), primero.split(","))
+        sufijo = f"/{cola}" if separador else ""
+        return f"{base}{MARCADOR_UPLOAD}{fusionado}{sufijo}"
 
-    fusionado = _fusionar(cadena.split(","), actual.split(","))
-    _, _, public_id = resto.partition("/")
-
-    return f"{base}{MARCADOR_UPLOAD}{fusionado}/{public_id}"
+    return f"{base}{MARCADOR_UPLOAD}{cadena}/{resto}"
 
 
 def optimizar_imagen(url, ancho):
