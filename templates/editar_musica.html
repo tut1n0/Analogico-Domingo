@@ -15,10 +15,11 @@
 </div>
 
 <form
-    action="/musica/editar/{{ musica.id_musica }}?csrf_token={{ csrf_token }}"
+    action="/musica/editar/{{ musica.id_musica }}"
     method="post"
     class="formulario"
     id="form-musica">
+    {% include "_csrf.html" %}
 
     <label for="musica-titulo">Título</label>
     <input id="musica-titulo" type="text" name="titulo" value="{{ musica.titulo }}" required>
@@ -37,7 +38,7 @@
 
     <p class="nota-formulario">Portada actual</p>
     {% if musica.portada %}
-    <p><img src="{{ img(musica.portada, 300) }}" alt="Portada actual de {{ musica.titulo }}" style="max-height:200px; border-radius:6px;"></p>
+            <p><img src="{{ img(musica.portada, 200) }}" srcset="{{ srcset(musica.portada, [100, 200, 400]) }}" sizes="200px" alt="Portada actual de {{ musica.titulo }}" style="max-height:200px; border-radius:6px;" loading="lazy" decoding="async"></p>
     {% endif %}
 
     <label for="input-portada">Nueva portada (opcional)</label>

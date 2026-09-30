@@ -55,6 +55,8 @@
 
             <img
             src="{{ img(item.portada, 600) }}"
+            srcset="{{ srcset(item.portada, [300, 600, 900]) }}"
+            sizes="(max-width: 604px) calc(100vw - 80px), (max-width: 899px) calc((100vw - 105px) / 2), 256px"
             alt="{{ item.titulo }}"
             loading="lazy"
             decoding="async">
@@ -114,8 +116,9 @@
     {% if session.usuario %}
     <div class="acciones">
         <a href="/musica/editar/{{ item.id_musica }}">Editar</a>
-        <form method="post" action="/musica/eliminar/{{ item.id_musica }}?csrf_token={{ csrf_token }}" class="form-eliminar"
+        <form method="post" action="/musica/eliminar/{{ item.id_musica }}" class="form-eliminar"
               onsubmit="return confirmEliminar('¿Eliminar este tema?')">
+            {% include "_csrf.html" %}
             <button type="submit" class="link-eliminar">Eliminar</button>
         </form>
     </div>

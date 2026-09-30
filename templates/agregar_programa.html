@@ -15,11 +15,12 @@
 </div>
 
 <form
-    action="/programas/nuevo?csrf_token={{ csrf_token }}"
+    action="/programas/nuevo"
     method="post"
     enctype="multipart/form-data"
     class="formulario"
     id="form-programa">
+    {% include "_csrf.html" %}
 
     <label for="programa-numero">Número</label>
 

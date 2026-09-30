@@ -58,8 +58,9 @@
     {% if session.usuario %}
     <div class="acciones">
         <a href="/programas/editar/{{ programa.id_programa }}">Editar</a>
-        <form method="post" action="/programas/eliminar/{{ programa.id_programa }}?csrf_token={{ csrf_token }}" class="form-eliminar"
+        <form method="post" action="/programas/eliminar/{{ programa.id_programa }}" class="form-eliminar"
               onsubmit="return confirmEliminar('¿Eliminar este programa?')">
+            {% include "_csrf.html" %}
             <button type="submit" class="link-eliminar">Eliminar</button>
         </form>
     </div>

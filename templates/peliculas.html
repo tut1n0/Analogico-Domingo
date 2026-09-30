@@ -69,6 +69,8 @@
 
         <img
         src="{{ img(pelicula.portada, 600) }}"
+        srcset="{{ srcset(pelicula.portada, [300, 600, 900]) }}"
+        sizes="(max-width: 604px) calc(100vw - 80px), (max-width: 899px) calc((100vw - 105px) / 2), 256px"
         alt="{{ pelicula.titulo }}"
         loading="lazy"
         decoding="async">
@@ -128,8 +130,9 @@
 
         <a href="/peliculas/editar/{{ pelicula.id_pelicula }}">Editar</a>
 
-        <form method="post" action="/peliculas/eliminar/{{ pelicula.id_pelicula }}?csrf_token={{ csrf_token }}" class="form-eliminar"
+        <form method="post" action="/peliculas/eliminar/{{ pelicula.id_pelicula }}" class="form-eliminar"
               onsubmit="return confirmEliminar('¿Eliminar esta película?')">
+            {% include "_csrf.html" %}
             <button type="submit" class="link-eliminar">Eliminar</button>
         </form>
 

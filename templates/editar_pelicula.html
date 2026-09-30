@@ -8,7 +8,8 @@
 
 <h2>Editar Película</h2>
 
-<form action="/peliculas/editar/{{ pelicula.id_pelicula }}?csrf_token={{ csrf_token }}" method="post" enctype="multipart/form-data" class="formulario">
+<form action="/peliculas/editar/{{ pelicula.id_pelicula }}" method="post" enctype="multipart/form-data" class="formulario">
+    {% include "_csrf.html" %}
 
     <label for="pelicula-titulo">Título</label>
     <input id="pelicula-titulo" type="text" name="titulo" value="{{ pelicula.titulo }}" required>
@@ -24,7 +25,7 @@
 
     <label for="pelicula-portada">Portada</label>
     {% if pelicula.portada %}
-    <img src="{{ img(pelicula.portada, 300) }}" alt="Portada actual de {{ pelicula.titulo }}" style="max-width:200px; border-radius:8px; margin-bottom:8px;">
+        <img src="{{ img(pelicula.portada, 200) }}" srcset="{{ srcset(pelicula.portada, [100, 200, 400]) }}" sizes="200px" alt="Portada actual de {{ pelicula.titulo }}" style="max-width:200px; border-radius:8px; margin-bottom:8px;" loading="lazy" decoding="async">
     <p style="color:rgba(255,255,255,0.6); font-size:14px; margin-bottom:8px;">Portada actual. Subí una nueva para reemplazarla.</p>
     {% endif %}
     <input id="pelicula-portada" type="file" name="portada" accept=".jpg,.jpeg,.png,.webp">

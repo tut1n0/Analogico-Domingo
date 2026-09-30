@@ -1,8 +1,9 @@
 import math
 import logging
 
-from fastapi import APIRouter, Request, Form, UploadFile, File, Query, HTTPException
+from fastapi import APIRouter, Depends, Request, Form, UploadFile, File, Query, HTTPException
 from fastapi.responses import RedirectResponse, JSONResponse
+from utils.csrf import verificar_csrf
 from utils.render import render
 from utils.auth import verificar_login
 from utils.mensajes import flash
@@ -27,7 +28,8 @@ from models import (
 
 router = APIRouter(
     prefix="/musica",
-    tags=["Musica"]
+    tags=["Musica"],
+    dependencies=[Depends(verificar_csrf)]
 )
 
 logger = logging.getLogger("analogico_domingo.musica")

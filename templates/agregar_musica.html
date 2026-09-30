@@ -15,10 +15,11 @@
 </div>
 
 <form
-    action="/musica/nuevo?csrf_token={{ csrf_token }}"
+    action="/musica/nuevo"
     method="post"
     class="formulario"
     id="form-musica">
+    {% include "_csrf.html" %}
 
     <label for="musica-titulo">Título</label>
     <input id="musica-titulo" type="text" name="titulo" required>

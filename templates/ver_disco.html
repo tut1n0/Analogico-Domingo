@@ -33,9 +33,12 @@
         {% if disco.portada %}
 
             <img
-                src="{{ img(disco.portada, 1000) }}"
+                src="{{ img(disco.portada, 700) }}"
+                srcset="{{ srcset(disco.portada, [350, 700, 1050]) }}"
+                sizes="350px"
                 alt="{{ disco.titulo }}"
-                fetchpriority="high">
+                fetchpriority="high"
+                decoding="async">
 
         {% else %}
 
@@ -52,9 +55,10 @@
         {% if editar %}
 
         <form
-            action="/discos/editar/{{ disco.id_disco }}?csrf_token={{ csrf_token }}"
+            action="/discos/editar/{{ disco.id_disco }}"
             method="post"
             enctype="multipart/form-data">
+            {% include "_csrf.html" %}
 
             <label for="disco-titulo">Título</label>
 
@@ -126,7 +130,7 @@
 
             {% if disco.portada %}
                 <p style="margin-bottom: 4px;">Portada actual:</p>
-                <img src="{{ img(disco.portada, 300) }}" alt="Portada actual de {{ disco.titulo }}" style="max-width: 200px; margin-bottom: 8px;">
+                <img src="{{ img(disco.portada, 200) }}" srcset="{{ srcset(disco.portada, [100, 200, 400]) }}" sizes="200px" alt="Portada actual de {{ disco.titulo }}" style="max-width: 200px; margin-bottom: 8px;" loading="lazy" decoding="async">
             {% endif %}
 
             <input
@@ -248,9 +252,10 @@
 
             <form
                 method="post"
-                action="/discos/eliminar/{{ disco.id_disco }}?csrf_token={{ csrf_token }}"
+                action="/discos/eliminar/{{ disco.id_disco }}"
                 class="form-eliminar"
                 onsubmit="return confirmEliminar('¿Eliminar este disco?');">
+                {% include "_csrf.html" %}
                 <button type="submit" class="boton boton-eliminar">🗑 Eliminar disco</button>
             </form>
 

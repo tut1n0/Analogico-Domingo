@@ -114,6 +114,8 @@
 
         <img
         src="{{ img(disco.portada, 600) }}"
+        srcset="{{ srcset(disco.portada, [300, 600, 900]) }}"
+        sizes="(max-width: 604px) calc(100vw - 80px), (max-width: 899px) calc((100vw - 105px) / 2), 256px"
         alt="{{ disco.titulo }}"
         loading="lazy"
         decoding="async">
@@ -159,8 +161,9 @@
 
         <a href="/discos/{{ disco.id_disco }}?editar=true">Editar</a>
 
-        <form method="post" action="/discos/eliminar/{{ disco.id_disco }}?csrf_token={{ csrf_token }}" class="form-eliminar"
+        <form method="post" action="/discos/eliminar/{{ disco.id_disco }}" class="form-eliminar"
               onsubmit="return confirmEliminar('¿Eliminar este disco?')">
+            {% include "_csrf.html" %}
             <button type="submit" class="link-eliminar">Eliminar</button>
         </form>
 

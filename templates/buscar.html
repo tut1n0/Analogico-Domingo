@@ -29,9 +29,9 @@
             {% for disco in resultados.discos %}
             <a class="tarjeta" href="/discos/{{ disco.id_disco }}">
                 {% if disco.portada %}
-                <img src="{{ img(disco.portada, 300) }}" alt="Portada de {{ disco.titulo }}" loading="lazy">
+                <img src="{{ img(disco.portada, 300) }}" srcset="{{ srcset(disco.portada, [300, 600, 900]) }}" sizes="(max-width: 599px) calc(100vw - 80px), (max-width: 899px) calc((100vw - 100px) / 2), 260px" alt="Portada de {{ disco.titulo }}" loading="lazy" decoding="async">
                 {% else %}
-                <img src="/static/caratula.jpg" alt="" loading="lazy">
+                <img src="/static/caratula.jpg" width="400" height="300" alt="" loading="lazy" decoding="async">
                 {% endif %}
                 <div class="tarjeta-info">
                     <strong>{{ disco.titulo }}</strong>
@@ -51,9 +51,9 @@
             {% for item in resultados.musica %}
             <a class="tarjeta" href="/musica/{{ item.id_musica }}">
                 {% if item.portada %}
-                <img src="{{ img(item.portada, 300) }}" alt="Portada de {{ item.titulo }}" loading="lazy">
+                <img src="{{ img(item.portada, 300) }}" srcset="{{ srcset(item.portada, [300, 600, 900]) }}" sizes="(max-width: 599px) calc(100vw - 80px), (max-width: 899px) calc((100vw - 100px) / 2), 260px" alt="Portada de {{ item.titulo }}" loading="lazy" decoding="async">
                 {% else %}
-                <img src="/static/caratula.jpg" alt="" loading="lazy">
+                <img src="/static/caratula.jpg" width="400" height="300" alt="" loading="lazy" decoding="async">
                 {% endif %}
                 <div class="tarjeta-info">
                     <strong>{{ item.titulo }}</strong>
@@ -77,9 +77,9 @@
             <div class="tarjeta">
             {% endif %}
                 {% if pelicula.portada %}
-                <img src="{{ img(pelicula.portada, 300) }}" alt="Portada de {{ pelicula.titulo }}" loading="lazy">
+                <img src="{{ img(pelicula.portada, 300) }}" srcset="{{ srcset(pelicula.portada, [300, 600, 900]) }}" sizes="(max-width: 599px) calc(100vw - 80px), (max-width: 899px) calc((100vw - 100px) / 2), 260px" alt="Portada de {{ pelicula.titulo }}" loading="lazy" decoding="async">
                 {% else %}
-                <img src="/static/caratula.jpg" alt="" loading="lazy">
+                <img src="/static/caratula.jpg" width="400" height="300" alt="" loading="lazy" decoding="async">
                 {% endif %}
                 <div class="tarjeta-info">
                     <strong>{{ pelicula.titulo }}</strong>

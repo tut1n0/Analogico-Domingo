@@ -11,9 +11,10 @@
     <h2>Iniciar sesión</h2>
 
     <form
-        action="/login?csrf_token={{ csrf_token }}"
+        action="/login"
         method="post"
         class="login-form">
+        {% include "_csrf.html" %}
 
         <label for="usuario">Usuario</label>
 

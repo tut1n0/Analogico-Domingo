@@ -1,11 +1,13 @@
-from fastapi import APIRouter, Request, Query
+from fastapi import APIRouter, Depends, Request, Query
 
+from utils.csrf import verificar_csrf
 from utils.render import render
 from models import buscar_global
 
 router = APIRouter(
     prefix="/buscar",
-    tags=["Busqueda"]
+    tags=["Busqueda"],
+    dependencies=[Depends(verificar_csrf)]
 )
 
 LIMITE_BUSQUEDA_GLOBAL = 6

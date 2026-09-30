@@ -33,7 +33,7 @@
 
     <div class="detalle-portada">
         {% if musica.portada %}
-        <img src="{{ img(musica.portada, 1000) }}" alt="{{ musica.titulo }}" fetchpriority="high">
+        <img src="{{ img(musica.portada, 700) }}" srcset="{{ srcset(musica.portada, [350, 700, 1050]) }}" sizes="350px" alt="{{ musica.titulo }}" fetchpriority="high" decoding="async">
         {% else %}
         <div class="portada">Sin portada</div>
         {% endif %}
@@ -72,8 +72,9 @@
 
             {% if session.usuario %}
             <a href="/musica/editar/{{ musica.id_musica }}" class="boton boton-editar">Editar</a>
-            <form method="post" action="/musica/eliminar/{{ musica.id_musica }}?csrf_token={{ csrf_token }}" class="form-eliminar"
+            <form method="post" action="/musica/eliminar/{{ musica.id_musica }}" class="form-eliminar"
                   onsubmit="return confirmEliminar('¿Eliminar este tema?')">
+                {% include "_csrf.html" %}
                 <button type="submit" class="boton boton-eliminar">Eliminar</button>
             </form>
             {% endif %}

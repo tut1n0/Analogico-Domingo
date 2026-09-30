@@ -1,13 +1,15 @@
-from fastapi import APIRouter, Request, Form
+from fastapi import APIRouter, Depends, Request, Form
 from fastapi.responses import RedirectResponse
 
+from utils.csrf import verificar_csrf
 from utils.render import render
 from utils.mensajes import flash
 from utils.passwords import verificar_password, hash_password
 from models import obtener_usuario, actualizar_password
 
 router = APIRouter(
-    tags=["Autenticación"]
+    tags=["Autenticación"],
+    dependencies=[Depends(verificar_csrf)]
 )
 
 INTENTOS_MAX = 5

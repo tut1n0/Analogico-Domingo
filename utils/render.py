@@ -3,7 +3,7 @@ import re
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 
-from utils.imagenes import optimizar_imagen, imagen_social
+from utils.imagenes import optimizar_imagen, srcset_imagen, imagen_social
 from utils.csrf import obtener_token
 
 templates = Jinja2Templates(directory="templates")
@@ -21,6 +21,7 @@ def render(request, template, context=None):
     context["request"] = request
     context["session"] = request.session
     context["img"] = optimizar_imagen
+    context["srcset"] = srcset_imagen
     context["img_social"] = imagen_social
     context["csrf_token"] = obtener_token(request)
     context["flash"] = request.session.pop("flash", None)
