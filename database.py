@@ -66,12 +66,18 @@ class PgCursorWrapper:
     def execute(self, sql, params=None):
         sql = sql.replace("?", "%s")
         self._cursor.execute(sql, params or ())
+        self._lastrowid = None
         if sql.strip().upper().startswith("INSERT"):
+            self._cursor.execute("SAVEPOINT lastval_sp")
             try:
                 self._cursor.execute("SELECT LASTVAL()")
-                self._lastrowid = self._cursor.fetchone()["lastval"]
+                fila = self._cursor.fetchone()
+                self._lastrowid = fila["lastval"] if fila else None
+                self._cursor.execute("RELEASE SAVEPOINT lastval_sp")
             except Exception:
                 self._lastrowid = None
+                self._cursor.execute("ROLLBACK TO SAVEPOINT lastval_sp")
+                self._cursor.execute("RELEASE SAVEPOINT lastval_sp")
 
     def fetchone(self):
         return self._cursor.fetchone()

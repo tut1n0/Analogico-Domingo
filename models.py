@@ -1296,15 +1296,17 @@ def _existe_tabla(conexion, tabla):
     with conexion.cursor() as cursor:
         if DB_DRIVER == "postgresql":
             cursor.execute(
-                "SELECT EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = %s)",
+                "SELECT EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = %s) AS existe",
                 (tabla,)
             )
+            fila = cursor.fetchone()
+            return bool(fila and fila["existe"])
         else:
             cursor.execute(
                 "SELECT 1 FROM sqlite_master WHERE type='table' AND name=?",
                 (tabla,)
             )
-        return bool(cursor.fetchone())
+            return bool(cursor.fetchone())
 
 
 def asegurar_columnas():
