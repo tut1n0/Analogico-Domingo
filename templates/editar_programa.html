@@ -73,21 +73,50 @@
 
     {% endif %}
 
-    <fieldset>
+    <fieldset class="selector-discos-fieldset">
         <legend>Discos del programa</legend>
-        <div class="lista-discos">
-        {% for disco in discos %}
 
-            <label for="programa-disco-{{ disco.id_disco }}">
+        <div class="selector-discos-barra">
+            <label class="sr-only" for="buscar-disco-selector">Buscar disco</label>
+            <input
+                id="buscar-disco-selector"
+                type="search"
+                class="selector-discos-buscar"
+                placeholder="Buscar por título o artista..."
+                autocomplete="off">
+            <span class="selector-discos-contador" id="selector-contador" aria-live="polite"></span>
+        </div>
+
+        <div class="selector-discos" id="selector-discos">
+        {% for disco in discos %}
+        {% set seleccionado = disco.id_disco in seleccionados %}
+
+            <label
+                class="selector-disco{% if seleccionado %} seleccionado{% endif %}"
+                for="programa-disco-{{ disco.id_disco }}"
+                data-buscar="{{ (disco.artista ~ ' ' ~ disco.titulo)|lower }}">
 
                 <input
                     id="programa-disco-{{ disco.id_disco }}"
                     type="checkbox"
                     name="discos"
                     value="{{ disco.id_disco }}"
-                    {% if disco.id_disco in seleccionados %}checked{% endif %}>
+                    {% if seleccionado %}checked{% endif %}>
 
-                {{ disco.artista }} - {{ disco.titulo }}
+                <span class="selector-disco-portada{% if not disco.portada %} portada-vacia{% endif %}">
+                    {% if disco.portada %}
+                    <img
+                        src="{{ img(disco.portada, 150) }}"
+                        alt="{{ disco.titulo }}"
+                        loading="lazy"
+                        decoding="async">
+                    {% else %}
+                    Sin portada
+                    {% endif %}
+                </span>
+
+                <span class="selector-disco-titulo">{{ disco.titulo }}</span>
+                <span class="selector-disco-artista">{{ disco.artista }}</span>
 
             </label>
 
@@ -145,6 +174,44 @@ document.getElementById("form-programa").addEventListener("submit", async functi
         btn.disabled = false;
     }
 });
+
+(function() {
+    var contenedor = document.getElementById("selector-discos");
+    var buscador = document.getElementById("buscar-disco-selector");
+    var contador = document.getElementById("selector-contador");
+
+    if (!contenedor || !buscador || !contador) return;
+
+    var items = Array.prototype.slice.call(contenedor.querySelectorAll(".selector-disco"));
+
+    function actualizarContador() {
+        var n = items.filter(function(el) {
+            return el.querySelector('input[name="discos"]').checked;
+        }).length;
+
+        contador.textContent = n + " seleccionado" + (n === 1 ? "" : "s");
+    }
+
+    items.forEach(function(el) {
+        var input = el.querySelector('input[name="discos"]');
+
+        input.addEventListener("change", function() {
+            el.classList.toggle("seleccionado", input.checked);
+            actualizarContador();
+        });
+    });
+
+    buscador.addEventListener("input", function() {
+        var q = buscador.value.trim().toLowerCase();
+
+        items.forEach(function(el) {
+            var coincide = !q || el.getAttribute("data-buscar").indexOf(q) !== -1;
+            el.style.display = coincide ? "" : "none";
+        });
+    });
+
+    actualizarContador();
+})();
 </script>
 
 {% endblock %}
