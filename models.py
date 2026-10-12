@@ -698,6 +698,36 @@ def obtener_discos_programa(id_programa):
         conexion.close()
 
 
+def obtener_discos_por_programas(ids_programas):
+    ids = [id_programa for id_programa in ids_programas if id_programa]
+
+    if not ids:
+        return []
+
+    conexion = get_connection()
+
+    try:
+        with conexion.cursor() as cursor:
+
+            marcadores = ", ".join(["?"] * len(ids))
+
+            sql = f"""
+                SELECT pd.id_programa, pd.id_disco, d.titulo, d.artista, d.portada
+                FROM programa_disco pd
+                JOIN discos d ON d.id_disco = pd.id_disco
+                WHERE pd.id_programa IN ({marcadores})
+                ORDER BY d.artista, d.titulo
+            """
+
+            cursor.execute(sql, tuple(ids))
+
+            return cursor.fetchall()
+
+    finally:
+
+        conexion.close()
+
+
 def eliminar_discos_programa(id_programa):
     conexion = get_connection()
 

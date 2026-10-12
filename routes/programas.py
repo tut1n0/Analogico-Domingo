@@ -21,6 +21,7 @@ from models import (
     obtener_discos,
     obtener_discos_pendientes,
     obtener_discos_programa,
+    obtener_discos_por_programas,
     agregar_disco_a_programa,
     eliminar_discos_programa,
     marcar_disco_escuchado
@@ -55,11 +56,21 @@ def listar_programas(request: Request, page: int = Query(1, ge=1)):
 
     programas = obtener_programas_paginados(page, POR_PAGINA)
 
+    discos_por_programa = {}
+
+    filas_discos = obtener_discos_por_programas(
+        [programa["id_programa"] for programa in programas]
+    )
+
+    for disco in filas_discos:
+        discos_por_programa.setdefault(disco["id_programa"], []).append(disco)
+
     return render(
         request,
         "programas.html",
         {
             "programas": programas,
+            "discos_por_programa": discos_por_programa,
             "pagina": page,
             "total_paginas": total_paginas,
             "total": total

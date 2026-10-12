@@ -484,6 +484,64 @@ footer{
     color:rgba(255,255,255,0.5);
 }
 
+.programa-discos{
+    display:grid;
+    grid-template-columns:repeat(auto-fill,minmax(80px,1fr));
+    gap:12px;
+    margin-top:4px;
+}
+
+.programa-disco{
+    display:flex;
+    flex-direction:column;
+    gap:4px;
+    min-width:0;
+    color:inherit;
+    text-decoration:none;
+}
+
+.programa-disco-portada{
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    height:80px;
+    background:#3a2e00;
+    border-radius:4px;
+    overflow:hidden;
+    color:#f2c14e;
+    font-size:12px;
+    text-align:center;
+}
+
+.programa-disco-portada img{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+}
+
+.programa-disco-titulo{
+    color:#fff;
+    font-size:12px;
+    line-height:1.3;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+}
+
+.programa-disco-artista{
+    color:rgba(255,255,255,0.6);
+    font-size:11px;
+    line-height:1.3;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+}
+
+a.programa-disco:hover .programa-disco-portada,
+a.programa-disco:focus-visible .programa-disco-portada{
+    outline:2px solid #f2c14e;
+}
+
 .portada{
 
     height:250px;

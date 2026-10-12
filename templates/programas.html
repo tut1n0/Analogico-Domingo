@@ -39,6 +39,29 @@
     <p class="programa-observaciones">{{ programa.observaciones }}</p>
     {% endif %}
 
+    {% set discos = discos_por_programa.get(programa.id_programa, []) %}
+    {% if discos %}
+    <div class="programa-discos">
+        {% for disco in discos %}
+        <a class="programa-disco" href="/discos/{{ disco.id_disco }}" title="{{ disco.artista }} — {{ disco.titulo }}">
+            <span class="programa-disco-portada{% if not disco.portada %} portada-vacia{% endif %}">
+                {% if disco.portada %}
+                <img
+                    src="{{ img(disco.portada, 150) }}"
+                    alt="{{ disco.titulo }}"
+                    loading="lazy"
+                    decoding="async">
+                {% else %}
+                Sin portada
+                {% endif %}
+            </span>
+            <span class="programa-disco-titulo">{{ disco.titulo }}</span>
+            <span class="programa-disco-artista">{{ disco.artista }}</span>
+        </a>
+        {% endfor %}
+    </div>
+    {% endif %}
+
     {% if programa.audio %}
     <div class="acciones-play">
         <button

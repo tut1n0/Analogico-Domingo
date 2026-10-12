@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% block title %}{{ codigo }} | Analógico Domingo{% endblock %}
+
+{% block meta_description %}Error {{ codigo }} en Analógico Domingo.{% endblock %}
+
+{% block contenido %}
+
+<section class="pagina-error" aria-labelledby="titulo-error">
+
+    <p class="error-codigo">{{ codigo }}</p>
+
+    <h2 id="titulo-error">{{ titulo }}</h2>
+
+    <p class="error-detalle">{{ detalle }}</p>
+
+    <div class="acciones-hero">
+        <a class="boton-outline" href="/">Ir al inicio</a>
+        <a class="boton-outline" href="/buscar/">Buscar en el archivo</a>
+    </div>
+
+</section>
+
+{% endblock %}
