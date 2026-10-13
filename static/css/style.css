@@ -442,7 +442,8 @@ footer{
 
 .contenedor-programas{
     display:grid;
-    grid-template-columns:repeat(auto-fill,minmax(250px,1fr));
+    grid-template-columns:repeat(auto-fill,minmax(280px,1fr));
+    grid-auto-rows:1fr;
     gap:25px;
     margin-top:30px;
 }
@@ -450,9 +451,30 @@ footer{
 .tarjeta-programa{
     display:flex;
     flex-direction:column;
-    gap:12px;
-    border-color:rgba(242,193,78,0.85);
-    background:linear-gradient(180deg,#16130a,#0a0906);
+    gap:14px;
+    height:100%;
+    padding:22px;
+    overflow:hidden;
+    border-color:rgba(242,193,78,0.35);
+    background:
+        linear-gradient(180deg,#17130a 0%,#0b0906 100%);
+    box-shadow:0 4px 18px rgba(0,0,0,0.35);
+}
+
+.tarjeta-programa::before{
+    content:"";
+    position:absolute;
+    top:0;
+    left:0;
+    right:0;
+    height:3px;
+    background:linear-gradient(90deg,#f2c14e,#d4a000 60%,rgba(212,160,0,0));
+}
+
+.tarjeta-programa:hover{
+    transform:translateY(-4px);
+    border-color:rgba(242,193,78,0.9);
+    box-shadow:0 14px 30px rgba(0,0,0,0.5),0 0 0 1px rgba(242,193,78,0.25);
 }
 
 .programa-cabecera{
@@ -465,30 +487,69 @@ footer{
 
 .programa-numero{
     font-family:"Caacupe One","Alumni Sans",sans-serif;
-    font-size:34px;
+    font-size:32px;
     color:#f2c14e;
     line-height:1;
 }
 
+.programa-numero a{
+    color:inherit;
+    text-decoration:none;
+}
+
+.programa-numero a:hover,
+.programa-numero a:focus-visible{
+    color:#ffe9a8;
+}
+
 .programa-fecha{
-    color:rgba(255,255,255,0.6);
-    font-size:15px;
+    color:#f2c14e;
+    font-size:14px;
+    padding:3px 10px;
+    border-radius:999px;
+    border:1px solid rgba(242,193,78,0.35);
+    background:rgba(242,193,78,0.08);
+    white-space:nowrap;
+}
+
+.programa-meta{
+    display:flex;
+    flex-wrap:wrap;
+    gap:8px;
+}
+
+.programa-meta-item{
+    font-size:13px;
+    color:rgba(255,255,255,0.65);
+    padding:2px 9px;
+    border-radius:999px;
+    background:rgba(255,255,255,0.06);
+}
+
+.programa-meta-audio{
+    color:#8fe0a8;
+    background:rgba(58,157,93,0.14);
 }
 
 .programa-observaciones{
-    color:rgba(255,255,255,0.85);
-    line-height:1.6;
+    color:rgba(255,255,255,0.82);
+    line-height:1.55;
+    display:-webkit-box;
+    -webkit-line-clamp:3;
+    -webkit-box-orient:vertical;
+    overflow:hidden;
 }
 
 .programa-sin-audio{
     color:rgba(255,255,255,0.5);
+    font-size:14px;
 }
 
 .programa-discos{
     display:grid;
-    grid-template-columns:repeat(auto-fill,minmax(80px,1fr));
+    grid-template-columns:repeat(3,minmax(0,1fr));
     gap:12px;
-    margin-top:4px;
+    margin-top:2px;
 }
 
 .programa-disco{
@@ -502,15 +563,19 @@ footer{
 
 .programa-disco-portada{
     display:flex;
+    flex-direction:column;
     justify-content:center;
     align-items:center;
-    height:80px;
-    background:#3a2e00;
-    border-radius:4px;
+    aspect-ratio:1 / 1;
+    background:linear-gradient(180deg,#3a2e00,#241c00);
+    border-radius:6px;
     overflow:hidden;
     color:#f2c14e;
     font-size:12px;
     text-align:center;
+    transition:outline-color 0.15s ease;
+    outline:2px solid transparent;
+    outline-offset:-2px;
 }
 
 .programa-disco-portada img{
@@ -539,7 +604,34 @@ footer{
 
 a.programa-disco:hover .programa-disco-portada,
 a.programa-disco:focus-visible .programa-disco-portada{
-    outline:2px solid #f2c14e;
+    outline-color:#f2c14e;
+}
+
+.programa-disco-mas .programa-disco-portada{
+    background:rgba(242,193,78,0.1);
+    border:1px dashed rgba(242,193,78,0.5);
+    gap:2px;
+}
+
+.programa-disco-mas-num{
+    font-family:"Caacupe One","Alumni Sans",sans-serif;
+    font-size:24px;
+    line-height:1;
+    color:#f2c14e;
+}
+
+.programa-disco-mas-txt{
+    font-size:11px;
+    color:rgba(255,255,255,0.7);
+}
+
+.programa-pie{
+    margin-top:auto;
+    padding-top:14px;
+    display:flex;
+    flex-direction:column;
+    gap:12px;
+    border-top:1px solid rgba(242,193,78,0.15);
 }
 
 /* SELECTOR DE DISCOS (EDITAR PROGRAMA) */
