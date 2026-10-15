@@ -41,7 +41,7 @@ body {
 header{
 
     background-color:#000;
-    background-image:url('/static/header-opt.webp');
+    background-image:url('/static/header-opt.webp?v=2');
     background-size:cover;
     background-position:center;
     background-repeat:no-repeat;
@@ -67,7 +67,6 @@ header::before {
     inset: 0;
     background:
         linear-gradient(to bottom, rgba(0,0,0,0.72), rgba(0,0,0,0.35) 45%, rgba(0,0,0,0.82));
-    backdrop-filter: blur(1.5px);
 }
 
 header > * {
@@ -169,7 +168,7 @@ main::before{
     background-color:#000;
     background-image:
         linear-gradient(rgba(0,0,0,0.74), rgba(0,0,0,0.84)),
-        url('/static/fondo-opt.webp');
+        url('/static/fondo-opt.webp?v=2');
     background-size:cover, cover;
     background-position:center, center;
     background-repeat:no-repeat, no-repeat;
@@ -2222,7 +2221,6 @@ body.cargando header {
 body.cargando header::before {
     background:
         linear-gradient(to bottom, rgba(0,0,0,0.55), rgba(0,0,0,0.20) 45%, rgba(0,0,0,0.65));
-    backdrop-filter: none;
 }
 
 #rp-barra-carga {

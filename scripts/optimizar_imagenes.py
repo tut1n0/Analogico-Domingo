@@ -20,7 +20,7 @@ FUENTES = os.path.join(RAIZ, "assets-src")
 
 
 def _redimensionar(img, ancho_max):
-    if img.width > ancho_max:
+    if img.width != ancho_max:
         alto = int(img.height * ancho_max / img.width)
         img = img.resize((ancho_max, alto), Image.LANCZOS)
     return img
@@ -31,7 +31,9 @@ def _peso(ruta):
 
 
 def optimizar_header():
-    origen = os.path.join(FUENTES, "header.jpg")
+    origen = os.path.join(FUENTES, "header.old.jpg")
+    if not os.path.exists(origen):
+        origen = os.path.join(FUENTES, "header.jpg")
     if not os.path.exists(origen):
         raise SystemExit(f"No existe {origen}. Mové el header original a assets-src/")
 
@@ -56,11 +58,11 @@ def optimizar_fondo():
     img = _redimensionar(img, 1920)
 
     destino_jpg = os.path.join(STATIC, "fondo-opt.jpg")
-    img.save(destino_jpg, "JPEG", quality=78, optimize=True, progressive=True)
+    img.save(destino_jpg, "JPEG", quality=75, optimize=True, progressive=True)
     print(f"OK: {destino_jpg} -> {_peso(destino_jpg)} KB")
 
     destino_webp = os.path.join(STATIC, "fondo-opt.webp")
-    img.save(destino_webp, "WEBP", quality=78, method=6)
+    img.save(destino_webp, "WEBP", quality=70, method=6)
     print(f"OK: {destino_webp} -> {_peso(destino_webp)} KB")
 
 
