@@ -6,6 +6,8 @@
 
 {% block contenido %}
 
+<h2 id="resultados-busqueda">{% if q %}Resultados para “{{ q }}”{% else %}Buscar en el archivo{% endif %}</h2>
+
 <div class="filtros" style="margin-bottom: 16px;">
     <form class="buscador-global" id="form-buscar-global" action="/buscar/" method="get" role="search">
         <label class="sr-only" for="q-global">Buscar en el archivo</label>
@@ -13,8 +15,6 @@
         <button type="submit" class="boton">Buscar</button>
     </form>
 </div>
-
-<h2 id="resultados-busqueda">{% if q %}Resultados para “{{ q }}”{% else %}Buscar en el archivo{% endif %}</h2>
 
 {% if q and limite_resultados %}
 <p class="resultados-busqueda">Se muestran hasta {{ limite_resultados }} resultados por categoría.</p>

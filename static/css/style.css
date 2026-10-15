@@ -958,6 +958,10 @@ a.programa-disco:focus-visible .programa-disco-portada{
     margin-bottom:20px;
 }
 
+#resultados-busqueda{
+    text-align:center;
+}
+
 .resultados-busqueda strong{
     color:#d39a0c;
 }
