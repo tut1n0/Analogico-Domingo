@@ -8,6 +8,7 @@
 
 :root {
     --reproductor-espacio: 90px;
+    --footer-gap: 80px;
 }
 
 body {
@@ -148,6 +149,30 @@ main{
     background:transparent;
 
     border-radius:12px;
+
+    position:relative;
+    isolation:isolate;
+
+}
+
+/* Fondo a todo el ancho detrás del contenido del main */
+main::before{
+
+    content:'';
+    position:absolute;
+    top:0;
+    bottom:calc(-1 * var(--footer-gap));
+    left:50%;
+    transform:translateX(-50%);
+    width:100vw;
+    z-index:-1;
+    background-color:#000;
+    background-image:
+        linear-gradient(rgba(0,0,0,0.74), rgba(0,0,0,0.84)),
+        url('/static/fondo-opt.webp');
+    background-size:cover, cover;
+    background-position:center, center;
+    background-repeat:no-repeat, no-repeat;
 
 }
 
@@ -311,7 +336,7 @@ main h3{
 
 footer{
 
-    margin-top:80px;
+    margin-top:var(--footer-gap);
 
     padding:30px;
 
@@ -1622,6 +1647,7 @@ a.programa-disco:focus-visible .programa-disco-portada{
 
     :root {
         --reproductor-espacio: 150px;
+        --footer-gap: 40px;
     }
 
     main {
@@ -1762,7 +1788,7 @@ a.programa-disco:focus-visible .programa-disco-portada{
     }
 
     footer {
-        margin-top: 40px;
+        margin-top: var(--footer-gap);
         padding: 20px;
     }
 
@@ -2356,6 +2382,7 @@ main.rp-fade-in {
 
 html {
     scrollbar-color: #3a3a3a #111;
+    overflow-x: hidden;
 }
 
 /* Sombra suave en las tarjetas por defecto */
